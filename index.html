@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will Haslun</title>
+    <meta name="description" content="Artist, tinkerer, writer. A few corners of the internet where I keep things.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-cream: #FAF7F2;
+            --color-warm-white: #FFFCF7;
+            --color-ink: #2C2A26;
+            --color-ink-light: #5A574F;
+            --color-terracotta: #C4846C;
+            --color-sage: #8B9A7D;
+            --color-slate: #6B7B8A;
+            --color-gold: #B8986B;
+            --font-serif: 'Cormorant Garamond', Georgia, serif;
+            --font-sans: 'DM Sans', -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--color-cream);
+            color: var(--color-ink);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Subtle paper texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Soft watercolor-inspired gradient wash */
+        .background-wash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wash-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.25;
+        }
+
+        .wash-1 {
+            width: 60vw;
+            height: 60vw;
+            background: linear-gradient(135deg, var(--color-terracotta), transparent);
+            top: -20%;
+            right: -15%;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .wash-2 {
+            width: 50vw;
+            height: 50vw;
+            background: linear-gradient(225deg, var(--color-sage), transparent);
+            bottom: -15%;
+            left: -10%;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        .wash-3 {
+            width: 35vw;
+            height: 35vw;
+            background: linear-gradient(180deg, var(--color-slate), transparent);
+            top: 30%;
+            left: 10%;
+            opacity: 0.15;
+            animation: float 18s ease-in-out infinite 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(15px, -20px) scale(1.02); }
+            66% { transform: translate(-10px, 15px) scale(0.98); }
+        }
+
+        /* Main card container */
+        .card {
+            background: var(--color-warm-white);
+            border-radius: 2px;
+            box-shadow: 
+                0 1px 2px rgba(44, 42, 38, 0.04),
+                0 4px 16px rgba(44, 42, 38, 0.06),
+                0 24px 64px rgba(44, 42, 38, 0.08);
+            max-width: 440px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        /* Gold accent line at top */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-terracotta), var(--color-gold), var(--color-sage));
+        }
+
+        .card-inner {
+            padding: 3rem 2.5rem;
+        }
+
+        /* Header section */
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .name {
+            font-family: var(--font-serif);
+            font-size: 2.25rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            color: var(--color-ink);
+            margin-bottom: 0.75rem;
+            line-height: 1.1;
+        }
+
+        .tagline {
+            font-family: var(--font-serif);
+            font-size: 1.125rem;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--color-ink-light);
+            letter-spacing: 0.01em;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.35s forwards;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--color-ink), transparent);
+            opacity: 0.12;
+        }
+
+        .divider-icon {
+            width: 8px;
+            height: 8px;
+            border: 1px solid var(--color-gold);
+            transform: rotate(45deg);
+            opacity: 0.6;
+        }
+
+        /* Bio section */
+        .bio {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.5s forwards;
+        }
+
+        .bio p {
+            font-size: 0.9375rem;
+            line-height: 1.7;
+            color: var(--color-ink-light);
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        /* Links section */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.65s forwards;
+        }
+
+        .link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: var(--color-cream);
+            border-radius: 2px;
+            text-decoration: none;
+            color: var(--color-ink);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--color-gold);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .link:hover {
+            background: var(--color-warm-white);
+            box-shadow: 0 4px 20px rgba(44, 42, 38, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .link:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .link-content {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .link-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--color-ink-light);
+            transition: color 0.3s ease;
+        }
+
+        .link:hover .link-icon {
+            color: var(--color-terracotta);
+        }
+
+        .link-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        .link-meta {
+            font-size: 0.75rem;
+            color: var(--color-ink-light);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .link-arrow {
+            width: 16px;
+            height: 16px;
+            color: var(--color-ink-light);
+            transition: all 0.3s ease;
+            opacity: 0.5;
+        }
+
+        .link:hover .link-arrow {
+            transform: translateX(4px);
+            opacity: 1;
+            color: var(--color-gold);
+        }
+
+        /* Contact row */
+        .contact-row {
+            display: flex;
+            gap: 0.875rem;
+        }
+
+        .contact-row .link {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .contact-row .link-content {
+            justify-content: center;
+        }
+
+        .contact-row .link-arrow {
+            display: none;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(44, 42, 38, 0.06);
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.8s forwards;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.8125rem;
+            color: var(--color-ink-light);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .location-icon {
+            width: 14px;
+            height: 14px;
+            opacity: 0.7;
+        }
+
+        /* Social icons row */
+        .social-row {
+            display: flex;
+            justify-content: center;
+            gap: 1.25rem;
+            margin-top: 1.25rem;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            color: var(--color-ink-light);
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--color-cream);
+            color: var(--color-ink);
+            transform: translateY(-2px);
+        }
+
+        .social-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile refinements */
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+                align-items: flex-start;
+                padding-top: 2rem;
+            }
+
+            .card-inner {
+                padding: 2.25rem 1.75rem;
+            }
+
+            .name {
+                font-size: 1.875rem;
+            }
+
+            .tagline {
+                font-size: 1rem;
+            }
+
+            .contact-row {
+                flex-direction: column;
+            }
+
+            .wash-1, .wash-2, .wash-3 {
+                filter: blur(60px);
+            }
+        }
+
+        /* Hover state for touch devices */
+        @media (hover: none) {
+            .link:hover {
+                transform: none;
+                box-shadow: none;
+            }
+
+            .link:active {
+                background: var(--color-warm-white);
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-cream: #1A1918;
+                --color-warm-white: #242220;
+                --color-ink: #F5F2ED;
+                --color-ink-light: #A8A49C;
+            }
+
+            .card {
+                box-shadow: 
+                    0 1px 2px rgba(0, 0, 0, 0.2),
+                    0 4px 16px rgba(0, 0, 0, 0.25),
+                    0 24px 64px rgba(0, 0, 0, 0.35);
+            }
+
+            body::before {
+                opacity: 0.02;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background watercolor wash -->
+    <div class="background-wash">
+        <div class="wash-element wash-1"></div>
+        <div class="wash-element wash-2"></div>
+        <div class="wash-element wash-3"></div>
+    </div>
+
+    <!-- Main card -->
+    <main class="card">
+        <div class="card-inner">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="name">Will Haslun</h1>
+                <p class="tagline">Multiple personas<br>all in one convenient place</p>
+            </header>
+
+            <!-- Divider -->
+            <div class="divider">
+                <span class="divider-line"></span>
+                <span class="divider-icon"></span>
+                <span class="divider-line"></span>
+            </div>
+
+            <!-- Bio -->
+            <section class="bio">
+                <p>I like to paint places, build projects,<br>and think about things,<br>big and small.</p>
+            </section>
+
+            <!-- Links -->
+            <nav class="links">
+                <!-- Studio Website -->
+                <a href="https://haslun.studio" class="link" target="_blank" rel="noopener">
+                    <span class="link-content">
+                        <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="2" y="6" width="20" height="12" rx="1"/>
+                            <path d="M6 10l4 4 3-2 5 4"/>
+                            <circle cx="8" cy="10" r="1.5"/>
+                        </svg>
+                        <span class="link-label">Haslun.Studio</span>
+                    </span>
+                    <span class="link-meta">Watercolor Gallery</span>
+                    <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+
+                <!-- AI Legal Demos -->
+                <a href="https://haslun.ai" class="link" target="_blank" rel="noopener">
+                    <span class="link-content">
+                        <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                        <span class="link-label">Haslun.ai</span>
+                    </span>
+                    <span class="link-meta">Legal Tech Experiments</span>
+                    <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+
+                <!-- Personal Wiki -->
+                <a href="https://haslun.info" class="link" target="_blank" rel="noopener">
+                    <span class="link-content">
+                        <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                            <path d="M8 7h8M8 11h6"/>
+                        </svg>
+                        <span class="link-label">Haslun.Info</span>
+                    </span>
+                    <span class="link-meta">Writings & Ideas</span>
+                    <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+
+                <!-- Contact Row -->
+                <div class="contact-row">
+                    <a href="mailto:Haslun@pm.me" class="link">
+                        <span class="link-content">
+                            <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="M22 6l-10 7L2 6"/>
+                            </svg>
+                            <span class="link-label">Email</span>
+                        </span>
+                        <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="tel:+12039120189" class="link">
+                        <span class="link-content">
+                            <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                            </svg>
+                            <span class="link-label">Call</span>
+                        </span>
+                        <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="location">
+                    <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span>Upper West Side, NYC</span>
+                </div>
+
+                <!-- Social Links -->
+                <div class="social-row">
+                    <a href="https://instagram.com/watercolorwill" class="social-link" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="2" y="2" width="20" height="20" rx="5"/>
+                            <circle cx="12" cy="12" r="4"/>
+                            <circle cx="18" cy="6" r="1" fill="currentColor"/>
+                        </svg>
+                    </a>
+                    <a href="https://linkedin.com/in/willhaslun" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="2" y="2" width="20" height="20" rx="2"/>
+                            <path d="M8 11v5M8 8v.01M12 16v-5c0-1 .5-2 2-2s2 1 2 2v5"/>
+                        </svg>
+                    </a>
+                    <a href="https://bsky.app/profile/willful-ignorance.bsky.social" class="social-link" target="_blank" rel="noopener" aria-label="Bluesky">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 3c-2.5 2.5-5 5.5-5 9 0 3 2 4.5 4 4.5.5 0 1-.1 1.5-.3-.5 1-1.5 1.8-3 1.8-1 0-2-.5-2.5-1-.5.5-.5 1.5 0 2 1 1 2.5 1.5 4 1.5 4 0 7-3 7-7.5 0-3.5-2.5-6.5-5-9-.3-.3-.7-.3-1 0z"/>
+                            <path d="M12 3c2.5 2.5 5 5.5 5 9 0 3-2 4.5-4 4.5-.5 0-1-.1-1.5-.3.5 1 1.5 1.8 3 1.8 1 0 2-.5 2.5-1 .5.5.5 1.5 0 2-1 1-2.5 1.5-4 1.5-4 0-7-3-7-7.5 0-3.5 2.5-6.5 5-9 .3-.3.7-.3 1 0z"/>
+                        </svg>
+                    </a>
+                </div>
+            </footer>
+        </div>
+    </main>
+</body>
+</html>
