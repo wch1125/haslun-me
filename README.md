@@ -6,7 +6,7 @@ Personal landing page — a virtual business card linking to my various corners 
 
 - [Haslun.Studio](https://haslun.studio) — Watercolor gallery
 - [Haslun.ai](https://haslun.ai) — Legal tech experiments
-- [Haslun.Info](https://haslun.info) — Personal wiki
+- [H. Aslan](https://haslan.xyz) — Creative writing pseudonym
 
 ## Deployment
 
