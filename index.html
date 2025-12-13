@@ -25,6 +25,14 @@
             --font-sans: 'DM Sans', -apple-system, sans-serif;
         }
 
+        /* Dark mode colors */
+        [data-theme="dark"] {
+            --color-cream: #1A1918;
+            --color-warm-white: #242220;
+            --color-ink: #F5F2ED;
+            --color-ink-light: #A8A49C;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -47,6 +55,7 @@
             padding: 1.5rem;
             position: relative;
             overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Subtle paper texture overlay */
@@ -61,6 +70,10 @@
             opacity: 0.03;
             pointer-events: none;
             z-index: 1;
+        }
+
+        [data-theme="dark"] body::before {
+            opacity: 0.02;
         }
 
         /* Soft watercolor-inspired gradient wash */
@@ -128,6 +141,14 @@
             position: relative;
             z-index: 2;
             overflow: hidden;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        [data-theme="dark"] .card {
+            box-shadow: 
+                0 1px 2px rgba(0, 0, 0, 0.2),
+                0 4px 16px rgba(0, 0, 0, 0.25),
+                0 24px 64px rgba(0, 0, 0, 0.35);
         }
 
         /* Gold accent line at top */
@@ -257,6 +278,10 @@
             transform: translateY(-2px);
         }
 
+        [data-theme="dark"] .link:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
         .link:hover::after {
             transform: scaleX(1);
             transform-origin: left;
@@ -292,6 +317,18 @@
             text-transform: uppercase;
         }
 
+        .link-meta .diamond {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--color-gold);
+            transform: rotate(45deg);
+            margin: 0 0.4em;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+        }
+
         .link-arrow {
             width: 16px;
             height: 16px;
@@ -325,6 +362,62 @@
             display: none;
         }
 
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.75s forwards;
+        }
+
+        .theme-toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            background: transparent;
+            border: 1px solid var(--color-ink);
+            border-radius: 2px;
+            color: var(--color-ink);
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.4;
+        }
+
+        .theme-toggle-btn:hover {
+            opacity: 1;
+            background: var(--color-cream);
+            border-color: var(--color-gold);
+            color: var(--color-gold);
+        }
+
+        .theme-toggle-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .theme-toggle-btn .sun {
+            display: none;
+        }
+
+        .theme-toggle-btn .moon {
+            display: block;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn .sun {
+            display: block;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn .moon {
+            display: none;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -332,6 +425,10 @@
             border-top: 1px solid rgba(44, 42, 38, 0.06);
             opacity: 0;
             animation: fadeUp 0.8s ease-out 0.8s forwards;
+        }
+
+        [data-theme="dark"] .footer {
+            border-top-color: rgba(255, 255, 255, 0.06);
         }
 
         .location {
@@ -443,27 +540,6 @@
                 transition-duration: 0.01ms !important;
             }
         }
-
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --color-cream: #1A1918;
-                --color-warm-white: #242220;
-                --color-ink: #F5F2ED;
-                --color-ink-light: #A8A49C;
-            }
-
-            .card {
-                box-shadow: 
-                    0 1px 2px rgba(0, 0, 0, 0.2),
-                    0 4px 16px rgba(0, 0, 0, 0.25),
-                    0 24px 64px rgba(0, 0, 0, 0.35);
-            }
-
-            body::before {
-                opacity: 0.02;
-            }
-        }
     </style>
 </head>
 <body>
@@ -523,7 +599,7 @@
                         </svg>
                         <span class="link-label">Haslun.ai</span>
                     </span>
-                    <span class="link-meta">AI-Powered Tech Experiments</span>
+                    <span class="link-meta">Legal <span class="diamond"></span> Tech <span class="diamond"></span> Design</span>
                     <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
@@ -571,6 +647,20 @@
                         </svg>
                     </a>
                 </div>
+
+                <!-- Theme Toggle -->
+                <div class="theme-toggle">
+                    <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle dark mode">
+                        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="5"/>
+                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                        </svg>
+                        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                        </svg>
+                        <span class="toggle-label">Toggle Theme</span>
+                    </button>
+                </div>
             </nav>
 
             <!-- Footer -->
@@ -608,5 +698,36 @@
             </footer>
         </div>
     </main>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // Check for saved preference or system preference
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme) {
+            html.setAttribute('data-theme', savedTheme);
+        } else if (systemPrefersDark) {
+            html.setAttribute('data-theme', 'dark');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+        
+        // Listen for system preference changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                html.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            }
+        });
+    </script>
 </body>
 </html>
