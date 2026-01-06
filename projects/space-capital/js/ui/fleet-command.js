@@ -7,7 +7,8 @@
  * with their status, stats bars, and P&L data.
  * 
  * Dependencies:
- *   - js/data/ship-data.js (SHIP_SPRITES, SHIP_CLASSES)
+ *   - js/core/ShipRegistry.js (preferred, central authority)
+ *   - js/data/ship-data.js (SHIP_SPRITES, SHIP_CLASSES) - fallback
  *   - js/data/ticker-profiles.js (TICKER_PROFILES)
  *   - js/ui/shipBrief.js (openShipBrief)
  * 
@@ -18,9 +19,9 @@
   'use strict';
   
   /**
-   * Ship class designations by ticker
+   * Legacy ship class designations (fallback when ShipRegistry unavailable)
    */
-  const SHIP_DESIGNATIONS = {
+  const _LEGACY_DESIGNATIONS = {
     RKLB: { class: 'FLAGSHIP', code: 'FSC-001', name: 'ELECTRON' },
     LUNR: { class: 'LANDER', code: 'LND-002', name: 'LUNAR' },
     JOBY: { class: 'LIGHT', code: 'EVT-003', name: 'EVTOL' },
@@ -37,6 +38,38 @@
     RDW: { class: 'HAULER', code: 'RDW-013', name: 'REDWIRE' },
     EVEX: { class: 'TRANSPORT', code: 'EVX-014', name: 'EVEX' }
   };
+  
+  /**
+   * Get ship designation from ShipRegistry or fallback
+   */
+  function getShipDesignation(ticker) {
+    // Try ShipRegistry first
+    if (window.ShipRegistry?.isReady()) {
+      const ship = window.ShipRegistry.get(ticker);
+      if (ship) {
+        return {
+          class: ship.role || ship.tier + '-CLASS',
+          code: `${ship.sector?.substring(0,3) || 'UNK'}-${ticker}`,
+          name: ship.codename || ship.name || ticker,
+          tier: ship.tier,
+          squadSize: ship.squadSize
+        };
+      }
+    }
+    // Fallback to legacy
+    return _LEGACY_DESIGNATIONS[ticker] || { 
+      class: 'UNKNOWN', 
+      code: 'UNK-000', 
+      name: ticker 
+    };
+  }
+  
+  // Proxy for backwards compatibility
+  const SHIP_DESIGNATIONS = new Proxy(_LEGACY_DESIGNATIONS, {
+    get(target, prop) {
+      return getShipDesignation(prop);
+    }
+  });
   
   /**
    * Calculate vessel stats from market data
@@ -99,8 +132,12 @@
     const pnlPct = pnl >= 0 ? `+${pnl.toFixed(1)}%` : `${pnl.toFixed(1)}%`;
     const pnlClass = pnl >= 0 ? 'positive' : 'negative';
     
+    // Tier badge (from ShipRegistry)
+    const tier = designation.tier || '';
+    const tierBadge = tier ? `<span class="vessel-tier tier-${tier}">${tier}</span>` : '';
+    
     return `
-      <div class="vessel-card" data-ticker="${ticker}" onclick="FleetCommand.openVessel('${ticker}')">
+      <div class="vessel-card" data-ticker="${ticker}" data-tier="${tier}" onclick="FleetCommand.openVessel('${ticker}')">
         <div class="vessel-sprite-frame">
           <span class="vessel-sprite-corner tl"></span>
           <span class="vessel-sprite-corner tr"></span>
@@ -108,6 +145,7 @@
           <span class="vessel-sprite-corner br"></span>
           <img class="vessel-sprite-img" src="${sprite}" alt="${ticker}" onerror="this.src='assets/ships/static/Unclaimed-Drone-ship.png'">
           <span class="vessel-sprite-class">${designation.class}</span>
+          ${tierBadge}
         </div>
         
         <div class="vessel-info">

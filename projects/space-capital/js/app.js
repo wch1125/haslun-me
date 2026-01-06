@@ -361,7 +361,8 @@
     let priceChart = null, macdChart = null, tickerData = {}, statsData = {};
     let macdOrbitMode = true; // MACD orbital visualization mode (default: ORBIT)
     
-    const tickerColors = {
+    // Legacy color/theme maps (fallback when ShipRegistry not ready)
+    const _legacyColors = {
       'RKLB': '#33ff99', 'LUNR': '#47d4ff', 'ASTS': '#ffb347', 'ACHR': '#ff6b9d',
       'JOBY': '#b388ff', 'GME': '#ff6b6b', 'BKSY': '#47d4ff', 'RDW': '#33ff99',
       'PL': '#b388ff', 'EVEX': '#ff6b9d', 'MP': '#ffb347', 'KTOS': '#47d4ff',
@@ -369,13 +370,52 @@
       'COHR': '#47d4ff', 'GE': '#ff6b6b', 'LHX': '#33ff99', 'RTX': '#ff6b6b'
     };
     
-    const tickerThemes = {
+    const _legacyThemes = {
       'RKLB': 'SPACE', 'LUNR': 'SPACE', 'ASTS': 'SPACE', 'BKSY': 'SPACE',
       'RDW': 'SPACE', 'PL': 'SPACE', 'IRDM': 'SPACE', 'KTOS': 'DEFENSE',
       'ACHR': 'eVTOL', 'JOBY': 'eVTOL', 'EVEX': 'eVTOL', 'GME': 'MEME',
       'MP': 'MATERIALS', 'HON': 'INDUSTRIAL', 'ATI': 'MATERIALS',
       'CACI': 'DEFENSE', 'LOAR': 'AEROSPACE',
       'COHR': 'OPTICS', 'GE': 'INDUSTRIAL', 'LHX': 'DEFENSE', 'RTX': 'DEFENSE'
+    };
+    
+    // Smart proxies: use ShipRegistry if available, fallback to legacy
+    const tickerColors = new Proxy(_legacyColors, {
+      get(target, prop) {
+        if (window.ShipRegistry?.isReady()) {
+          const color = window.ShipRegistry.getColor(prop);
+          if (color) return color;
+        }
+        return target[prop] || '#33ff99';
+      }
+    });
+    
+    const tickerThemes = new Proxy(_legacyThemes, {
+      get(target, prop) {
+        if (window.ShipRegistry?.isReady()) {
+          const sector = window.ShipRegistry.getSector(prop);
+          if (sector) return sector;
+        }
+        return target[prop] || '';
+      }
+    });
+    
+    // Global helper: get full ship data from registry
+    window.getShip = function(ticker) {
+      if (window.ShipRegistry?.isReady()) {
+        return window.ShipRegistry.get(ticker);
+      }
+      // Fallback: construct minimal ship object from legacy data
+      return {
+        ticker: ticker,
+        color: _legacyColors[ticker] || '#33ff99',
+        sector: _legacyThemes[ticker] || 'UNKNOWN',
+        tier: 'B',
+        role: 'ESCORT',
+        squadSize: 1,
+        scores: { power: 0.5, momentum: 0.5, strength: 0.5, volatility: 0.5 },
+        spriteUpgrades: { wings: 'medium', engines: 'thruster_2', armor: 'plate_medium', glow: 'normal' }
+      };
     };
     
     const rangeDays = { '1W': 7, '1M': 30, '3M': 90, '6M': 180, '1Y': 365, 'ALL': 9999 };
@@ -6390,6 +6430,18 @@
       }
 
       // Run initializations immediately
+      
+      // Initialize ShipRegistry first (async but non-blocking)
+      if (window.ShipRegistry) {
+        window.ShipRegistry.init().then(() => {
+          console.log('[APP] ShipRegistry ready');
+          // Emit event for modules that depend on registry
+          document.dispatchEvent(new CustomEvent('shipregistry:ready'));
+        }).catch(err => {
+          console.warn('[APP] ShipRegistry init failed, using fallbacks:', err);
+        });
+      }
+      
       initInvaderArmy();
       initColorProfileControl();
       initAmbientParticles();
