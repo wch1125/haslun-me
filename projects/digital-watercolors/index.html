@@ -242,103 +242,161 @@
       max-width: none;
     }
 
-    /* Gradient overlay - lighter, let the art show */
-    .overlay {
+    /* ========================================
+       HERO OVERLAY + WINDOW
+       ======================================== */
+    .hero-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      background: radial-gradient(ellipse at center, rgba(20,15,10,0.1) 0%, rgba(20,15,10,0.5) 80%);
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      perspective: 1200px;
+      z-index: 2;
+    }
+
+    /* Vignette behind window */
+    .hero-overlay::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center,
+        rgba(0,0,0,0.0) 0%,
+        rgba(0,0,0,0.25) 50%,
+        rgba(0,0,0,0.6) 100%);
       pointer-events: none;
     }
 
-    /* Main content */
-    .content {
+    .hero-window {
+      pointer-events: auto;
+      transform-style: preserve-3d;
+      transform: translate3d(0, 0, 0);
+      max-width: min(420px, 90vw);
+      transition: transform 0.08s ease-out;
+    }
+
+    /* Pixel-art glass panel base styles */
+    .hero-header,
+    .hero-menu {
       position: relative;
-      z-index: 2;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
+      background:
+        /* subtle diagonal dither */
+        repeating-linear-gradient(
+          135deg,
+          rgba(255,255,255,0.06) 0px,
+          rgba(255,255,255,0.06) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      background-color: rgba(22, 12, 6, 0.88);
+      border: 3px solid #c9a86c;
+      box-shadow:
+        0 16px 40px rgba(0,0,0,0.7),
+        0 0 0 1px rgba(0,0,0,0.8),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      image-rendering: pixelated;
+      backdrop-filter: blur(3px);
     }
 
-    /* Logo */
-    .logo {
-      text-align: center;
-      margin-bottom: 1.25rem;
-      padding: 1rem 2rem;
-      background: rgba(30, 20, 10, 0.6);
-      border-radius: 4px;
-      backdrop-filter: blur(2px);
+    /* Connect header + menu into one vertical window */
+    .hero-header {
+      border-radius: 6px 6px 0 0;
+      padding: 1.25rem 2rem 1rem;
+      border-bottom: none;
     }
 
-    .logo h1 {
+    .hero-menu {
+      border-radius: 0 0 6px 6px;
+      border-top: 1px solid rgba(0,0,0,0.5);
+      padding: 0;
+    }
+
+    /* Inner highlight for depth */
+    .hero-header::before,
+    .hero-menu::before {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 3px;
+      pointer-events: none;
+    }
+
+    /* Pixel corner dots */
+    .hero-header::after {
+      content: "";
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #c9a86c;
+      box-shadow:
+        calc(100% - 7px) 0 0 #c9a86c;
+      left: 3px;
+      top: 3px;
+      opacity: 0.7;
+    }
+
+    .hero-menu::after {
+      content: "";
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #c9a86c;
+      box-shadow:
+        calc(100% - 7px) 0 0 #c9a86c;
+      left: 3px;
+      bottom: 3px;
+      opacity: 0.7;
+    }
+
+    /* Title typography */
+    .hero-title {
+      margin: 0;
       font-family: 'Cormorant Garamond', serif;
       font-weight: 600;
-      font-size: 2rem;
-      letter-spacing: 0.15em;
+      font-size: clamp(1.1rem, 2.8vw, 1.4rem);
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #f4e4c1;
-      text-shadow: 
-        2px 2px 0 #1a0f05,
-        -1px -1px 0 #1a0f05,
-        1px -1px 0 #1a0f05,
-        -1px 1px 0 #1a0f05,
-        0 3px 6px rgba(0,0,0,0.5);
-      margin-bottom: 0.25rem;
+      text-align: center;
+      color: #fef5e3;
+      text-shadow:
+        0 2px 0 rgba(0,0,0,0.9),
+        0 0 20px rgba(0,0,0,0.8);
     }
 
-    .logo .tagline {
+    .hero-subtitle {
+      margin: 0.4rem 0 0;
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: 0.95rem;
-      color: #c9b896;
-      letter-spacing: 0.05em;
+      font-size: 0.9rem;
+      text-align: center;
+      color: rgba(250,235,200,0.7);
+      letter-spacing: 0.08em;
     }
 
-    /* Stardew-style Pixel Menu */
-    .pixel-menu {
-      background: linear-gradient(180deg, #f4e4c1 0%, #e8d4a8 100%);
-      border: 4px solid #8b5a2b;
-      border-radius: 2px;
-      padding: 0;
-      box-shadow: 
-        0 0 0 2px #5c3d1e,
-        4px 4px 0 0 rgba(0,0,0,0.3),
-        inset 0 0 0 2px #faf0d7;
-      position: relative;
-      min-width: 220px;
-    }
-
-    /* Wood plank header */
+    /* Menu panel styles */
     .menu-header {
-      background: linear-gradient(180deg, #7a4a1e 0%, #5c3d1e 100%);
-      padding: 0.6rem 1rem;
-      margin: -4px -4px 0 -4px;
-      border-radius: 0;
-      border-bottom: 3px solid #3d2810;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+      background: linear-gradient(180deg, rgba(100,70,35,0.9) 0%, rgba(70,50,25,0.95) 100%);
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid rgba(0,0,0,0.4);
     }
 
     .menu-header h2 {
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #f4e4c1;
-      text-shadow: 1px 1px 0 #2a1a08;
+      letter-spacing: 0.15em;
+      color: #d4c4a4;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
       margin: 0;
       text-align: center;
     }
 
     .menu-section {
-      padding: 0.75rem 0.5rem;
-      border-bottom: 2px dashed #c4a467;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px dashed rgba(200,180,140,0.2);
     }
 
     .menu-section:last-child {
@@ -350,28 +408,28 @@
       font-size: 0.6rem;
       text-transform: uppercase;
       letter-spacing: 0.15em;
-      color: #7a5c3a;
-      margin-bottom: 0.4rem;
-      padding-left: 0.75rem;
-      font-weight: 600;
+      color: rgba(200,180,140,0.6);
+      margin-bottom: 0.35rem;
+      padding-left: 0.5rem;
+      font-weight: 500;
     }
 
     .menu-items {
       display: flex;
-      gap: 0.2rem;
+      gap: 0.15rem;
       flex-direction: column;
     }
 
     .menu-item {
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 500;
-      color: #3d2810;
+      color: #e8dcc8;
       text-decoration: none;
-      padding: 0.5rem 0.75rem;
+      padding: 0.45rem 0.6rem;
       background: transparent;
       border: 2px solid transparent;
-      border-radius: 2px;
+      border-radius: 3px;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -381,53 +439,50 @@
 
     .menu-item::before {
       content: '◆';
-      font-size: 0.5rem;
-      color: #8b5a2b;
+      font-size: 0.45rem;
+      color: #c9a86c;
       opacity: 0.4;
       transition: all 0.1s ease;
     }
 
     .menu-item:hover {
-      background: #e8d4a8;
-      border-color: #8b5a2b;
-      color: #2a1a08;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+      background: rgba(200,168,108,0.15);
+      border-color: rgba(200,168,108,0.4);
+      color: #fef5e3;
     }
 
     .menu-item:hover::before {
       opacity: 1;
-      color: #c4703f;
+      color: #e8c080;
     }
 
     .menu-item.disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
     }
 
     .menu-item.disabled:hover {
       background: transparent;
       border-color: transparent;
-      box-shadow: none;
     }
 
     .menu-item.disabled::before {
-      opacity: 0.3;
+      opacity: 0.2;
     }
 
     .coming-soon {
-      font-size: 0.65rem;
-      color: #8b7355;
+      font-size: 0.6rem;
+      color: rgba(200,180,140,0.5);
       font-style: italic;
       margin-left: auto;
     }
 
-    /* Scene items get a special style */
     .menu-item.scene-link {
-      background: rgba(139, 90, 43, 0.1);
+      background: rgba(200,168,108,0.08);
     }
 
     .menu-item.scene-link:hover {
-      background: rgba(139, 90, 43, 0.25);
+      background: rgba(200,168,108,0.2);
     }
 
     /* Footer */
@@ -438,55 +493,56 @@
       transform: translateX(-50%);
       z-index: 2;
       text-align: center;
-      padding: 0.4rem 1rem;
-      background: rgba(30, 20, 10, 0.5);
+      padding: 0.35rem 0.9rem;
+      background: rgba(22, 12, 6, 0.7);
+      border: 1px solid rgba(200,168,108,0.3);
       border-radius: 3px;
+      backdrop-filter: blur(2px);
     }
 
     .footer p {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: 0.8rem;
-      color: #b8a888;
+      font-size: 0.75rem;
+      color: rgba(200,180,140,0.7);
       margin: 0;
     }
 
     .footer a {
-      color: #d4c4a4;
+      color: #c9a86c;
       text-decoration: none;
     }
 
     .footer a:hover {
-      color: #f4e4c1;
+      color: #e8dcc8;
     }
 
     /* Responsive */
     @media (max-width: 600px) {
-      .logo {
-        padding: 0.75rem 1.25rem;
-        margin-bottom: 1rem;
+      .hero-window {
+        max-width: 92vw;
       }
-      
-      .logo h1 {
-        font-size: 1.4rem;
+
+      .hero-header {
+        padding: 1rem 1.25rem 0.75rem;
+      }
+
+      .hero-title {
+        font-size: 1.1rem;
         letter-spacing: 0.12em;
       }
-      
-      .logo .tagline {
+
+      .hero-subtitle {
         font-size: 0.8rem;
       }
       
-      .pixel-menu {
-        min-width: 200px;
-      }
-      
       .menu-header h2 {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
       }
       
       .menu-item {
-        font-size: 0.85rem;
-        padding: 0.45rem 0.6rem;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.5rem;
       }
     }
   </style>
@@ -517,35 +573,36 @@
     <canvas id="bg-canvas"></canvas>
   </div>
 
-  <div class="overlay"></div>
+  <!-- Hero Overlay with 3D parallax -->
+  <div class="hero-overlay" id="hero-overlay">
+    <div class="hero-window" id="hero-window">
+      <header class="hero-header">
+        <h1 class="hero-title">Digital Watercolors</h1>
+        <p class="hero-subtitle">Paintings that breathe</p>
+      </header>
 
-  <div class="content">
-    <div class="logo">
-      <h1>Digital Watercolors</h1>
-      <p class="tagline">Paintings that breathe</p>
-    </div>
-
-    <nav class="pixel-menu">
-      <div class="menu-header">
-        <h2>✦ Menu ✦</h2>
-      </div>
-      
-      <!-- Scenes section - populated by JavaScript -->
-      <div class="menu-section" id="scenes-section" style="display: none;">
-        <div class="menu-section-label">Scenes</div>
-        <div class="menu-items" id="scenes-menu"></div>
-      </div>
-
-      <!-- Static links -->
-      <div class="menu-section">
-        <div class="menu-section-label">Studio</div>
-        <div class="menu-items">
-          <a href="https://haslun.studio" class="menu-item" target="_blank">Gallery</a>
-          <a href="https://haslun.studio/#prints" class="menu-item" target="_blank">Shop Prints</a>
-          <a href="https://haslun.studio/watercolor-lab.html" class="menu-item" target="_blank">Color Lab</a>
+      <section class="hero-menu">
+        <div class="menu-header">
+          <h2>✦ Menu ✦</h2>
         </div>
-      </div>
-    </nav>
+        
+        <!-- Scenes section - populated by JavaScript -->
+        <div class="menu-section" id="scenes-section" style="display: none;">
+          <div class="menu-section-label">Scenes</div>
+          <div class="menu-items" id="scenes-menu"></div>
+        </div>
+
+        <!-- Static links -->
+        <div class="menu-section">
+          <div class="menu-section-label">Studio</div>
+          <div class="menu-items">
+            <a href="https://haslun.studio" class="menu-item" target="_blank">Gallery</a>
+            <a href="https://haslun.studio/#prints" class="menu-item" target="_blank">Shop Prints</a>
+            <a href="https://haslun.studio/watercolor-lab.html" class="menu-item" target="_blank">Color Lab</a>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 
   <div class="footer">
@@ -666,9 +723,58 @@
     }
 
     // ========================================
+    // 3D PARALLAX FOR HERO WINDOW
+    // ========================================
+    function initHeroParallax() {
+      const heroOverlay = document.getElementById('hero-overlay');
+      const heroWindow = document.getElementById('hero-window');
+      
+      if (!heroOverlay || !heroWindow) return;
+      
+      const maxRotate = 8;   // degrees
+      const maxShift = 18;   // pixels
+
+      function applyParallax(xNorm, yNorm) {
+        const rotateY = (xNorm - 0.5) * -2 * maxRotate;
+        const rotateX = (yNorm - 0.5) * 2 * maxRotate;
+        const translateX = (xNorm - 0.5) * 2 * maxShift;
+        const translateY = (yNorm - 0.5) * 2 * maxShift;
+
+        heroWindow.style.transform = 
+          `translate3d(${translateX}px, ${translateY}px, 0) ` +
+          `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      }
+
+      // Desktop: pointer/mouse movement
+      window.addEventListener('pointermove', (e) => {
+        const rect = heroOverlay.getBoundingClientRect();
+        const xNorm = (e.clientX - rect.left) / rect.width;
+        const yNorm = (e.clientY - rect.top) / rect.height;
+        applyParallax(xNorm, yNorm);
+      });
+
+      // Mobile: device tilt
+      window.addEventListener('deviceorientation', (e) => {
+        if (e.gamma === null && e.beta === null) return;
+        const xNorm = (e.gamma + 45) / 90;  // gamma: -45 to 45
+        const yNorm = (e.beta - 30) / 60;   // beta: 0 to 60
+        applyParallax(
+          Math.min(1, Math.max(0, xNorm)),
+          Math.min(1, Math.max(0, yNorm))
+        );
+      }, { passive: true });
+
+      // Reset on mouse leave
+      heroOverlay.addEventListener('mouseleave', () => {
+        heroWindow.style.transform = 'translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg)';
+      });
+    }
+
+    // ========================================
     // INIT
     // ========================================
     buildScenesMenu();
+    initHeroParallax();
     
     preloadFrames().then(() => {
       drawFrame();
