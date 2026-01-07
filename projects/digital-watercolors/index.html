@@ -41,183 +41,39 @@
     /* ========================================
        LOADING SCREEN
        ======================================== */
+    /* ========================================
+       PIXEL CANVAS LOADING SCREEN
+       ======================================== */
     .loading-screen {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--bg-dark);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      inset: 0;
+      background: #101112;
+      display: grid;
+      place-items: center;
       z-index: 1000;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
     }
 
     .loading-screen.hidden {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
+      transition: opacity 200ms steps(6, end), visibility 200ms steps(6, end);
     }
 
-    /* Pixel drops */
-    .loading-drops {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 1rem;
-      align-items: flex-end;
-    }
-
-    .loading-drop {
-      width: 8px;
-      height: 12px;
+    /* Scale up the low-res canvas with nearest-neighbor */
+    .loading-screen canvas {
+      width: min(92vw, 960px);
+      height: auto;
+      aspect-ratio: 16 / 9;
       image-rendering: pixelated;
-      position: relative;
-      animation: pixelBreathe 1600ms ease-in-out infinite;
-      /* Pixelated drop shape via clip-path */
-      clip-path: polygon(
-        25% 0%, 75% 0%,
-        100% 25%, 100% 75%,
-        75% 100%, 25% 100%,
-        0% 75%, 0% 25%
-      );
+      image-rendering: crisp-edges;
+      -ms-interpolation-mode: nearest-neighbor;
     }
 
-    .loading-drop::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 4px;
-      height: 4px;
-      background: inherit;
-      opacity: 0;
-      animation: pixelDrip 1600ms ease-in-out infinite;
-    }
-
-    /* Six drops - earthy watercolor palette */
-    .loading-drop:nth-child(1) { 
-      background: #c4703f;
-      animation-delay: 0ms;
-    }
-    .loading-drop:nth-child(1)::after { animation-delay: 0ms; }
-
-    .loading-drop:nth-child(2) { 
-      background: #d4845a;
-      animation-delay: -267ms;
-    }
-    .loading-drop:nth-child(2)::after { animation-delay: -267ms; }
-
-    .loading-drop:nth-child(3) { 
-      background: #b8986b;
-      animation-delay: -534ms;
-      width: 10px;
-      height: 14px;
-    }
-    .loading-drop:nth-child(3)::after { animation-delay: -534ms; }
-
-    .loading-drop:nth-child(4) { 
-      background: #8b9a7d;
-      animation-delay: -801ms;
-      width: 10px;
-      height: 14px;
-    }
-    .loading-drop:nth-child(4)::after { animation-delay: -801ms; }
-
-    .loading-drop:nth-child(5) { 
-      background: #5a7247;
-      animation-delay: -1068ms;
-    }
-    .loading-drop:nth-child(5)::after { animation-delay: -1068ms; }
-
-    .loading-drop:nth-child(6) { 
-      background: #4a6a8a;
-      animation-delay: -1335ms;
-    }
-    .loading-drop:nth-child(6)::after { animation-delay: -1335ms; }
-
-    @keyframes pixelBreathe {
-      0%, 100% {
-        transform: translateY(0) scaleY(1);
-        opacity: 0.7;
+    @media (prefers-reduced-motion: reduce) {
+      .loading-screen.hidden {
+        transition: opacity 0.1s linear, visibility 0.1s linear;
       }
-      50% {
-        transform: translateY(-6px) scaleY(1.15);
-        opacity: 1;
-      }
-    }
-
-    @keyframes pixelDrip {
-      0%, 60%, 100% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(0);
-      }
-      70% {
-        opacity: 0.6;
-        transform: translateX(-50%) translateY(2px);
-      }
-      85% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(8px);
-      }
-    }
-
-    /* Brand */
-    .loading-brand {
-      text-align: center;
-      margin-bottom: 0.75rem;
-    }
-
-    .loading-brand-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.75rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      color: #f4e4c1;
-      text-shadow: 2px 2px 0 #1a0f05;
-    }
-
-    .loading-brand-sub {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #8a7a5a;
-      margin-top: 0.2rem;
-    }
-
-    /* Pixel progress bar */
-    .loading-bar {
-      width: 120px;
-      height: 6px;
-      background: #2a2520;
-      border: 2px solid #3d3530;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .loading-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, 
-        #c4703f 0%, 
-        #d4845a 20%, 
-        #b8986b 40%, 
-        #8b9a7d 70%, 
-        #5a7247 100%
-      );
-      transition: width 0.3s ease;
-    }
-
-    .loading-tagline {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 0.85rem;
-      color: #6a5a4a;
-      margin-top: 0.75rem;
     }
 
     /* Animated Background */
@@ -748,24 +604,9 @@
 </head>
 <body>
 
-  <!-- Loading Screen -->
+  <!-- Loading Screen (pixel canvas) -->
   <div class="loading-screen" id="loading-screen">
-    <div class="loading-drops">
-      <div class="loading-drop"></div>
-      <div class="loading-drop"></div>
-      <div class="loading-drop"></div>
-      <div class="loading-drop"></div>
-      <div class="loading-drop"></div>
-      <div class="loading-drop"></div>
-    </div>
-    <div class="loading-brand">
-      <div class="loading-brand-name">Digital Watercolors</div>
-      <div class="loading-brand-sub">Haslun Studio</div>
-    </div>
-    <div class="loading-bar">
-      <div class="loading-bar-fill" id="loading-bar-fill"></div>
-    </div>
-    <div class="loading-tagline">paintings that breathe</div>
+    <canvas id="loader-canvas" width="320" height="180"></canvas>
   </div>
 
   <div class="background-animation">
@@ -819,6 +660,247 @@
   <script src="watercolor-engine/watercolor-engine.js"></script>
   
   <script>
+    // ========================================
+    // PIXEL CANVAS LOADER
+    // Renders loading screen at low res, scales up pixelated
+    // ========================================
+    const PixelLoader = {
+      canvas: null,
+      ctx: null,
+      W: 320,
+      H: 180,
+      progress: 0,
+      startTime: 0,
+      animationId: null,
+      
+      // Haslun palette (fallback, engine may override)
+      palette: ['#c4703f', '#d4845a', '#b8986b', '#8b9a7d', '#5a7247', '#4a6a8a'],
+      
+      // Bayer 4x4 dither matrix
+      dither4: [
+        [0, 8, 2, 10],
+        [12, 4, 14, 6],
+        [3, 11, 1, 9],
+        [15, 7, 13, 5],
+      ],
+      
+      init() {
+        this.canvas = document.getElementById('loader-canvas');
+        if (!this.canvas) return;
+        
+        this.ctx = this.canvas.getContext('2d', { alpha: false });
+        this.startTime = performance.now();
+        
+        // Try to get palette from watercolor engine
+        if (typeof WatercolorEngine !== 'undefined') {
+          try {
+            const engine = new WatercolorEngine();
+            const haslunPalette = engine.getHaslunPalette();
+            if (haslunPalette && haslunPalette.length > 0) {
+              this.palette = haslunPalette.map(p => p.hex);
+            }
+          } catch (e) {
+            // Use fallback palette
+          }
+        }
+        
+        this.animate();
+      },
+      
+      // Stepped timing for game-y feel
+      stepPulse(t, steps = 8) {
+        return Math.floor((t % 1) * steps) / steps;
+      },
+      
+      // Color utilities
+      hexToRgb(hex) {
+        const h = hex.replace('#', '');
+        return [
+          parseInt(h.slice(0, 2), 16),
+          parseInt(h.slice(2, 4), 16),
+          parseInt(h.slice(4, 6), 16)
+        ];
+      },
+      
+      rgbToHex(r, g, b) {
+        const clamp = v => Math.max(0, Math.min(255, Math.round(v)));
+        return '#' + [r, g, b].map(v => clamp(v).toString(16).padStart(2, '0')).join('');
+      },
+      
+      // Dithered rectangle fill
+      fillDithered(x, y, w, h, baseHex, strength = 12) {
+        const rgb = this.hexToRgb(baseHex);
+        for (let j = 0; j < h; j++) {
+          for (let i = 0; i < w; i++) {
+            const t = this.dither4[(y + j) & 3][(x + i) & 3] / 15;
+            const n = (t - 0.5) * strength;
+            this.ctx.fillStyle = this.rgbToHex(rgb[0] + n, rgb[1] + n, rgb[2] + n);
+            this.ctx.fillRect(x + i, y + j, 1, 1);
+          }
+        }
+      },
+      
+      // Draw text with pixel outline
+      drawOutlinedText(text, x, y, fill, stroke, font) {
+        this.ctx.font = font;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        
+        // 4-direction outline
+        this.ctx.fillStyle = stroke;
+        this.ctx.fillText(text, x - 1, y);
+        this.ctx.fillText(text, x + 1, y);
+        this.ctx.fillText(text, x, y - 1);
+        this.ctx.fillText(text, x, y + 1);
+        
+        // Fill
+        this.ctx.fillStyle = fill;
+        this.ctx.fillText(text, x, y);
+      },
+      
+      // Draw a chunky pixel "pill" shape
+      drawPill(x, y, w, h, color) {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(x, y, w, h);
+        // Bottom shadow
+        this.ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        this.ctx.fillRect(x, y + h - 2, w, 2);
+        // Top highlight
+        this.ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        this.ctx.fillRect(x, y, w, 1);
+      },
+      
+      setProgress(p) {
+        this.progress = Math.min(1, Math.max(0, p));
+      },
+      
+      draw(now) {
+        const t = (now - this.startTime) / 1000;
+        const ctx = this.ctx;
+        const W = this.W;
+        const H = this.H;
+        
+        // Background with subtle dither
+        ctx.fillStyle = '#101112';
+        ctx.fillRect(0, 0, W, H);
+        this.fillDithered(0, 0, W, H, '#151617', 8);
+        
+        // Palette pills (animated bob)
+        const pillW = 12;
+        const pillH = 16;
+        const gap = 8;
+        const total = this.palette.length;
+        const rowW = total * pillW + (total - 1) * gap;
+        const rowY = 42;
+        let px = Math.floor((W - rowW) / 2);
+        
+        for (let i = 0; i < total; i++) {
+          // Stepped bob animation, offset per pill
+          const phase = (t * 0.7 + i * 0.15) % 1;
+          const bob = this.stepPulse(phase, 6) < 0.5 ? 0 : -3;
+          this.drawPill(px, rowY + bob, pillW, pillH, this.palette[i]);
+          px += pillW + gap;
+        }
+        
+        // Title
+        this.drawOutlinedText(
+          'Digital Watercolors',
+          W / 2, 82,
+          '#f4e4c1', '#1a0f05',
+          '600 14px Cormorant Garamond, Georgia, serif'
+        );
+        
+        // Studio subtitle
+        this.drawOutlinedText(
+          'HASLUN STUDIO',
+          W / 2, 100,
+          '#8a7a5a', '#1a0f05',
+          '500 7px DM Sans, system-ui, sans-serif'
+        );
+        
+        // Divider line
+        const divW = 100;
+        ctx.fillStyle = '#3a2b22';
+        ctx.fillRect((W - divW) / 2, 112, divW, 2);
+        ctx.fillStyle = '#5a4336';
+        ctx.fillRect((W - divW) / 2, 112, divW, 1);
+        
+        // Tagline
+        ctx.globalAlpha = 0.85;
+        this.drawOutlinedText(
+          'paintings that breathe',
+          W / 2, 126,
+          '#7a6a5a', '#1a0f05',
+          'italic 8px Cormorant Garamond, Georgia, serif'
+        );
+        ctx.globalAlpha = 1;
+        
+        // Progress bar
+        const barW = 100;
+        const barH = 6;
+        const barX = (W - barW) / 2;
+        const barY = 145;
+        
+        // Bar background
+        ctx.fillStyle = '#2a2520';
+        ctx.fillRect(barX, barY, barW, barH);
+        
+        // Bar border (chunky)
+        ctx.fillStyle = '#3d3530';
+        ctx.fillRect(barX - 2, barY - 2, barW + 4, 2); // top
+        ctx.fillRect(barX - 2, barY + barH, barW + 4, 2); // bottom
+        ctx.fillRect(barX - 2, barY, 2, barH); // left
+        ctx.fillRect(barX + barW, barY, 2, barH); // right
+        
+        // Bar fill (stepped, not smooth)
+        const fillW = Math.floor(this.progress * barW);
+        if (fillW > 0) {
+          // Draw fill with palette gradient
+          for (let i = 0; i < fillW; i++) {
+            const idx = Math.floor((i / barW) * this.palette.length);
+            ctx.fillStyle = this.palette[Math.min(idx, this.palette.length - 1)];
+            ctx.fillRect(barX + i, barY, 1, barH);
+          }
+        }
+        
+        // "Loading..." text (blinking)
+        const blink = Math.floor(t * 2.5) % 2 === 0;
+        if (blink && this.progress < 1) {
+          this.drawOutlinedText(
+            'loading...',
+            W / 2, 164,
+            '#5a5a5c', '#101112',
+            '6px DM Sans, system-ui, sans-serif'
+          );
+        }
+      },
+      
+      animate() {
+        this.draw(performance.now());
+        this.animationId = requestAnimationFrame(() => this.animate());
+      },
+      
+      stop() {
+        if (this.animationId) {
+          cancelAnimationFrame(this.animationId);
+          this.animationId = null;
+        }
+      },
+      
+      hide() {
+        this.stop();
+        const screen = document.getElementById('loading-screen');
+        if (screen) {
+          screen.classList.add('hidden');
+          // Remove from DOM after transition
+          setTimeout(() => screen.remove(), 250);
+        }
+      }
+    };
+
+    // Start loader immediately
+    PixelLoader.init();
+
     // ========================================
     // ATMOSPHERE SYSTEM (Pigment Engine)
     // Silent infrastructure - colors are felt, not announced
@@ -1012,8 +1094,6 @@
 
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
-    const loadingScreen = document.getElementById('loading-screen');
-    const loadingBarFill = document.getElementById('loading-bar-fill');
 
     const state = {
       frames: [],
@@ -1033,9 +1113,9 @@
           img.onload = () => {
             state.loaded++;
             
-            // Update progress bar
-            const progress = (state.loaded / hubConfig.frameCount) * 100;
-            loadingBarFill.style.width = progress + '%';
+            // Update pixel loader progress
+            const progress = state.loaded / hubConfig.frameCount;
+            PixelLoader.setProgress(progress);
             
             if (state.loaded === hubConfig.frameCount) {
               canvas.width = state.frames[0].width;
@@ -1044,7 +1124,7 @@
               
               // Hide loading screen after brief delay
               setTimeout(() => {
-                loadingScreen.classList.add('hidden');
+                PixelLoader.hide();
               }, 400);
               
               resolve();

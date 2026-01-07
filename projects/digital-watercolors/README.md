@@ -238,6 +238,24 @@ Tested in:
 
 ## Version History
 
+### v0.4.0 — Pixel Canvas Loader (2025-01-07)
+**Added:**
+- Canvas-based loading screen rendered at 320×180, scaled up pixelated
+- Dithered background using Bayer 4×4 matrix
+- Animated palette pills with stepped bob timing
+- Chunky pixel progress bar with palette gradient fill
+- Blinking "loading..." text
+- Integration with watercolor engine for palette colors
+
+**Changed:**
+- Loading screen now uses `PixelLoader` object instead of DOM elements
+- Progress updates via `PixelLoader.setProgress()` instead of CSS width
+- Hide transition uses `steps()` timing for game-y feel
+
+**Files modified:** `index.html`
+
+---
+
 ### v0.3.0 — Atmosphere System (2025-01-07)
 **Added:**
 - Watercolor engine integration in hub page
