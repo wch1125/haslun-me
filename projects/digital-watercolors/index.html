@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Watercolors — Haslun Studio</title>
+  <meta name="description" content="Interactive experiments with watercolor paintings. A digital sketchbook by Haslun Studio.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗽</text></svg>">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Phaser 3 -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+</head>
+<body>
+  <div id="game-container">
+    <div id="game"></div>
+    
+    <!-- Title overlay (shown before game starts) -->
+    <div id="title-overlay">
+      <div class="title-content">
+        <p class="title-eyebrow">An Interactive Sketchbook</p>
+        <h1>Digital Watercolors</h1>
+        <p class="title-premise">
+          Wander through paintings.<br>
+          No objective. No timer. Just look around.
+        </p>
+        <button id="start-btn" class="start-btn">
+          <span>Begin</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+        <p class="title-controls">Arrow keys to move</p>
+      </div>
+      <p class="title-credit">
+        Paintings by <a href="https://haslun.studio" target="_blank">Haslun Studio</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="js/BaseScene.js"></script>
+  <script src="js/scenes/BootScene.js"></script>
+  <script src="js/scenes/SubwayScene.js"></script>
+  <script src="js/scenes/MilanoScene.js"></script>
+  <script src="js/scenes/ParkScene.js"></script>
+  <script src="js/scenes/MuseumScene.js"></script>
+  <script src="js/scenes/GrandCentralScene.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
