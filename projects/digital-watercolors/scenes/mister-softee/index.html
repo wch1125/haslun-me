@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mister Softee — Digital Watercolors</title>
+  <meta name="description" content="A summer afternoon in Central Park. Ice cream truck, city sounds, and watercolor.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍦</text></svg>">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #1a1a1a;
+      --terracotta: #c4703f;
+      --terracotta-light: #d4845a;
+      --text-primary: #f5f5f5;
+      --text-muted: #a0a0a0;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Full-screen animated painting */
+    .scene {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .scene canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    /* Subtle vignette */
+    .vignette {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      box-shadow: inset 0 0 150px rgba(0,0,0,0.4);
+    }
+
+    /* Scene title - appears briefly */
+    .scene-title {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      opacity: 0;
+      animation: fadeInOut 4s ease-in-out forwards;
+      pointer-events: none;
+    }
+
+    .scene-title h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 1.5rem;
+      letter-spacing: 0.1em;
+      color: var(--text-primary);
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+      margin-bottom: 0.25rem;
+    }
+
+    .scene-title p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Controls - minimal, bottom corner */
+    .controls {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 100;
+    }
+
+    .control-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: rgba(26, 26, 26, 0.7);
+      color: var(--text-muted);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .control-btn:hover {
+      background: rgba(26, 26, 26, 0.9);
+      color: var(--text-primary);
+    }
+
+    .control-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Back link */
+    .back-link {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(26, 26, 26, 0.7);
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+      z-index: 100;
+    }
+
+    .back-link:hover {
+      background: rgba(26, 26, 26, 0.9);
+      color: var(--text-primary);
+    }
+
+    /* Loading state */
+    .loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="loading" id="loading">Loading...</div>
+
+  <div class="scene">
+    <canvas id="scene-canvas"></canvas>
+  </div>
+
+  <div class="vignette"></div>
+
+  <div class="scene-title" id="scene-title">
+    <h1>Mister Softee</h1>
+    <p>Central Park, Summer</p>
+  </div>
+
+  <a href="../../" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    Back
+  </a>
+
+  <div class="controls">
+    <button class="control-btn" id="sound-toggle" title="Toggle sound">
+      <svg id="sound-on-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+        <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+      </svg>
+      <svg id="sound-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+        <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+        <line x1="23" y1="9" x2="17" y2="15"/>
+        <line x1="17" y1="9" x2="23" y2="15"/>
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    // ========================================
+    // SCENE CONFIG
+    // ========================================
+    const sceneConfig = {
+      frameCount: 20,           // Number of frames in your animation
+      framePath: 'frames/frame-',
+      frameExtension: '.png',
+      frameDelay: 120,          // ms between frames
+      pingPong: true,           // Breathe back and forth
+      
+      // Audio layers (add files to audio/ folder)
+      audio: [
+        { src: 'audio/ice-cream-truck.mp3', volume: 0.3, loop: true },
+        { src: 'audio/summer-ambient.mp3', volume: 0.5, loop: true }
+      ]
+    };
+
+    // ========================================
+    // ANIMATION ENGINE
+    // ========================================
+    const canvas = document.getElementById('scene-canvas');
+    const ctx = canvas.getContext('2d');
+    const loading = document.getElementById('loading');
+
+    const state = {
+      frames: [],
+      currentFrame: 0,
+      direction: 1,
+      lastFrameTime: 0,
+      loaded: 0,
+      audioPlayers: [],
+      soundEnabled: false
+    };
+
+    function preloadFrames() {
+      return new Promise((resolve, reject) => {
+        // If no frames yet, show placeholder
+        if (sceneConfig.frameCount === 0) {
+          loading.textContent = 'Waiting for animation frames...';
+          return;
+        }
+
+        for (let i = 0; i < sceneConfig.frameCount; i++) {
+          const img = new Image();
+          const frameNum = String(i).padStart(3, '0');
+          img.src = `${sceneConfig.framePath}${frameNum}${sceneConfig.frameExtension}`;
+          
+          img.onload = () => {
+            state.loaded++;
+            loading.textContent = `Loading... ${Math.round(state.loaded / sceneConfig.frameCount * 100)}%`;
+            
+            if (state.loaded === sceneConfig.frameCount) {
+              canvas.width = state.frames[0].width;
+              canvas.height = state.frames[0].height;
+              ctx.imageSmoothingEnabled = false;
+              loading.style.display = 'none';
+              resolve();
+            }
+          };
+          
+          img.onerror = () => {
+            loading.textContent = 'Add animation frames to: scenes/mister-softee/frames/';
+          };
+          
+          state.frames[i] = img;
+        }
+      });
+    }
+
+    function drawFrame() {
+      const img = state.frames[state.currentFrame];
+      if (!img) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    }
+
+    function animate(timestamp) {
+      if (timestamp - state.lastFrameTime >= sceneConfig.frameDelay) {
+        state.lastFrameTime = timestamp;
+        
+        state.currentFrame += state.direction;
+        
+        if (sceneConfig.pingPong) {
+          if (state.currentFrame >= sceneConfig.frameCount - 1) {
+            state.currentFrame = sceneConfig.frameCount - 1;
+            state.direction = -1;
+          } else if (state.currentFrame <= 0) {
+            state.currentFrame = 0;
+            state.direction = 1;
+          }
+        } else {
+          if (state.currentFrame >= sceneConfig.frameCount) {
+            state.currentFrame = 0;
+          }
+        }
+        
+        drawFrame();
+      }
+      
+      requestAnimationFrame(animate);
+    }
+
+    // ========================================
+    // AUDIO ENGINE
+    // ========================================
+    function initAudio() {
+      sceneConfig.audio.forEach(audioConfig => {
+        const audio = new Audio(audioConfig.src);
+        audio.loop = audioConfig.loop;
+        audio.volume = 0; // Start silent
+        audio.preload = 'auto';
+        
+        state.audioPlayers.push({
+          element: audio,
+          targetVolume: audioConfig.volume
+        });
+      });
+    }
+
+    function toggleSound() {
+      state.soundEnabled = !state.soundEnabled;
+      
+      const onIcon = document.getElementById('sound-on-icon');
+      const offIcon = document.getElementById('sound-off-icon');
+      
+      if (state.soundEnabled) {
+        onIcon.style.display = 'block';
+        offIcon.style.display = 'none';
+        
+        state.audioPlayers.forEach(player => {
+          player.element.play().catch(() => {});
+          // Fade in
+          fadeVolume(player.element, player.targetVolume, 1000);
+        });
+      } else {
+        onIcon.style.display = 'none';
+        offIcon.style.display = 'block';
+        
+        state.audioPlayers.forEach(player => {
+          // Fade out then pause
+          fadeVolume(player.element, 0, 500, () => player.element.pause());
+        });
+      }
+    }
+
+    function fadeVolume(audio, target, duration, callback) {
+      const start = audio.volume;
+      const diff = target - start;
+      const startTime = performance.now();
+      
+      function step(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        audio.volume = start + (diff * progress);
+        
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else if (callback) {
+          callback();
+        }
+      }
+      
+      requestAnimationFrame(step);
+    }
+
+    // ========================================
+    // INIT
+    // ========================================
+    document.getElementById('sound-toggle').addEventListener('click', toggleSound);
+    
+    // Start with sound off icon
+    document.getElementById('sound-on-icon').style.display = 'none';
+    document.getElementById('sound-off-icon').style.display = 'block';
+    
+    initAudio();
+    
+    preloadFrames().then(() => {
+      drawFrame();
+      requestAnimationFrame(animate);
+    });
+  </script>
+
+</body>
+</html>
