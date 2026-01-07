@@ -610,6 +610,52 @@
       animation: pixelOpen 300ms steps(6, end) forwards;
     }
 
+    /* ========================================
+       ATMOSPHERE SYSTEM (Pigment Engine)
+       ======================================== */
+    
+    /* Living wash overlay - sits between background and UI */
+    .wash-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 8s ease-in-out, background-color 8s ease-in-out;
+      mix-blend-mode: multiply;
+    }
+
+    .wash-overlay.active {
+      opacity: 0.08;
+    }
+
+    /* Scene transition wash */
+    .transition-wash {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s ease-in-out;
+    }
+
+    .transition-wash.entering {
+      opacity: 0.85;
+      transition: opacity 0.4s ease-in;
+    }
+
+    .transition-wash.leaving {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+    }
+
+    /* Daily accent - CSS custom properties set by engine */
+    :root {
+      --daily-accent: #c9a86c;
+      --daily-accent-light: #d4b87a;
+      --daily-wash: rgba(200, 168, 108, 0.1);
+    }
+
     /* Responsive */
     @media (max-width: 600px) {
       .hero-window {
@@ -726,6 +772,12 @@
     <canvas id="bg-canvas"></canvas>
   </div>
 
+  <!-- Atmosphere: Living wash overlay (pigment engine) -->
+  <div class="wash-overlay" id="wash-overlay"></div>
+  
+  <!-- Atmosphere: Scene transition wash -->
+  <div class="transition-wash" id="transition-wash"></div>
+
   <!-- Hero Overlay with 3D parallax -->
   <div class="hero-overlay" id="hero-overlay">
     <div class="hero-window" id="hero-window">
@@ -762,10 +814,191 @@
     <p>Watercolors by <a href="https://haslun.studio" target="_blank">Haslun Studio</a></p>
   </div>
 
-  <!-- Load scenes config -->
+  <!-- Load scenes config and watercolor engine -->
   <script src="scenes.js"></script>
+  <script src="watercolor-engine/watercolor-engine.js"></script>
   
   <script>
+    // ========================================
+    // ATMOSPHERE SYSTEM (Pigment Engine)
+    // Silent infrastructure - colors are felt, not announced
+    // ========================================
+    const Atmosphere = {
+      engine: null,
+      washOverlay: null,
+      transitionWash: null,
+      currentWashIndex: 0,
+      washInterval: null,
+      
+      // Pigments suitable for ambient washes (transparent/semi-transparent only)
+      glazingPigments: [],
+      
+      init() {
+        if (typeof WatercolorEngine === 'undefined') {
+          console.warn('Watercolor engine not loaded, atmosphere disabled');
+          return;
+        }
+        
+        this.engine = new WatercolorEngine();
+        this.washOverlay = document.getElementById('wash-overlay');
+        this.transitionWash = document.getElementById('transition-wash');
+        this.glazingPigments = this.engine.getGlazingPigments();
+        
+        // Set daily accent colors
+        this.setDailyAccent();
+        
+        // Start living washes after a delay
+        setTimeout(() => this.startLivingWashes(), 3000);
+      },
+      
+      // ----------------------------------------
+      // DAILY GENERATIVE SWATCH
+      // Deterministic palette based on date
+      // ----------------------------------------
+      getDailySeed() {
+        const now = new Date();
+        // Create seed from year + day of year
+        const start = new Date(now.getFullYear(), 0, 0);
+        const diff = now - start;
+        const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+        return now.getFullYear() * 1000 + dayOfYear;
+      },
+      
+      seededRandom(seed) {
+        // Simple seeded PRNG (mulberry32)
+        return function() {
+          let t = seed += 0x6D2B79F5;
+          t = Math.imul(t ^ t >>> 15, t | 1);
+          t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+          return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+      },
+      
+      setDailyAccent() {
+        const seed = this.getDailySeed();
+        const random = this.seededRandom(seed);
+        
+        // Pick 2-3 pigments for today
+        const count = 2 + Math.floor(random() * 2); // 2 or 3
+        const todaysPigments = [];
+        const available = [...this.glazingPigments];
+        
+        for (let i = 0; i < count && available.length > 0; i++) {
+          const idx = Math.floor(random() * available.length);
+          todaysPigments.push(available.splice(idx, 1)[0]);
+        }
+        
+        if (todaysPigments.length === 0) return;
+        
+        // Glaze them together
+        const glazed = this.engine.glazeMultiple(todaysPigments);
+        const glazedLight = this.engine.lerp(this.engine.paperWhite, glazed, 0.6);
+        const glazedWash = this.engine.lerp(this.engine.paperWhite, glazed, 0.15);
+        
+        // Set CSS custom properties
+        document.documentElement.style.setProperty('--daily-accent', glazed);
+        document.documentElement.style.setProperty('--daily-accent-light', glazedLight);
+        document.documentElement.style.setProperty('--daily-wash', glazedWash);
+        
+        // Store for other uses
+        this.dailyPalette = {
+          pigments: todaysPigments,
+          glazed,
+          glazedLight,
+          glazedWash
+        };
+      },
+      
+      // ----------------------------------------
+      // LIVING BACKGROUND WASHES
+      // Subtle, breathing color shifts
+      // ----------------------------------------
+      startLivingWashes() {
+        if (!this.washOverlay || this.glazingPigments.length === 0) return;
+        
+        // Initial wash
+        this.applyNextWash();
+        
+        // Cycle every 25-40 seconds
+        const cycleTime = 25000 + Math.random() * 15000;
+        this.washInterval = setInterval(() => {
+          this.applyNextWash();
+        }, cycleTime);
+      },
+      
+      applyNextWash() {
+        if (!this.washOverlay) return;
+        
+        // Pick 1-2 transparent pigments
+        const count = 1 + Math.floor(Math.random() * 2);
+        const pigments = [];
+        
+        for (let i = 0; i < count; i++) {
+          const idx = Math.floor(Math.random() * this.glazingPigments.length);
+          pigments.push(this.glazingPigments[idx]);
+        }
+        
+        // Glaze over paper white
+        const washColor = this.engine.glazeMultiple(pigments);
+        
+        // Apply with very low opacity (handled by CSS)
+        this.washOverlay.style.backgroundColor = washColor;
+        this.washOverlay.classList.add('active');
+      },
+      
+      // ----------------------------------------
+      // SCENE TRANSITION WASHES
+      // Called when navigating between scenes
+      // ----------------------------------------
+      
+      // Pigment associations for different moods/destinations
+      transitionPalettes: {
+        warm: ['Indian Yellow', 'Yellow Ochre', 'Orange'],
+        cool: ['Ultramarine', 'Prussian Blue', "Payne's Grey"],
+        earth: ['Burnt Umber', 'Sepia', 'Yellow Ochre'],
+        vibrant: ['Magenta', 'Cyan', 'Brilliant Green'],
+        neutral: ["Payne's Grey", 'Sepia']
+      },
+      
+      async transitionTo(destination, mood = 'neutral') {
+        if (!this.transitionWash || !this.engine) {
+          // Fallback: just navigate
+          window.location.href = destination;
+          return;
+        }
+        
+        // Pick pigment based on mood
+        const palette = this.transitionPalettes[mood] || this.transitionPalettes.neutral;
+        const pigmentName = palette[Math.floor(Math.random() * palette.length)];
+        const pigment = this.engine.findPigment(pigmentName);
+        
+        if (pigment) {
+          const washColor = this.engine.glaze(this.engine.paperWhite, pigment);
+          this.transitionWash.style.backgroundColor = washColor;
+        }
+        
+        // Animate in
+        this.transitionWash.classList.add('entering');
+        
+        // Navigate after wash covers screen
+        await new Promise(resolve => setTimeout(resolve, 400));
+        window.location.href = destination;
+      },
+      
+      // For incoming transitions (call on page load)
+      transitionIn() {
+        if (!this.transitionWash) return;
+        
+        // If we arrived via transition, fade out the wash
+        this.transitionWash.classList.remove('entering');
+        this.transitionWash.classList.add('leaving');
+        
+        setTimeout(() => {
+          this.transitionWash.classList.remove('leaving');
+        }, 600);
+      }
+    };
+
     // ========================================
     // HUB ANIMATION
     // ========================================
@@ -867,6 +1100,13 @@
         if (!scene.ready) {
           item.innerHTML += '<span class="coming-soon">soon</span>';
           item.onclick = (e) => e.preventDefault();
+        } else {
+          // Use transition wash for scene navigation
+          item.onclick = (e) => {
+            e.preventDefault();
+            const mood = scene.mood || 'neutral'; // scenes can define mood
+            Atmosphere.transitionTo(item.href, mood);
+          };
         }
         
         menu.appendChild(item);
@@ -962,9 +1202,15 @@
     buildScenesMenu();
     initHeroParallax();
     
+    // Initialize atmosphere (pigment engine)
+    Atmosphere.init();
+    
     preloadFrames().then(() => {
       drawFrame();
       requestAnimationFrame(animate);
+      
+      // Fade in transition if arriving from another page
+      Atmosphere.transitionIn();
     });
   </script>
 
