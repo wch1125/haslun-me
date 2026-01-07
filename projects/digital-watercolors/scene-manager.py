@@ -96,6 +96,7 @@ def get_scene_details(scene_id):
     scene_dir = SCENES_DIR / scene_id
     frames_dir = scene_dir / "frames"
     audio_dir = scene_dir / "audio"
+    manifest_path = scene_dir / "scene.json"
     
     details = {
         'id': scene_id,
@@ -103,8 +104,22 @@ def get_scene_details(scene_id):
         'frame_count': 0,
         'frames': [],
         'audio_files': [],
-        'has_index': (scene_dir / "index.html").exists()
+        'has_index': (scene_dir / "index.html").exists(),
+        'has_manifest': manifest_path.exists(),
+        'title': '',
+        'subtitle': ''
     }
+    
+    # Load manifest if exists
+    if manifest_path.exists():
+        try:
+            with open(manifest_path, 'r', encoding='utf-8') as f:
+                manifest = json.load(f)
+                details['title'] = manifest.get('title', '')
+                details['subtitle'] = manifest.get('subtitle', '')
+                details['manifest_frame_count'] = manifest.get('animation', {}).get('frameCount', 0)
+        except:
+            pass
     
     if frames_dir.exists():
         frames = sorted([f.name for f in frames_dir.glob("frame-*.png")])
@@ -133,6 +148,29 @@ def create_scene_folder(scene_id):
     (scene_dir / "frames").mkdir(parents=True, exist_ok=True)
     (scene_dir / "audio").mkdir(parents=True, exist_ok=True)
     return scene_dir
+
+
+def create_scene_manifest(scene_id, title, subtitle, emoji='🎨'):
+    """Create the scene.json manifest file."""
+    manifest = {
+        "title": title,
+        "subtitle": subtitle,
+        "emoji": emoji,
+        "animation": {
+            "frameCount": 20,
+            "frameDelay": 120,
+            "pingPong": True
+        },
+        "audio": [],
+        "parallax": {
+            "enabled": True,
+            "intensity": 0.5
+        }
+    }
+    
+    scene_dir = SCENES_DIR / scene_id
+    with open(scene_dir / "scene.json", 'w', encoding='utf-8') as f:
+        json.dump(manifest, f, indent=2)
 
 
 def create_scene_html(scene_id, title, subtitle):
@@ -744,7 +782,10 @@ def create_scene():
         # Create folder structure
         create_scene_folder(scene_id)
         
-        # Create HTML
+        # Create scene.json manifest
+        create_scene_manifest(scene_id, title, subtitle)
+        
+        # Create HTML (copies template)
         create_scene_html(scene_id, title, subtitle)
         
         # Add to scenes.js
@@ -797,16 +838,22 @@ def upload_frames():
 
 
 def update_scene_frame_count(scene_id, count):
-    """Update the frameCount in a scene's index.html."""
-    html_path = SCENES_DIR / scene_id / "index.html"
-    if html_path.exists():
-        with open(html_path, 'r', encoding='utf-8') as f:
-            html = f.read()
-        
-        html = re.sub(r'frameCount:\s*\d+', f'frameCount: {count}', html)
-        
-        with open(html_path, 'w', encoding='utf-8') as f:
-            f.write(html)
+    """Update the frameCount in a scene's scene.json manifest."""
+    manifest_path = SCENES_DIR / scene_id / "scene.json"
+    
+    if manifest_path.exists():
+        try:
+            with open(manifest_path, 'r', encoding='utf-8') as f:
+                manifest = json.load(f)
+            
+            if 'animation' not in manifest:
+                manifest['animation'] = {}
+            manifest['animation']['frameCount'] = count
+            
+            with open(manifest_path, 'w', encoding='utf-8') as f:
+                json.dump(manifest, f, indent=2)
+        except Exception as e:
+            print(f"Error updating manifest: {e}")
 
 
 @app.route('/upload-audio', methods=['POST'])
@@ -826,10 +873,38 @@ def upload_audio():
         filename = file.filename.replace(' ', '-').lower()
         file.save(audio_dir / filename)
         
+        # Update scene.json with new audio file
+        update_scene_audio(scene_id)
+        
         return redirect(url_for('index', tab='scenes', message=f'Uploaded {filename} to {scene_id}', success='true'))
         
     except Exception as e:
         return redirect(url_for('index', tab='upload', message=f'Error: {e}', success='false'))
+
+
+def update_scene_audio(scene_id):
+    """Update audio list in scene.json based on files in audio folder."""
+    manifest_path = SCENES_DIR / scene_id / "scene.json"
+    audio_dir = SCENES_DIR / scene_id / "audio"
+    
+    if manifest_path.exists() and audio_dir.exists():
+        try:
+            with open(manifest_path, 'r', encoding='utf-8') as f:
+                manifest = json.load(f)
+            
+            # Get all mp3 files in audio folder
+            audio_files = sorted([f.name for f in audio_dir.glob("*.mp3")])
+            
+            # Build audio config
+            manifest['audio'] = [
+                {"src": f"audio/{f}", "volume": 0.4, "loop": True}
+                for f in audio_files
+            ]
+            
+            with open(manifest_path, 'w', encoding='utf-8') as f:
+                json.dump(manifest, f, indent=2)
+        except Exception as e:
+            print(f"Error updating audio in manifest: {e}")
 
 
 @app.route('/toggle-ready', methods=['POST'])

@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mister Softee — Digital Watercolors</title>
-  <meta name="description" content="A summer afternoon in Central Park. Ice cream truck, city sounds, and watercolor.">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍦</text></svg>">
+  <title>Loading... — Digital Watercolors</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -17,26 +16,17 @@
       box-sizing: border-box;
     }
 
-    :root {
-      --bg-dark: #1a1a1a;
-      --terracotta: #c4703f;
-      --terracotta-light: #d4845a;
-      --text-primary: #f5f5f5;
-      --text-muted: #a0a0a0;
-    }
-
     html, body {
       height: 100%;
       overflow: hidden;
+      background: #1a1a1a;
     }
 
     body {
-      background: var(--bg-dark);
-      color: var(--text-primary);
       font-family: 'DM Sans', sans-serif;
     }
 
-    /* Full-screen animated painting */
+    /* Scene container with parallax */
     .scene {
       position: fixed;
       top: 0;
@@ -47,6 +37,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      transition: transform 0.15s ease-out;
     }
 
     .scene canvas {
@@ -66,43 +57,47 @@
       height: 100%;
       pointer-events: none;
       box-shadow: inset 0 0 150px rgba(0,0,0,0.4);
+      z-index: 10;
     }
 
-    /* Scene title - appears briefly */
+    /* Scene title - fades in and out */
     .scene-title {
       position: fixed;
-      bottom: 2rem;
+      bottom: 3rem;
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
+      z-index: 20;
+      padding: 0.75rem 1.5rem;
+      background: rgba(30, 20, 10, 0.7);
+      border-radius: 4px;
       opacity: 0;
-      animation: fadeInOut 4s ease-in-out forwards;
+      animation: fadeInOut 5s ease-in-out 0.5s forwards;
       pointer-events: none;
     }
 
     .scene-title h1 {
       font-family: 'Cormorant Garamond', serif;
-      font-weight: 400;
-      font-size: 1.5rem;
+      font-weight: 600;
+      font-size: 1.3rem;
       letter-spacing: 0.1em;
-      color: var(--text-primary);
-      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      color: #f4e4c1;
+      margin-bottom: 0.15rem;
     }
 
     .scene-title p {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+      font-size: 0.85rem;
+      color: #c9b896;
     }
 
     @keyframes fadeInOut {
-      0% { opacity: 0; }
-      15% { opacity: 1; }
-      85% { opacity: 1; }
-      100% { opacity: 0; }
+      0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
     }
 
     /* Controls - minimal, bottom corner */
@@ -116,23 +111,23 @@
     }
 
     .control-btn {
-      width: 40px;
-      height: 40px;
-      border: none;
-      background: rgba(26, 26, 26, 0.7);
-      color: var(--text-muted);
+      width: 44px;
+      height: 44px;
+      border: 2px solid rgba(244, 228, 193, 0.3);
+      background: rgba(30, 20, 10, 0.6);
+      color: #c9b896;
       border-radius: 4px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
-      backdrop-filter: blur(4px);
     }
 
     .control-btn:hover {
-      background: rgba(26, 26, 26, 0.9);
-      color: var(--text-primary);
+      background: rgba(30, 20, 10, 0.85);
+      border-color: rgba(244, 228, 193, 0.6);
+      color: #f4e4c1;
     }
 
     .control-btn svg {
@@ -147,22 +142,23 @@
       left: 1rem;
       font-family: 'DM Sans', sans-serif;
       font-size: 0.8rem;
-      color: var(--text-muted);
+      color: #c9b896;
       text-decoration: none;
       display: flex;
       align-items: center;
       gap: 0.4rem;
-      padding: 0.5rem 0.75rem;
-      background: rgba(26, 26, 26, 0.7);
+      padding: 0.6rem 0.9rem;
+      background: rgba(30, 20, 10, 0.6);
+      border: 2px solid rgba(244, 228, 193, 0.3);
       border-radius: 4px;
-      backdrop-filter: blur(4px);
       transition: all 0.2s ease;
       z-index: 100;
     }
 
     .back-link:hover {
-      background: rgba(26, 26, 26, 0.9);
-      color: var(--text-primary);
+      background: rgba(30, 20, 10, 0.85);
+      border-color: rgba(244, 228, 193, 0.6);
+      color: #f4e4c1;
     }
 
     /* Loading state */
@@ -171,28 +167,44 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 50;
+    }
+
+    .loading p {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      color: var(--text-muted);
+      color: #c9b896;
+      font-size: 1rem;
+    }
+
+    .loading .progress {
+      margin-top: 0.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      color: #8a7a5a;
     }
   </style>
 </head>
 <body>
 
-  <div class="loading" id="loading">Loading...</div>
+  <div class="loading" id="loading">
+    <p>stepping into the painting…</p>
+    <div class="progress" id="progress"></div>
+  </div>
 
-  <div class="scene">
+  <div class="scene" id="scene">
     <canvas id="scene-canvas"></canvas>
   </div>
 
   <div class="vignette"></div>
 
   <div class="scene-title" id="scene-title">
-    <h1>Mister Softee</h1>
-    <p>Central Park, Summer</p>
+    <h1 id="title-text">Loading</h1>
+    <p id="subtitle-text"></p>
   </div>
 
-  <a href="../../" class="back-link">
+  <a href="../../" class="back-link" id="back-link">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
       <path d="M19 12H5M12 19l-7-7 7-7"/>
     </svg>
@@ -201,11 +213,11 @@
 
   <div class="controls">
     <button class="control-btn" id="sound-toggle" title="Toggle sound">
-      <svg id="sound-on-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg id="sound-on-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
         <path d="M11 5L6 9H2v6h4l5 4V5z"/>
         <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
       </svg>
-      <svg id="sound-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+      <svg id="sound-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M11 5L6 9H2v6h4l5 4V5z"/>
         <line x1="23" y1="9" x2="17" y2="15"/>
         <line x1="17" y1="9" x2="23" y2="15"/>
@@ -215,57 +227,79 @@
 
   <script>
     // ========================================
-    // SCENE CONFIG
+    // SCENE ENGINE - Loads from scene.json
     // ========================================
-    const sceneConfig = {
-      frameCount: 20,           // Number of frames in your animation
-      framePath: 'frames/frame-',
-      frameExtension: '.png',
-      frameDelay: 120,          // ms between frames
-      pingPong: true,           // Breathe back and forth
-      
-      // Audio layers (add files to audio/ folder)
-      audio: [
-        { src: 'audio/ice-cream-truck.mp3', volume: 0.3, loop: true },
-        { src: 'audio/summer-ambient.mp3', volume: 0.5, loop: true }
-      ]
-    };
-
-    // ========================================
-    // ANIMATION ENGINE
-    // ========================================
+    
     const canvas = document.getElementById('scene-canvas');
     const ctx = canvas.getContext('2d');
+    const sceneEl = document.getElementById('scene');
     const loading = document.getElementById('loading');
+    const progress = document.getElementById('progress');
 
     const state = {
+      config: null,
       frames: [],
       currentFrame: 0,
       direction: 1,
       lastFrameTime: 0,
-      loaded: 0,
       audioPlayers: [],
-      soundEnabled: false
+      soundEnabled: false,
+      lastMouseMove: 0
     };
 
+    // Load scene manifest
+    async function loadManifest() {
+      try {
+        const res = await fetch('scene.json');
+        state.config = await res.json();
+        
+        // Update page title and scene title
+        document.title = `${state.config.title} — Digital Watercolors`;
+        document.getElementById('title-text').textContent = state.config.title;
+        document.getElementById('subtitle-text').textContent = state.config.subtitle || '';
+        
+        // Update favicon if emoji specified
+        if (state.config.emoji) {
+          const favicon = document.querySelector('link[rel="icon"]');
+          favicon.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>${state.config.emoji}</text></svg>`;
+        }
+        
+        return state.config;
+      } catch (e) {
+        console.warn('No scene.json found, using defaults');
+        state.config = {
+          title: 'Scene',
+          subtitle: '',
+          animation: { frameCount: 20, frameDelay: 120, pingPong: true },
+          audio: [],
+          parallax: { enabled: false }
+        };
+        return state.config;
+      }
+    }
+
+    // Preload animation frames
     function preloadFrames() {
+      const { frameCount } = state.config.animation;
+      
       return new Promise((resolve, reject) => {
-        // If no frames yet, show placeholder
-        if (sceneConfig.frameCount === 0) {
-          loading.textContent = 'Waiting for animation frames...';
+        if (frameCount === 0) {
+          progress.textContent = 'waiting for frames...';
           return;
         }
 
-        for (let i = 0; i < sceneConfig.frameCount; i++) {
+        let loaded = 0;
+        
+        for (let i = 0; i < frameCount; i++) {
           const img = new Image();
           const frameNum = String(i).padStart(3, '0');
-          img.src = `${sceneConfig.framePath}${frameNum}${sceneConfig.frameExtension}`;
+          img.src = `frames/frame-${frameNum}.png`;
           
           img.onload = () => {
-            state.loaded++;
-            loading.textContent = `Loading... ${Math.round(state.loaded / sceneConfig.frameCount * 100)}%`;
+            loaded++;
+            progress.textContent = `${Math.round(loaded / frameCount * 100)}%`;
             
-            if (state.loaded === sceneConfig.frameCount) {
+            if (loaded === frameCount) {
               canvas.width = state.frames[0].width;
               canvas.height = state.frames[0].height;
               ctx.imageSmoothingEnabled = false;
@@ -275,7 +309,7 @@
           };
           
           img.onerror = () => {
-            loading.textContent = 'Add animation frames to: scenes/mister-softee/frames/';
+            progress.textContent = 'frames not found';
           };
           
           state.frames[i] = img;
@@ -283,6 +317,7 @@
       });
     }
 
+    // Animation loop
     function drawFrame() {
       const img = state.frames[state.currentFrame];
       if (!img) return;
@@ -291,21 +326,23 @@
     }
 
     function animate(timestamp) {
-      if (timestamp - state.lastFrameTime >= sceneConfig.frameDelay) {
+      const { frameDelay, pingPong, frameCount } = state.config.animation;
+      
+      if (timestamp - state.lastFrameTime >= frameDelay) {
         state.lastFrameTime = timestamp;
         
         state.currentFrame += state.direction;
         
-        if (sceneConfig.pingPong) {
-          if (state.currentFrame >= sceneConfig.frameCount - 1) {
-            state.currentFrame = sceneConfig.frameCount - 1;
+        if (pingPong) {
+          if (state.currentFrame >= frameCount - 1) {
+            state.currentFrame = frameCount - 1;
             state.direction = -1;
           } else if (state.currentFrame <= 0) {
             state.currentFrame = 0;
             state.direction = 1;
           }
         } else {
-          if (state.currentFrame >= sceneConfig.frameCount) {
+          if (state.currentFrame >= frameCount) {
             state.currentFrame = 0;
           }
         }
@@ -316,19 +353,57 @@
       requestAnimationFrame(animate);
     }
 
-    // ========================================
-    // AUDIO ENGINE
-    // ========================================
+    // Parallax effect
+    function initParallax() {
+      if (!state.config.parallax?.enabled) return;
+      
+      const intensity = state.config.parallax.intensity || 0.5;
+      let idleAngle = 0;
+      
+      // Mouse-driven parallax
+      document.addEventListener('mousemove', (e) => {
+        state.lastMouseMove = Date.now();
+        
+        const mouseX = e.clientX / window.innerWidth;
+        const mouseY = e.clientY / window.innerHeight;
+        
+        const offsetX = (mouseX - 0.5) * 20 * intensity;
+        const offsetY = (mouseY - 0.5) * 15 * intensity;
+        
+        sceneEl.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+      });
+      
+      // Subtle idle drift when no mouse movement
+      function idleDrift() {
+        if (document.hidden) return;
+        
+        // Only drift if mouse hasn't moved in 2 seconds
+        if (Date.now() - state.lastMouseMove > 2000) {
+          idleAngle += 0.015;
+          const idleX = Math.sin(idleAngle) * 4 * intensity;
+          const idleY = Math.cos(idleAngle * 0.7) * 3 * intensity;
+          sceneEl.style.transform = `translate(${idleX}px, ${idleY}px)`;
+        }
+        
+        requestAnimationFrame(idleDrift);
+      }
+      
+      requestAnimationFrame(idleDrift);
+    }
+
+    // Audio system
     function initAudio() {
-      sceneConfig.audio.forEach(audioConfig => {
+      if (!state.config.audio?.length) return;
+      
+      state.config.audio.forEach(audioConfig => {
         const audio = new Audio(audioConfig.src);
-        audio.loop = audioConfig.loop;
-        audio.volume = 0; // Start silent
+        audio.loop = audioConfig.loop !== false;
+        audio.volume = 0;
         audio.preload = 'auto';
         
         state.audioPlayers.push({
           element: audio,
-          targetVolume: audioConfig.volume
+          targetVolume: audioConfig.volume || 0.4
         });
       });
     }
@@ -345,7 +420,6 @@
         
         state.audioPlayers.forEach(player => {
           player.element.play().catch(() => {});
-          // Fade in
           fadeVolume(player.element, player.targetVolume, 1000);
         });
       } else {
@@ -353,7 +427,6 @@
         offIcon.style.display = 'block';
         
         state.audioPlayers.forEach(player => {
-          // Fade out then pause
           fadeVolume(player.element, 0, 500, () => player.element.pause());
         });
       }
@@ -366,11 +439,11 @@
       
       function step(currentTime) {
         const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
+        const pct = Math.min(elapsed / duration, 1);
         
-        audio.volume = start + (diff * progress);
+        audio.volume = start + (diff * pct);
         
-        if (progress < 1) {
+        if (pct < 1) {
           requestAnimationFrame(step);
         } else if (callback) {
           callback();
@@ -385,15 +458,14 @@
     // ========================================
     document.getElementById('sound-toggle').addEventListener('click', toggleSound);
     
-    // Start with sound off icon
-    document.getElementById('sound-on-icon').style.display = 'none';
-    document.getElementById('sound-off-icon').style.display = 'block';
-    
-    initAudio();
-    
-    preloadFrames().then(() => {
-      drawFrame();
-      requestAnimationFrame(animate);
+    loadManifest().then(() => {
+      initAudio();
+      initParallax();
+      
+      preloadFrames().then(() => {
+        drawFrame();
+        requestAnimationFrame(animate);
+      });
     });
   </script>
 
