@@ -4,51 +4,299 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Digital Watercolors — Haslun Studio</title>
-  <meta name="description" content="Interactive experiments with watercolor paintings. A digital sketchbook by Haslun Studio.">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗽</text></svg>">
+  <meta name="description" content="Watercolor paintings brought to life. An interactive sketchbook by Haslun Studio.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
   
-  <!-- Phaser 3 -->
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #1a1a1a;
+      --bg-card: #242424;
+      --terracotta: #c4703f;
+      --terracotta-light: #d4845a;
+      --text-primary: #f5f5f5;
+      --text-muted: #a0a0a0;
+      --pixel-shadow: #0a0a0a;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Animated Background */
+    .background-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .background-animation canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      height: 100%;
+      width: auto;
+      max-width: none;
+    }
+
+    /* Gradient overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: radial-gradient(ellipse at center, rgba(26,26,26,0.3) 0%, rgba(26,26,26,0.85) 70%);
+      pointer-events: none;
+    }
+
+    /* Main content */
+    .content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    /* Logo */
+    .logo {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .logo h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 2.5rem;
+      letter-spacing: 0.08em;
+      color: var(--text-primary);
+      text-shadow: 2px 2px 0 var(--pixel-shadow);
+      margin-bottom: 0.5rem;
+    }
+
+    .logo .tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    /* Pixel Menu */
+    .pixel-menu {
+      background: var(--bg-card);
+      border: 3px solid var(--terracotta);
+      padding: 1.25rem 1.75rem;
+      box-shadow: 4px 4px 0 0 var(--pixel-shadow);
+    }
+
+    .menu-items {
+      display: flex;
+      gap: 0.4rem;
+      flex-direction: column;
+    }
+
+    .menu-item {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 0.6rem 1.25rem;
+      background: transparent;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      transition: all 0.15s ease;
+    }
+
+    .menu-item::before {
+      content: '▸';
+      color: var(--terracotta);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .menu-item:hover {
+      background: rgba(196, 112, 63, 0.15);
+      border-color: var(--terracotta);
+      color: var(--terracotta-light);
+    }
+
+    .menu-item:hover::before {
+      opacity: 1;
+    }
+
+    /* Footer */
+    .footer {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      text-align: center;
+    }
+
+    .footer p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .footer a {
+      color: var(--terracotta);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .logo h1 {
+        font-size: 1.75rem;
+      }
+      
+      .pixel-menu {
+        padding: 1rem 1.25rem;
+      }
+      
+      .menu-item {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div id="game-container">
-    <div id="game"></div>
-    
-    <!-- Title overlay (shown before game starts) -->
-    <div id="title-overlay">
-      <div class="title-content">
-        <p class="title-eyebrow">An Interactive Sketchbook</p>
-        <h1>Digital Watercolors</h1>
-        <p class="title-premise">
-          Wander through paintings.<br>
-          No objective. No timer. Just look around.
-        </p>
-        <button id="start-btn" class="start-btn">
-          <span>Begin</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </button>
-        <p class="title-controls">Arrow keys to move</p>
-      </div>
-      <p class="title-credit">
-        Paintings by <a href="https://haslun.studio" target="_blank">Haslun Studio</a>
-      </p>
-    </div>
+
+  <div class="background-animation">
+    <canvas id="bg-canvas"></canvas>
   </div>
 
-  <!-- Game Scripts -->
-  <script src="js/BaseScene.js"></script>
-  <script src="js/scenes/BootScene.js"></script>
-  <script src="js/scenes/SubwayScene.js"></script>
-  <script src="js/scenes/MilanoScene.js"></script>
-  <script src="js/scenes/ParkScene.js"></script>
-  <script src="js/scenes/MuseumScene.js"></script>
-  <script src="js/scenes/GrandCentralScene.js"></script>
-  <script src="js/main.js"></script>
+  <div class="overlay"></div>
+
+  <div class="content">
+    <div class="logo">
+      <h1>Digital Watercolors</h1>
+      <p class="tagline">Paintings that breathe</p>
+    </div>
+
+    <nav class="pixel-menu">
+      <div class="menu-items">
+        <a href="https://haslun.studio" class="menu-item" target="_blank">Gallery</a>
+        <a href="https://haslun.studio/#prints" class="menu-item" target="_blank">Shop</a>
+        <a href="https://haslun.studio/watercolor-lab.html" class="menu-item" target="_blank">Color Lab</a>
+        <a href="https://haslun.me" class="menu-item" target="_blank">About</a>
+      </div>
+    </nav>
+  </div>
+
+  <div class="footer">
+    <p>Watercolors by <a href="https://haslun.studio" target="_blank">Haslun Studio</a></p>
+  </div>
+
+  <script>
+    const config = {
+      frameCount: 20,
+      framePath: 'img/frame-',
+      frameExtension: '.png',
+      frameDelay: 120,
+      pingPong: true
+    };
+
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const state = {
+      frames: [],
+      currentFrame: 0,
+      direction: 1,
+      lastFrameTime: 0,
+      loaded: 0
+    };
+
+    function preloadFrames() {
+      return new Promise((resolve) => {
+        for (let i = 0; i < config.frameCount; i++) {
+          const img = new Image();
+          const frameNum = String(i).padStart(3, '0');
+          img.src = `${config.framePath}${frameNum}${config.frameExtension}`;
+          
+          img.onload = () => {
+            state.loaded++;
+            if (state.loaded === config.frameCount) {
+              canvas.width = state.frames[0].width;
+              canvas.height = state.frames[0].height;
+              ctx.imageSmoothingEnabled = false;
+              resolve();
+            }
+          };
+          
+          state.frames[i] = img;
+        }
+      });
+    }
+
+    function drawFrame() {
+      const img = state.frames[state.currentFrame];
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    }
+
+    function animate(timestamp) {
+      if (timestamp - state.lastFrameTime >= config.frameDelay) {
+        state.lastFrameTime = timestamp;
+        
+        state.currentFrame += state.direction;
+        
+        if (state.currentFrame >= config.frameCount - 1) {
+          state.currentFrame = config.frameCount - 1;
+          state.direction = -1;
+        } else if (state.currentFrame <= 0) {
+          state.currentFrame = 0;
+          state.direction = 1;
+        }
+        
+        drawFrame();
+      }
+      
+      requestAnimationFrame(animate);
+    }
+
+    preloadFrames().then(() => {
+      drawFrame();
+      requestAnimationFrame(animate);
+    });
+  </script>
+
 </body>
 </html>
