@@ -544,6 +544,63 @@
         font-size: 0.8rem;
         padding: 0.4rem 0.5rem;
       }
+
+      /* Mobile: disable blur for performance, use solid fallback */
+      .hero-header,
+      .hero-menu {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background-color: rgba(22, 12, 6, 0.94);
+      }
+      
+      .footer {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background-color: rgba(22, 12, 6, 0.85);
+      }
+    }
+
+    /* Respect reduced-motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .hero-window {
+        transform: none !important;
+        transition: none !important;
+      }
+      
+      .loading-drop,
+      .loading-drop::after {
+        animation: none !important;
+      }
+    }
+
+    /* iOS motion permission button */
+    .motion-permission {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 100;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: #d4c4a4;
+      background: rgba(22, 12, 6, 0.9);
+      border: 2px solid #c9a86c;
+      border-radius: 4px;
+      padding: 0.5rem 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .motion-permission:hover {
+      background: rgba(40, 25, 12, 0.95);
+      color: #fef5e3;
+      border-color: #e8c080;
+    }
+
+    .motion-permission:active {
+      transform: scale(0.96);
     }
   </style>
 </head>
@@ -731,6 +788,11 @@
       
       if (!heroOverlay || !heroWindow) return;
       
+      // Respect reduced-motion preference
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+      
       const maxRotate = 8;   // degrees
       const maxShift = 18;   // pixels
 
@@ -744,6 +806,18 @@
           `translate3d(${translateX}px, ${translateY}px, 0) ` +
           `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
       }
+      
+      function setupDeviceOrientation() {
+        window.addEventListener('deviceorientation', (e) => {
+          if (e.gamma === null && e.beta === null) return;
+          const xNorm = (e.gamma + 45) / 90;  // gamma: -45 to 45
+          const yNorm = (e.beta - 30) / 60;   // beta: 0 to 60
+          applyParallax(
+            Math.min(1, Math.max(0, xNorm)),
+            Math.min(1, Math.max(0, yNorm))
+          );
+        }, { passive: true });
+      }
 
       // Desktop: pointer/mouse movement
       window.addEventListener('pointermove', (e) => {
@@ -753,16 +827,32 @@
         applyParallax(xNorm, yNorm);
       });
 
-      // Mobile: device tilt
-      window.addEventListener('deviceorientation', (e) => {
-        if (e.gamma === null && e.beta === null) return;
-        const xNorm = (e.gamma + 45) / 90;  // gamma: -45 to 45
-        const yNorm = (e.beta - 30) / 60;   // beta: 0 to 60
-        applyParallax(
-          Math.min(1, Math.max(0, xNorm)),
-          Math.min(1, Math.max(0, yNorm))
-        );
-      }, { passive: true });
+      // Mobile: device tilt (iOS requires permission)
+      if (typeof DeviceOrientationEvent !== 'undefined' &&
+          typeof DeviceOrientationEvent.requestPermission === 'function') {
+        // iOS 13+ requires permission - show button
+        const btn = document.createElement('button');
+        btn.textContent = '✦ Enable tilt ✦';
+        btn.className = 'motion-permission';
+        btn.setAttribute('aria-label', 'Enable device motion for parallax effect');
+        document.body.appendChild(btn);
+
+        btn.onclick = async () => {
+          try {
+            const permission = await DeviceOrientationEvent.requestPermission();
+            if (permission === 'granted') {
+              setupDeviceOrientation();
+              btn.remove();
+            }
+          } catch (err) {
+            console.log('Motion permission denied:', err);
+            btn.remove();
+          }
+        };
+      } else if ('DeviceOrientationEvent' in window) {
+        // Android and other devices - just attach listener
+        setupDeviceOrientation();
+      }
 
       // Reset on mouse leave
       heroOverlay.addEventListener('mouseleave', () => {
