@@ -161,36 +161,101 @@
       color: #f4e4c1;
     }
 
-    /* Loading state */
-    .loading {
+    /* Loading screen */
+    .loading-screen {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      z-index: 50;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
     }
 
-    .loading p {
+    .loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Pixel drops */
+    .loading-drops {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+      align-items: flex-end;
+    }
+
+    .loading-drop {
+      width: 8px;
+      height: 12px;
+      position: relative;
+      animation: pixelBreathe 1600ms ease-in-out infinite;
+      clip-path: polygon(
+        25% 0%, 75% 0%,
+        100% 25%, 100% 75%,
+        75% 100%, 25% 100%,
+        0% 75%, 0% 25%
+      );
+    }
+
+    .loading-drop:nth-child(1) { background: #c4703f; animation-delay: 0ms; }
+    .loading-drop:nth-child(2) { background: #d4845a; animation-delay: -267ms; }
+    .loading-drop:nth-child(3) { background: #b8986b; animation-delay: -534ms; width: 10px; height: 14px; }
+    .loading-drop:nth-child(4) { background: #8b9a7d; animation-delay: -801ms; width: 10px; height: 14px; }
+    .loading-drop:nth-child(5) { background: #5a7247; animation-delay: -1068ms; }
+    .loading-drop:nth-child(6) { background: #4a6a8a; animation-delay: -1335ms; }
+
+    @keyframes pixelBreathe {
+      0%, 100% { transform: translateY(0) scaleY(1); opacity: 0.7; }
+      50% { transform: translateY(-6px) scaleY(1.15); opacity: 1; }
+    }
+
+    .loading-text {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       color: #c9b896;
       font-size: 1rem;
+      margin-bottom: 0.75rem;
     }
 
-    .loading .progress {
-      margin-top: 0.5rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.8rem;
-      color: #8a7a5a;
+    .loading-bar {
+      width: 120px;
+      height: 6px;
+      background: #2a2520;
+      border: 2px solid #3d3530;
+      overflow: hidden;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #c4703f, #b8986b, #5a7247);
+      transition: width 0.3s ease;
     }
   </style>
 </head>
 <body>
 
-  <div class="loading" id="loading">
-    <p>stepping into the painting…</p>
-    <div class="progress" id="progress"></div>
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loading-screen">
+    <div class="loading-drops">
+      <div class="loading-drop"></div>
+      <div class="loading-drop"></div>
+      <div class="loading-drop"></div>
+      <div class="loading-drop"></div>
+      <div class="loading-drop"></div>
+      <div class="loading-drop"></div>
+    </div>
+    <div class="loading-text">stepping into the painting…</div>
+    <div class="loading-bar">
+      <div class="loading-bar-fill" id="loading-bar-fill"></div>
+    </div>
   </div>
 
   <div class="scene" id="scene">
@@ -233,8 +298,8 @@
     const canvas = document.getElementById('scene-canvas');
     const ctx = canvas.getContext('2d');
     const sceneEl = document.getElementById('scene');
-    const loading = document.getElementById('loading');
-    const progress = document.getElementById('progress');
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingBarFill = document.getElementById('loading-bar-fill');
 
     const state = {
       config: null,
@@ -284,7 +349,7 @@
       
       return new Promise((resolve, reject) => {
         if (frameCount === 0) {
-          progress.textContent = 'waiting for frames...';
+          document.querySelector('.loading-text').textContent = 'waiting for frames...';
           return;
         }
 
@@ -297,19 +362,27 @@
           
           img.onload = () => {
             loaded++;
-            progress.textContent = `${Math.round(loaded / frameCount * 100)}%`;
+            
+            // Update progress bar
+            const progress = (loaded / frameCount) * 100;
+            loadingBarFill.style.width = progress + '%';
             
             if (loaded === frameCount) {
               canvas.width = state.frames[0].width;
               canvas.height = state.frames[0].height;
               ctx.imageSmoothingEnabled = false;
-              loading.style.display = 'none';
+              
+              // Hide loading screen
+              setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+              }, 300);
+              
               resolve();
             }
           };
           
           img.onerror = () => {
-            progress.textContent = 'frames not found';
+            document.querySelector('.loading-text').textContent = 'frames not found';
           };
           
           state.frames[i] = img;
