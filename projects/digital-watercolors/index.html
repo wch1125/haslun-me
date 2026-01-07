@@ -60,7 +60,7 @@
       max-width: none;
     }
 
-    /* Gradient overlay */
+    /* Gradient overlay - softer for warm menu */
     .overlay {
       position: fixed;
       top: 0;
@@ -68,7 +68,7 @@
       width: 100%;
       height: 100%;
       z-index: 1;
-      background: radial-gradient(ellipse at center, rgba(26,26,26,0.3) 0%, rgba(26,26,26,0.85) 70%);
+      background: radial-gradient(ellipse at center, rgba(20,15,10,0.2) 0%, rgba(20,15,10,0.75) 70%);
       pointer-events: none;
     }
 
@@ -87,114 +87,157 @@
     /* Logo */
     .logo {
       text-align: center;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
     }
 
     .logo h1 {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 400;
       font-size: 2.5rem;
-      letter-spacing: 0.08em;
-      color: var(--text-primary);
-      text-shadow: 2px 2px 0 var(--pixel-shadow);
-      margin-bottom: 0.5rem;
+      letter-spacing: 0.06em;
+      color: #f4e4c1;
+      text-shadow: 
+        2px 2px 0 #2a1a08,
+        -1px -1px 0 rgba(0,0,0,0.3);
+      margin-bottom: 0.4rem;
     }
 
     .logo .tagline {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-size: 1rem;
-      color: var(--text-muted);
+      color: #d4c4a1;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     }
 
-    /* Pixel Menu */
+    /* Stardew-style Pixel Menu */
     .pixel-menu {
-      background: var(--bg-card);
-      border: 3px solid var(--terracotta);
-      padding: 1.25rem 1.75rem;
-      box-shadow: 4px 4px 0 0 var(--pixel-shadow);
+      background: linear-gradient(180deg, #f4e4c1 0%, #e8d4a8 100%);
+      border: 4px solid #8b5a2b;
+      border-radius: 2px;
+      padding: 0;
+      box-shadow: 
+        0 0 0 2px #5c3d1e,
+        4px 4px 0 0 rgba(0,0,0,0.3),
+        inset 0 0 0 2px #faf0d7;
+      position: relative;
+      min-width: 220px;
+    }
+
+    /* Wood plank header */
+    .menu-header {
+      background: linear-gradient(180deg, #7a4a1e 0%, #5c3d1e 100%);
+      padding: 0.6rem 1rem;
+      margin: -4px -4px 0 -4px;
+      border-radius: 0;
+      border-bottom: 3px solid #3d2810;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+
+    .menu-header h2 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #f4e4c1;
+      text-shadow: 1px 1px 0 #2a1a08;
+      margin: 0;
+      text-align: center;
     }
 
     .menu-section {
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px dashed rgba(255,255,255,0.1);
+      padding: 0.75rem 0.5rem;
+      border-bottom: 2px dashed #c4a467;
     }
 
     .menu-section:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
       border-bottom: none;
     }
 
     .menu-section-label {
-      font-size: 0.65rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.6rem;
       text-transform: uppercase;
       letter-spacing: 0.15em;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-      padding-left: 0.5rem;
+      color: #7a5c3a;
+      margin-bottom: 0.4rem;
+      padding-left: 0.75rem;
+      font-weight: 600;
     }
 
     .menu-items {
       display: flex;
-      gap: 0.3rem;
+      gap: 0.2rem;
       flex-direction: column;
     }
 
     .menu-item {
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 500;
-      color: var(--text-primary);
+      color: #3d2810;
       text-decoration: none;
-      padding: 0.6rem 1.25rem;
+      padding: 0.5rem 0.75rem;
       background: transparent;
       border: 2px solid transparent;
+      border-radius: 2px;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      transition: all 0.15s ease;
+      gap: 0.5rem;
+      transition: all 0.1s ease;
       cursor: pointer;
     }
 
     .menu-item::before {
-      content: '▸';
-      color: var(--terracotta);
-      opacity: 0;
-      transition: opacity 0.15s ease;
+      content: '◆';
+      font-size: 0.5rem;
+      color: #8b5a2b;
+      opacity: 0.4;
+      transition: all 0.1s ease;
     }
 
     .menu-item:hover {
-      background: rgba(196, 112, 63, 0.15);
-      border-color: var(--terracotta);
-      color: var(--terracotta-light);
+      background: #e8d4a8;
+      border-color: #8b5a2b;
+      color: #2a1a08;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
     }
 
     .menu-item:hover::before {
       opacity: 1;
+      color: #c4703f;
     }
 
     .menu-item.disabled {
-      opacity: 0.4;
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
     .menu-item.disabled:hover {
       background: transparent;
       border-color: transparent;
-      color: var(--text-primary);
+      box-shadow: none;
     }
 
     .menu-item.disabled::before {
-      opacity: 0;
+      opacity: 0.3;
     }
 
     .coming-soon {
-      font-size: 0.7rem;
-      color: var(--text-muted);
+      font-size: 0.65rem;
+      color: #8b7355;
       font-style: italic;
       margin-left: auto;
+    }
+
+    /* Scene items get a special style */
+    .menu-item.scene-link {
+      background: rgba(139, 90, 43, 0.1);
+    }
+
+    .menu-item.scene-link:hover {
+      background: rgba(139, 90, 43, 0.25);
     }
 
     /* Footer */
@@ -211,11 +254,12 @@
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-size: 0.85rem;
-      color: var(--text-muted);
+      color: #d4c4a1;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     }
 
     .footer a {
-      color: var(--terracotta);
+      color: #f4e4c1;
       text-decoration: none;
     }
 
@@ -230,12 +274,16 @@
       }
       
       .pixel-menu {
-        padding: 1rem 1.25rem;
+        min-width: 200px;
+      }
+      
+      .menu-header h2 {
+        font-size: 0.7rem;
       }
       
       .menu-item {
         font-size: 0.85rem;
-        padding: 0.5rem 1rem;
+        padding: 0.45rem 0.6rem;
       }
     }
   </style>
@@ -255,15 +303,19 @@
     </div>
 
     <nav class="pixel-menu">
+      <div class="menu-header">
+        <h2>✦ Menu ✦</h2>
+      </div>
+      
       <!-- Scenes section - populated by JavaScript -->
       <div class="menu-section" id="scenes-section" style="display: none;">
-        <div class="menu-section-label">Enter a scene</div>
+        <div class="menu-section-label">Scenes</div>
         <div class="menu-items" id="scenes-menu"></div>
       </div>
 
       <!-- Static links -->
       <div class="menu-section">
-        <div class="menu-section-label">Haslun Studio</div>
+        <div class="menu-section-label">Studio</div>
         <div class="menu-items">
           <a href="https://haslun.studio" class="menu-item" target="_blank">Gallery</a>
           <a href="https://haslun.studio/#prints" class="menu-item" target="_blank">Shop Prints</a>
@@ -362,12 +414,12 @@
       
       SCENES.forEach(scene => {
         const item = document.createElement('a');
-        item.className = 'menu-item' + (scene.ready ? '' : ' disabled');
+        item.className = 'menu-item scene-link' + (scene.ready ? '' : ' disabled');
         item.href = scene.ready ? `scenes/${scene.id}/` : '#';
         item.innerHTML = scene.label;
         
         if (!scene.ready) {
-          item.innerHTML += '<span class="coming-soon">coming soon</span>';
+          item.innerHTML += '<span class="coming-soon">soon</span>';
           item.onclick = (e) => e.preventDefault();
         }
         
