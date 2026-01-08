@@ -1,0 +1,172 @@
+/**
+ * Pixel Overlay Styles
+ * Retro, chunky UI with dithered fills
+ * Applied when html or body has .pixel-mode class
+ * (html class is set early to prevent FOUC)
+ */
+
+/* Pixel mode overrides for glass panel */
+html.pixel-mode .glass-panel {
+  background: var(--pixel-bg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 4px solid var(--pixel-border);
+  border-radius: 0;
+  box-shadow: 
+    inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.1),
+    4px 4px 0 rgba(0, 0, 0, 0.3);
+  
+  /* Dithered background pattern */
+  background-image: 
+    linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,0.02) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.02) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.02) 75%);
+  background-size: 4px 4px;
+  background-position: 0 0, 0 2px, 2px -2px, -2px 0px;
+  background-color: var(--pixel-bg);
+}
+
+/* Pixel branding */
+html.pixel-mode .brand-title {
+  font-family: var(--font-pixel);
+  font-size: 0.9rem;
+  letter-spacing: 0;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
+  line-height: 1.4;
+}
+
+html.pixel-mode .brand-tagline {
+  font-family: var(--font-pixel);
+  font-size: 0.45rem;
+  letter-spacing: 0.05em;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+  margin-top: 0.5rem;
+}
+
+html.pixel-mode .brand-divider {
+  width: 60px;
+  height: 2px;
+  background: var(--pixel-border);
+  border-radius: 0;
+}
+
+/* Pixel navigation */
+html.pixel-mode .nav-link {
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  letter-spacing: 0;
+  padding: 0.6rem 0.5rem;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+  border: 2px solid transparent;
+  transition: none;
+}
+
+html.pixel-mode .nav-link:hover {
+  background: var(--pixel-border);
+  border-color: var(--pixel-accent);
+}
+
+html.pixel-mode .nav-link::after {
+  display: none;
+}
+
+html.pixel-mode .nav-link .coming-soon {
+  font-family: var(--font-pixel);
+  font-size: 0.35rem;
+}
+
+/* Pixel footer */
+html.pixel-mode .glass-footer {
+  border-top: 2px solid var(--pixel-border);
+}
+
+html.pixel-mode .glass-footer p {
+  font-family: var(--font-pixel);
+  font-size: 0.35rem;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+  line-height: 1.8;
+}
+
+html.pixel-mode .glass-footer a {
+  color: var(--pixel-accent);
+}
+
+html.pixel-mode .glass-footer a:hover {
+  color: var(--text-primary);
+}
+
+/* Pixel toggle button */
+.pixel-toggle {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  background: var(--pixel-bg);
+  border: 2px solid var(--pixel-border);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pixel-toggle:hover {
+  background: var(--pixel-border);
+  border-color: var(--pixel-accent);
+}
+
+html.pixel-mode .pixel-toggle {
+  border-radius: 0;
+  box-shadow: 
+    inset -1px -1px 0 rgba(0, 0, 0, 0.5),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.1),
+    2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Pixel mode responsive */
+@media (max-width: 768px) {
+  html.pixel-mode .brand-title {
+    font-size: 0.75rem;
+  }
+
+  html.pixel-mode .brand-tagline {
+    font-size: 0.4rem;
+  }
+
+  html.pixel-mode .nav-link {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  html.pixel-mode .glass-panel {
+    border-width: 3px;
+  }
+
+  html.pixel-mode .brand-title {
+    font-size: 0.65rem;
+  }
+
+  html.pixel-mode .nav-link {
+    font-size: 0.45rem;
+    padding: 0.5rem 0.4rem;
+  }
+
+  html.pixel-mode .glass-footer p {
+    font-size: 0.3rem;
+  }
+
+  .pixel-toggle {
+    width: 32px;
+    height: 32px;
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "card-template",
+  "title": "Card Title",
+  "type": "card",
+  "modeDefault": "glass",
+  "loader": "dom",
+  "theme": "warm",
+  "atmosphere": {
+    "livingWashes": true,
+    "dailyAccent": false
+  },
+  "share": {
+    "ogTitle": "You've received a card!",
+    "ogDescription": "A digital greeting from Haslun Studio",
+    "ogImage": "og.png",
+    "noIndex": true
+  },
+  "card": {
+    "allowParams": true,
+    "params": {
+      "to": "Friend",
+      "from": "Someone special",
+      "msg": ""
+    }
+  }
+}

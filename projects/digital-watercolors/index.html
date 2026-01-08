@@ -14,14 +14,14 @@
   <script>
     (function() {
       try {
-        var isPixelMode = localStorage.getItem('pixelMode') === 'true';
+        // Use namespaced key for multi-app compatibility
+        var isPixelMode = localStorage.getItem('haslun:pixelMode') === 'true';
         if (isPixelMode) {
           document.documentElement.classList.add('pixel-mode');
         }
-        // Store for later use by loader
-        window.__pixelModeBoot = isPixelMode;
+        window.__haslunBoot = { pixelMode: isPixelMode };
       } catch (e) {
-        window.__pixelModeBoot = false;
+        window.__haslunBoot = { pixelMode: false };
       }
     })();
   </script>
@@ -134,7 +134,7 @@
     // Initialize
     async function init() {
       // Use boot flag set by early script (prevents FOUC)
-      const isPixelMode = window.__pixelModeBoot || false;
+      const isPixelMode = window.__haslunBoot?.pixelMode || false;
       
       // Initialize loader with appropriate mode
       Loader.init(isPixelMode ? 'canvas' : 'dom');

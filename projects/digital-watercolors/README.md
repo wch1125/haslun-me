@@ -8,6 +8,29 @@ An interactive art experience by [Haslun Studio](https://haslun.studio). Hand-pa
 
 ---
 
+## Part of Haslun Projects
+
+This is one of several projects in the Haslun Studio ecosystem:
+
+```
+projects/
+├── shared/              # Platform modules (CSS, JS, engine)
+├── digital-watercolors/ # ← You are here
+├── cards/               # Shareable greeting cards
+├── invites/             # Wedding invitation demos
+└── menus/               # Restaurant menu demos
+```
+
+All projects share:
+- **boot.js** — Early init to prevent FOUC
+- **pixel-mode.js** — Glass/pixel UI toggle
+- **atmosphere.js** — Pigment-based washes
+- **watercolor-engine/** — Pigment mixing engine
+
+LocalStorage key: `haslun:pixelMode` (namespaced for multi-app compatibility)
+
+---
+
 ## Project Vision
 
 The goal is to build an interactive sketchbook where paintings feel alive. Each scene is a watercolor that breathes — subtle movements, ambient sounds, and an atmosphere that shifts with real pigment data. The aesthetic blends pixel art UI (chunky borders, dithered fills, stepped animations) with painterly backgrounds.
@@ -376,6 +399,38 @@ Tested in:
 ---
 
 ## Version History
+
+### v0.9.2 — Multi-Project Architecture (2025-01-08)
+**Architecture:**
+- Moved into `/projects/` ecosystem alongside cards, invites, menus
+- Created `/projects/shared/` platform with reusable modules
+- Namespaced localStorage key: `haslun:pixelMode`
+- Added `app.json` configuration file
+- Created `boot.js` for consistent initialization across projects
+
+**Shared Platform:**
+- All projects can use common modules from `/shared/`
+- `registry.json` tracks all projects for potential hub page
+- Consistent URL structure: `/projects/{type}/{slug}/`
+
+**Files added:** `app.json`
+**Files created:** `/projects/shared/*`, `/projects/registry.json`
+
+---
+
+### v0.9.1 — Performance Refinements (2025-01-08)
+**Performance (per ChatGPT review):**
+- **Time-based smoothing** — Using `tau` time constant for consistent feel across refresh rates
+- **Input-specific tau** — Mouse (0.14), touch (0.10), orientation (0.08)
+- **Visibility handler fixes** — Clear timer on hidden, double-init guard
+- **Early boot script** — Prevents FOUC by setting `html.pixel-mode` before first paint
+- **CSS selectors on html** — All pixel-mode rules now use `html.pixel-mode`
+- **DeviceOrientation cleanup** — Permission requested via pixel toggle, not any click
+- **Frame image caching** — Keep preloaded Image objects in memory
+
+**Files modified:** All `assets/js/*.js`, `assets/css/*.css`, `index.html`
+
+---
 
 ### v0.9.0 — Modular Architecture (2025-01-08)
 **Architecture:**

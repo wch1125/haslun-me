@@ -1,0 +1,43 @@
+{
+  "projects": [
+    {
+      "id": "digital-watercolors",
+      "title": "Digital Watercolors",
+      "description": "Watercolor paintings brought to life",
+      "path": "/projects/digital-watercolors/",
+      "category": "gallery",
+      "featured": true,
+      "status": "live"
+    },
+    {
+      "id": "cards",
+      "title": "Greeting Cards",
+      "description": "Shareable digital greeting cards",
+      "path": "/projects/cards/",
+      "category": "cards",
+      "status": "template"
+    },
+    {
+      "id": "invites",
+      "title": "Wedding Invites",
+      "description": "Interactive wedding invitation demos",
+      "path": "/projects/invites/",
+      "category": "invites",
+      "status": "template"
+    },
+    {
+      "id": "menus",
+      "title": "Restaurant Menus",
+      "description": "Digital menu experiences",
+      "path": "/projects/menus/",
+      "category": "menus",
+      "status": "template"
+    }
+  ],
+  "categories": {
+    "gallery": { "label": "Galleries", "icon": "🎨" },
+    "cards": { "label": "Cards", "icon": "💌" },
+    "invites": { "label": "Invitations", "icon": "💒" },
+    "menus": { "label": "Menus", "icon": "🍽️" }
+  }
+}

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO: noindex for private cards -->
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Open Graph for link previews -->
+  <meta property="og:title" content="You've received a card!">
+  <meta property="og:description" content="A digital greeting from Haslun Studio">
+  <meta property="og:image" content="og.png">
+  <meta property="og:type" content="website">
+  
+  <title>A Card For You</title>
+  
+  <!-- Early boot to prevent FOUC -->
+  <script src="../../shared/assets/js/boot.js"></script>
+  <script>HaslunBoot.early();</script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../../shared/assets/css/base.css">
+  <link rel="stylesheet" href="../../shared/ui/loader.css">
+  <link rel="stylesheet" href="../../shared/ui/glass-overlay.css">
+  <link rel="stylesheet" href="../../shared/ui/pixel-overlay.css">
+  
+  <!-- Card-specific styles -->
+  <style>
+    body {
+      overflow: hidden;
+    }
+    
+    /* Card background */
+    .card-bg {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #2a1f1a 0%, #1a1510 100%);
+      z-index: -1;
+    }
+    
+    /* Card container */
+    .card-container {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-lg);
+    }
+    
+    /* The card itself */
+    .card {
+      background: var(--glass-bg-solid);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      padding: var(--space-2xl);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    
+    html.pixel-mode .card {
+      background: var(--pixel-bg);
+      border: 4px solid var(--pixel-border);
+      border-radius: 0;
+      box-shadow: 
+        inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+        inset 2px 2px 0 rgba(255, 255, 255, 0.1),
+        4px 4px 0 rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Card art placeholder */
+    .card-art {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto var(--space-lg);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+    
+    html.pixel-mode .card-art {
+      border-radius: 0;
+      border: 2px solid var(--pixel-border);
+    }
+    
+    /* Greeting */
+    .card-greeting {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+    
+    html.pixel-mode .card-greeting {
+      font-family: var(--font-pixel);
+      font-size: 0.5rem;
+    }
+    
+    .card-recipient {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-lg);
+    }
+    
+    html.pixel-mode .card-recipient {
+      font-family: var(--font-pixel);
+      font-size: 0.8rem;
+    }
+    
+    /* Message */
+    .card-message {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--text-primary);
+      line-height: 1.6;
+      margin-bottom: var(--space-lg);
+      min-height: 3em;
+    }
+    
+    html.pixel-mode .card-message {
+      font-family: var(--font-pixel);
+      font-size: 0.45rem;
+      font-style: normal;
+      line-height: 1.8;
+    }
+    
+    /* Signature */
+    .card-signature {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+    
+    html.pixel-mode .card-signature {
+      font-family: var(--font-pixel);
+      font-size: 0.4rem;
+    }
+    
+    .card-from {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--accent);
+      margin-top: var(--space-xs);
+    }
+    
+    html.pixel-mode .card-from {
+      font-family: var(--font-pixel);
+      font-size: 0.55rem;
+    }
+    
+    /* Footer */
+    .card-footer {
+      margin-top: var(--space-xl);
+      padding-top: var(--space-md);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    html.pixel-mode .card-footer {
+      border-top: 2px solid var(--pixel-border);
+    }
+    
+    .card-footer a {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    
+    html.pixel-mode .card-footer a {
+      font-family: var(--font-pixel);
+      font-size: 0.35rem;
+    }
+    
+    .card-footer a:hover {
+      color: var(--text-secondary);
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+      .card {
+        padding: var(--space-lg);
+      }
+      
+      .card-art {
+        width: 150px;
+        height: 150px;
+        font-size: 3rem;
+      }
+      
+      .card-recipient {
+        font-size: 1.5rem;
+      }
+      
+      html.pixel-mode .card-recipient {
+        font-size: 0.65rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="loading-content">
+      <p class="loading-text">opening your card...</p>
+      <div class="loading-bar">
+        <div class="loading-bar-fill" id="loading-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Background -->
+  <div class="card-bg"></div>
+  
+  <!-- Atmosphere overlays -->
+  <div class="wash-overlay" id="wash-overlay"></div>
+
+  <!-- Card -->
+  <div class="card-container">
+    <div class="card">
+      <div class="card-art">🌸</div>
+      
+      <p class="card-greeting">Dear</p>
+      <h1 class="card-recipient" id="recipient">Friend</h1>
+      
+      <p class="card-message" id="message">
+        Wishing you a wonderful day filled with joy and beauty.
+      </p>
+      
+      <p class="card-signature">With love,</p>
+      <p class="card-from" id="sender">Someone special</p>
+      
+      <footer class="card-footer">
+        <a href="https://haslun.studio" target="_blank">Made with 🎨 at Haslun Studio</a>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../../shared/watercolor-engine/watercolor-engine.js"></script>
+  <script src="../../shared/assets/js/loader.js"></script>
+  <script src="../../shared/assets/js/atmosphere.js"></script>
+  <script src="../../shared/assets/js/pixel-mode.js"></script>
+  
+  <script>
+    // Parse URL parameters
+    function getParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        to: params.get('to'),
+        from: params.get('from'),
+        msg: params.get('msg')
+      };
+    }
+    
+    // Apply parameters to card
+    function applyParams(params) {
+      if (params.to) {
+        document.getElementById('recipient').textContent = params.to;
+        document.title = `A Card for ${params.to}`;
+      }
+      if (params.from) {
+        document.getElementById('sender').textContent = params.from;
+      }
+      if (params.msg) {
+        document.getElementById('message').textContent = decodeURIComponent(params.msg);
+      }
+    }
+    
+    // Initialize
+    async function init() {
+      // Apply URL parameters
+      const params = getParams();
+      applyParams(params);
+      
+      // Initialize loader
+      const isPixelMode = window.__haslunBoot?.pixelMode || false;
+      Loader.init(isPixelMode ? 'canvas' : 'dom');
+      
+      // Quick load (no images to preload for basic template)
+      await Loader.hide(800);
+      
+      // Initialize atmosphere
+      Atmosphere.init({ initialDelay: 2000 });
+      
+      // Initialize pixel mode toggle
+      PixelMode.init();
+    }
+    
+    init();
+  </script>
+
+</body>
+</html>

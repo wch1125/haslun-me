@@ -2,12 +2,11 @@
  * Pixel Mode Toggle
  * Switches between glass (elegant) and pixel (retro) UI aesthetics
  * Uses namespaced localStorage key: haslun:pixelMode
- * Also handles iOS motion permission request (piggybacks on user gesture)
  */
 
 const PixelMode = {
   enabled: false,
-  storageKey: 'haslun:pixelMode', // Namespaced key for multi-app compatibility
+  storageKey: 'haslun:pixelMode', // Namespaced key
   toggleBtn: null,
   _initialized: false,
   
@@ -15,24 +14,27 @@ const PixelMode = {
     if (this._initialized) return this.enabled;
     this._initialized = true;
     
-    // Load saved preference (should already be applied by boot script)
-    const saved = localStorage.getItem(this.storageKey);
-    this.enabled = saved === 'true';
-    
-    // Ensure class is applied (in case boot script didn't run)
-    if (this.enabled) {
-      document.documentElement.classList.add('pixel-mode');
-      document.body.classList.add('pixel-mode');
+    // Load saved preference
+    try {
+      const saved = localStorage.getItem(this.storageKey);
+      this.enabled = saved === 'true';
+    } catch {
+      this.enabled = false;
     }
     
-    // Create toggle button if it doesn't exist
+    // Ensure classes are applied (boot.js may have done this early)
+    if (this.enabled) {
+      document.documentElement.classList.add('pixel-mode');
+      document.body?.classList.add('pixel-mode');
+    }
+    
+    // Create toggle button
     this.createToggle();
     
     return this.enabled;
   },
   
   createToggle() {
-    // Check if toggle already exists
     this.toggleBtn = document.getElementById('pixel-toggle');
     
     if (!this.toggleBtn) {
@@ -44,20 +46,21 @@ const PixelMode = {
     }
     
     this.updateToggleIcon();
-    
     this.toggleBtn.addEventListener('click', () => this.toggle());
   },
   
   updateToggleIcon() {
     if (!this.toggleBtn) return;
-    // Use text icons for simplicity (no external dependencies)
     this.toggleBtn.textContent = this.enabled ? '◼' : '◻';
     this.toggleBtn.title = this.enabled ? 'Switch to glass mode' : 'Switch to pixel mode';
   },
   
   toggle() {
     this.enabled = !this.enabled;
-    localStorage.setItem(this.storageKey, this.enabled);
+    
+    try {
+      localStorage.setItem(this.storageKey, this.enabled);
+    } catch {}
     
     if (this.enabled) {
       document.documentElement.classList.add('pixel-mode');
@@ -69,12 +72,12 @@ const PixelMode = {
     
     this.updateToggleIcon();
     
-    // Piggyback on this user gesture to request motion permission (iOS)
+    // Request motion permission on iOS (piggyback on user gesture)
     if (typeof Parallax !== 'undefined' && Parallax.requestMotionPermission) {
       Parallax.requestMotionPermission();
     }
     
-    // Dispatch event for other components to react
+    // Dispatch event
     window.dispatchEvent(new CustomEvent('pixelmodechange', { 
       detail: { enabled: this.enabled } 
     }));
@@ -86,9 +89,8 @@ const PixelMode = {
     return this.enabled;
   },
   
-  // Cleanup (for SPA navigation)
   destroy() {
-    if (this.toggleBtn && this.toggleBtn.parentNode) {
+    if (this.toggleBtn?.parentNode) {
       this.toggleBtn.parentNode.removeChild(this.toggleBtn);
     }
     this.toggleBtn = null;
@@ -96,7 +98,6 @@ const PixelMode = {
   }
 };
 
-// Export for module use or attach to window
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = PixelMode;
 } else {
