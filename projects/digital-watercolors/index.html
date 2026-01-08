@@ -10,6 +10,22 @@
   <meta name="description" content="Watercolor paintings brought to life. An interactive sketchbook by Haslun Studio.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
   
+  <!-- Early boot: apply pixel mode before first paint to prevent FOUC -->
+  <script>
+    (function() {
+      try {
+        var isPixelMode = localStorage.getItem('pixelMode') === 'true';
+        if (isPixelMode) {
+          document.documentElement.classList.add('pixel-mode');
+        }
+        // Store for later use by loader
+        window.__pixelModeBoot = isPixelMode;
+      } catch (e) {
+        window.__pixelModeBoot = false;
+      }
+    })();
+  </script>
+  
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -117,9 +133,11 @@
     
     // Initialize
     async function init() {
-      // Initialize loader (use canvas mode if pixel mode is saved)
-      const savedPixelMode = localStorage.getItem('pixelMode') === 'true';
-      Loader.init(savedPixelMode ? 'canvas' : 'dom');
+      // Use boot flag set by early script (prevents FOUC)
+      const isPixelMode = window.__pixelModeBoot || false;
+      
+      // Initialize loader with appropriate mode
+      Loader.init(isPixelMode ? 'canvas' : 'dom');
       
       // Preload images
       await Loader.preloadImages(imagesToLoad);
@@ -133,7 +151,7 @@
         Parallax.applyAtmosphere(atmosphereColor);
       }
       
-      // Initialize pixel mode toggle
+      // Initialize pixel mode toggle (will sync with boot state)
       PixelMode.init();
     }
     

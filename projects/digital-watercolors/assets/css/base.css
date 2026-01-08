@@ -61,8 +61,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Pixel mode overrides */
-body.pixel-mode {
+/* Pixel mode overrides - apply to html to catch early boot */
+html.pixel-mode,
+html.pixel-mode body {
   font-family: var(--font-pixel);
   -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: unset;

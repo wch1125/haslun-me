@@ -54,14 +54,14 @@
 }
 
 /* Pixel mode loader (DOM fallback) */
-body.pixel-mode .loading-text {
+html.pixel-mode .loading-text {
   font-family: var(--font-pixel);
   font-size: 0.6rem;
   font-style: normal;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
 }
 
-body.pixel-mode .loading-bar {
+html.pixel-mode .loading-bar {
   width: 120px;
   height: 10px;
   border: 2px solid var(--pixel-border);
@@ -71,7 +71,7 @@ body.pixel-mode .loading-bar {
     inset 1px 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-body.pixel-mode .loading-bar-fill {
+html.pixel-mode .loading-bar-fill {
   background: var(--pixel-accent);
   /* Even chunkier steps */
   transition: width 0.1s steps(12, end);
@@ -98,7 +98,7 @@ body.pixel-mode .loading-bar-fill {
   margin-top: 0.5rem;
 }
 
-body.pixel-mode .loading-percent {
+html.pixel-mode .loading-percent {
   font-family: var(--font-pixel);
   font-size: 0.4rem;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);

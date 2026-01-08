@@ -11,6 +11,7 @@ const Atmosphere = {
   glazingPigments: [],
   _washTimer: null,
   _initialized: false,
+  _visibilityHandler: null,
   
   // Configuration
   washInterval: 30000,
@@ -18,9 +19,12 @@ const Atmosphere = {
   resumeDelay: 5000,
   
   init(options = {}) {
+    // Prevent double-init
+    if (this._initialized) return this.getAtmosphereColor();
+    
     if (typeof WatercolorEngine === 'undefined') {
       console.warn('Atmosphere: WatercolorEngine not found');
-      return;
+      return null;
     }
     
     this.engine = new WatercolorEngine();
@@ -60,13 +64,20 @@ const Atmosphere = {
     this.applyWash();
     this._washTimer = setTimeout(tick, this.washInterval);
     
-    // Resume when tab becomes visible again
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
+    // Visibility change handler (stored for cleanup)
+    this._visibilityHandler = () => {
+      if (document.hidden) {
+        // Clear timer when hidden
+        clearTimeout(this._washTimer);
+        this._washTimer = null;
+      } else {
+        // Resume when visible
         clearTimeout(this._washTimer);
         this._washTimer = setTimeout(tick, this.resumeDelay);
       }
-    });
+    };
+    
+    document.addEventListener('visibilitychange', this._visibilityHandler);
   },
   
   applyWash() {
@@ -124,9 +135,17 @@ const Atmosphere = {
     return this.glazingPigments[idx];
   },
   
-  // Stop washes (for cleanup or pause)
+  // Stop washes and cleanup (for SPA navigation)
   stop() {
     clearTimeout(this._washTimer);
+    this._washTimer = null;
+    
+    if (this._visibilityHandler) {
+      document.removeEventListener('visibilitychange', this._visibilityHandler);
+      this._visibilityHandler = null;
+    }
+    
+    this._initialized = false;
   }
 };
 

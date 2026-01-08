@@ -1,11 +1,12 @@
 /**
  * Pixel Overlay Styles
  * Retro, chunky UI with dithered fills
- * Applied when body has .pixel-mode class
+ * Applied when html or body has .pixel-mode class
+ * (html class is set early to prevent FOUC)
  */
 
 /* Pixel mode overrides for glass panel */
-body.pixel-mode .glass-panel {
+html.pixel-mode .glass-panel {
   background: var(--pixel-bg);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -28,7 +29,7 @@ body.pixel-mode .glass-panel {
 }
 
 /* Pixel branding */
-body.pixel-mode .brand-title {
+html.pixel-mode .brand-title {
   font-family: var(--font-pixel);
   font-size: 0.9rem;
   letter-spacing: 0;
@@ -36,7 +37,7 @@ body.pixel-mode .brand-title {
   line-height: 1.4;
 }
 
-body.pixel-mode .brand-tagline {
+html.pixel-mode .brand-tagline {
   font-family: var(--font-pixel);
   font-size: 0.45rem;
   letter-spacing: 0.05em;
@@ -44,7 +45,7 @@ body.pixel-mode .brand-tagline {
   margin-top: 0.5rem;
 }
 
-body.pixel-mode .brand-divider {
+html.pixel-mode .brand-divider {
   width: 60px;
   height: 2px;
   background: var(--pixel-border);
@@ -52,7 +53,7 @@ body.pixel-mode .brand-divider {
 }
 
 /* Pixel navigation */
-body.pixel-mode .nav-link {
+html.pixel-mode .nav-link {
   font-family: var(--font-pixel);
   font-size: 0.55rem;
   letter-spacing: 0;
@@ -62,37 +63,37 @@ body.pixel-mode .nav-link {
   transition: none;
 }
 
-body.pixel-mode .nav-link:hover {
+html.pixel-mode .nav-link:hover {
   background: var(--pixel-border);
   border-color: var(--pixel-accent);
 }
 
-body.pixel-mode .nav-link::after {
+html.pixel-mode .nav-link::after {
   display: none;
 }
 
-body.pixel-mode .nav-link .coming-soon {
+html.pixel-mode .nav-link .coming-soon {
   font-family: var(--font-pixel);
   font-size: 0.35rem;
 }
 
 /* Pixel footer */
-body.pixel-mode .glass-footer {
+html.pixel-mode .glass-footer {
   border-top: 2px solid var(--pixel-border);
 }
 
-body.pixel-mode .glass-footer p {
+html.pixel-mode .glass-footer p {
   font-family: var(--font-pixel);
   font-size: 0.35rem;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
   line-height: 1.8;
 }
 
-body.pixel-mode .glass-footer a {
+html.pixel-mode .glass-footer a {
   color: var(--pixel-accent);
 }
 
-body.pixel-mode .glass-footer a:hover {
+html.pixel-mode .glass-footer a:hover {
   color: var(--text-primary);
 }
 
@@ -106,6 +107,7 @@ body.pixel-mode .glass-footer a:hover {
   height: 36px;
   background: var(--pixel-bg);
   border: 2px solid var(--pixel-border);
+  border-radius: 3px;
   color: var(--text-primary);
   font-size: 1rem;
   cursor: pointer;
@@ -120,7 +122,7 @@ body.pixel-mode .glass-footer a:hover {
   border-color: var(--pixel-accent);
 }
 
-body.pixel-mode .pixel-toggle {
+html.pixel-mode .pixel-toggle {
   border-radius: 0;
   box-shadow: 
     inset -1px -1px 0 rgba(0, 0, 0, 0.5),
@@ -130,34 +132,34 @@ body.pixel-mode .pixel-toggle {
 
 /* Pixel mode responsive */
 @media (max-width: 768px) {
-  body.pixel-mode .brand-title {
+  html.pixel-mode .brand-title {
     font-size: 0.75rem;
   }
 
-  body.pixel-mode .brand-tagline {
+  html.pixel-mode .brand-tagline {
     font-size: 0.4rem;
   }
 
-  body.pixel-mode .nav-link {
+  html.pixel-mode .nav-link {
     font-size: 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  body.pixel-mode .glass-panel {
+  html.pixel-mode .glass-panel {
     border-width: 3px;
   }
 
-  body.pixel-mode .brand-title {
+  html.pixel-mode .brand-title {
     font-size: 0.65rem;
   }
 
-  body.pixel-mode .nav-link {
+  html.pixel-mode .nav-link {
     font-size: 0.45rem;
     padding: 0.5rem 0.4rem;
   }
 
-  body.pixel-mode .glass-footer p {
+  html.pixel-mode .glass-footer p {
     font-size: 0.3rem;
   }
 

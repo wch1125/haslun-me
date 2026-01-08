@@ -2,20 +2,26 @@
  * Pixel Mode Toggle
  * Switches between glass (elegant) and pixel (retro) UI aesthetics
  * Persists preference to localStorage
+ * Also handles iOS motion permission request (piggybacks on user gesture)
  */
 
 const PixelMode = {
   enabled: false,
   storageKey: 'pixelMode',
   toggleBtn: null,
+  _initialized: false,
   
   init() {
-    // Load saved preference
+    if (this._initialized) return this.enabled;
+    this._initialized = true;
+    
+    // Load saved preference (should already be applied by boot script)
     const saved = localStorage.getItem(this.storageKey);
     this.enabled = saved === 'true';
     
-    // Apply initial state
+    // Ensure class is applied (in case boot script didn't run)
     if (this.enabled) {
+      document.documentElement.classList.add('pixel-mode');
       document.body.classList.add('pixel-mode');
     }
     
@@ -54,12 +60,19 @@ const PixelMode = {
     localStorage.setItem(this.storageKey, this.enabled);
     
     if (this.enabled) {
+      document.documentElement.classList.add('pixel-mode');
       document.body.classList.add('pixel-mode');
     } else {
+      document.documentElement.classList.remove('pixel-mode');
       document.body.classList.remove('pixel-mode');
     }
     
     this.updateToggleIcon();
+    
+    // Piggyback on this user gesture to request motion permission (iOS)
+    if (typeof Parallax !== 'undefined' && Parallax.requestMotionPermission) {
+      Parallax.requestMotionPermission();
+    }
     
     // Dispatch event for other components to react
     window.dispatchEvent(new CustomEvent('pixelmodechange', { 
@@ -71,6 +84,15 @@ const PixelMode = {
   
   isEnabled() {
     return this.enabled;
+  },
+  
+  // Cleanup (for SPA navigation)
+  destroy() {
+    if (this.toggleBtn && this.toggleBtn.parentNode) {
+      this.toggleBtn.parentNode.removeChild(this.toggleBtn);
+    }
+    this.toggleBtn = null;
+    this._initialized = false;
   }
 };
 
