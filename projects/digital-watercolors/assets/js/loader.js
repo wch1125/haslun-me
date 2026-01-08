@@ -25,7 +25,8 @@ const Loader = {
     bar: '#c9a86c',
     barBg: '#2a2826',
     text: '#f8f6f1',
-    border: '#3a3836'
+    border: '#3a3836',
+    font: '8px monospace' // Configurable font
   },
   
   init(mode = 'dom', options = {}) {
@@ -79,7 +80,13 @@ const Loader = {
     this.ctx = this.canvas.getContext('2d');
     this.ctx.imageSmoothingEnabled = false;
     
-    this.drawCanvas();
+    // Wait for fonts to load before first draw (prevents fallback font flash)
+    const draw = () => this.drawCanvas();
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(draw);
+    } else {
+      draw();
+    }
   },
   
   drawCanvas() {
@@ -127,7 +134,7 @@ const Loader = {
     
     // Loading text
     ctx.fillStyle = this.palette.text;
-    ctx.font = '8px monospace';
+    ctx.font = this.palette.font;
     ctx.textAlign = 'center';
     ctx.fillText('loading...', w / 2, barY - 10);
     

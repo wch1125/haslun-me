@@ -130,27 +130,30 @@ const Parallax = {
       if (this.frameIndex <= 0) this.frameDirection = 1;
     }
     
-    requestAnimationFrame((t) => this.loop(t));
+    this._rafId = requestAnimationFrame((t) => this.loop(t));
   },
   
   setupListeners() {
-    // Resize handler
-    window.addEventListener('resize', () => this.onResize(), { passive: true });
+    // Store handlers for cleanup
+    this._handlers = {
+      resize: () => this.onResize(),
+      mousemove: (e) => {
+        this._currentTau = this.tau.mouse;
+        this.targetX = e.clientX / window.innerWidth;
+        this.targetY = e.clientY / window.innerHeight;
+      },
+      touchmove: (e) => {
+        this._currentTau = this.tau.touch;
+        const touch = e.touches[0];
+        this.targetX = touch.clientX / window.innerWidth;
+        this.targetY = touch.clientY / window.innerHeight;
+      }
+    };
     
-    // Mouse - use floaty tau
-    window.addEventListener('mousemove', (e) => {
-      this._currentTau = this.tau.mouse;
-      this.targetX = e.clientX / window.innerWidth;
-      this.targetY = e.clientY / window.innerHeight;
-    }, { passive: true });
-    
-    // Touch - snappier tau
-    window.addEventListener('touchmove', (e) => {
-      this._currentTau = this.tau.touch;
-      const touch = e.touches[0];
-      this.targetX = touch.clientX / window.innerWidth;
-      this.targetY = touch.clientY / window.innerHeight;
-    }, { passive: true });
+    // Attach handlers
+    window.addEventListener('resize', this._handlers.resize, { passive: true });
+    window.addEventListener('mousemove', this._handlers.mousemove, { passive: true });
+    window.addEventListener('touchmove', this._handlers.touchmove, { passive: true });
     
     // Device orientation (setup separately, snappiest tau)
     this.setupDeviceOrientation();
@@ -159,7 +162,7 @@ const Parallax = {
   setupDeviceOrientation() {
     if (!('DeviceOrientationEvent' in window)) return;
     
-    const handleOrientation = (e) => {
+    this._handlers.orientation = (e) => {
       if (e.gamma === null) return;
       this._currentTau = this.tau.orientation; // Snappiest for tilt
       this.targetX = Math.min(1, Math.max(0, (e.gamma + 45) / 90));
@@ -168,11 +171,10 @@ const Parallax = {
     
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
       // iOS 13+ - permission requested via PixelMode toggle or explicit button
-      // Store handler for later activation
-      this._orientationHandler = handleOrientation;
       this._orientationEnabled = false;
     } else {
-      window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+      window.addEventListener('deviceorientation', this._handlers.orientation, { passive: true });
+      this._orientationEnabled = true;
     }
   },
   
@@ -183,8 +185,8 @@ const Parallax = {
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
       return DeviceOrientationEvent.requestPermission()
         .then(permission => {
-          if (permission === 'granted' && this._orientationHandler) {
-            window.addEventListener('deviceorientation', this._orientationHandler, { passive: true });
+          if (permission === 'granted' && this._handlers.orientation) {
+            window.addEventListener('deviceorientation', this._handlers.orientation, { passive: true });
             this._orientationEnabled = true;
             return true;
           }
@@ -217,8 +219,28 @@ const Parallax = {
   
   // Cleanup (for SPA navigation)
   destroy() {
+    // Cancel animation loop
+    if (this._rafId) {
+      cancelAnimationFrame(this._rafId);
+      this._rafId = null;
+    }
+    
+    // Remove event listeners
+    if (this._handlers) {
+      window.removeEventListener('resize', this._handlers.resize);
+      window.removeEventListener('mousemove', this._handlers.mousemove);
+      window.removeEventListener('touchmove', this._handlers.touchmove);
+      if (this._handlers.orientation) {
+        window.removeEventListener('deviceorientation', this._handlers.orientation);
+      }
+      this._handlers = null;
+    }
+    
+    // Reset state
     this._initialized = false;
-    // Note: Would need to store and remove event listeners for full cleanup
+    this._orientationEnabled = false;
+    this.layers = [];
+    this.animatedLayers = [];
   }
 };
 

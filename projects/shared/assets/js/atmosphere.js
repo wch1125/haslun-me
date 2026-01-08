@@ -53,6 +53,8 @@ const Atmosphere = {
   
   startLivingWashes() {
     if (!this.washOverlay || this.glazingPigments.length === 0) return;
+    if (this._washesStarted) return; // Prevent duplicate listeners
+    this._washesStarted = true;
     
     const tick = () => {
       if (document.hidden) return; // Don't run when tab is hidden
@@ -146,6 +148,7 @@ const Atmosphere = {
     }
     
     this._initialized = false;
+    this._washesStarted = false;
   }
 };
 

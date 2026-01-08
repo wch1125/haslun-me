@@ -1,0 +1,27 @@
+{
+  "id": "invite-template",
+  "title": "Wedding Invitation",
+  "type": "invite",
+  "modeDefault": "glass",
+  "loader": "dom",
+  "theme": "warm",
+  "atmosphere": {
+    "livingWashes": true,
+    "dailyAccent": false
+  },
+  "share": {
+    "ogTitle": "You're Invited!",
+    "ogDescription": "A special invitation",
+    "ogImage": "og.png",
+    "noIndex": true
+  },
+  "invite": {
+    "tokenMode": false,
+    "allowParams": true,
+    "params": {
+      "names": "Guest",
+      "date": "",
+      "venue": ""
+    }
+  }
+}

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <title>Card Maker — Haslun Studio</title>
+  
+  <!-- Early boot -->
+  <script src="../../shared/assets/js/boot.js"></script>
+  <script>HaslunBoot.early();</script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../../shared/assets/css/base.css">
+  <link rel="stylesheet" href="../../shared/ui/glass-overlay.css">
+  <link rel="stylesheet" href="../../shared/ui/pixel-overlay.css">
+  
+  <style>
+    body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      padding: var(--space-lg);
+    }
+    
+    .maker-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: var(--space-xl);
+      min-height: calc(100vh - var(--space-lg) * 2);
+    }
+    
+    @media (max-width: 900px) {
+      .maker-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Panel styling */
+    .panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: var(--space-lg);
+    }
+    
+    html.pixel-mode .panel {
+      background: var(--pixel-bg);
+      backdrop-filter: none;
+      border: 4px solid var(--pixel-border);
+      border-radius: 0;
+      box-shadow: 
+        inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+        inset 2px 2px 0 rgba(255, 255, 255, 0.1);
+    }
+    
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    
+    html.pixel-mode .panel-title {
+      font-family: var(--font-pixel);
+      font-size: 0.6rem;
+      border-bottom: 2px solid var(--pixel-border);
+    }
+    
+    /* Form styling */
+    .form-group {
+      margin-bottom: var(--space-md);
+    }
+    
+    .form-label {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+    
+    html.pixel-mode .form-label {
+      font-family: var(--font-pixel);
+      font-size: 0.4rem;
+    }
+    
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: var(--space-sm) var(--space-md);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 1rem;
+    }
+    
+    html.pixel-mode .form-input,
+    html.pixel-mode .form-select,
+    html.pixel-mode .form-textarea {
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid var(--pixel-border);
+      border-radius: 0;
+      font-family: var(--font-pixel);
+      font-size: 0.45rem;
+      padding: var(--space-md);
+    }
+    
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    /* Mode toggle */
+    .mode-toggle {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+    }
+    
+    .mode-btn {
+      flex: 1;
+      padding: var(--space-sm) var(--space-md);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    html.pixel-mode .mode-btn {
+      border: 2px solid var(--pixel-border);
+      border-radius: 0;
+      font-family: var(--font-pixel);
+      font-size: 0.4rem;
+    }
+    
+    .mode-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .mode-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg-dark);
+    }
+    
+    /* Action buttons */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-top: var(--space-lg);
+      padding-top: var(--space-lg);
+      border-top: 1px solid var(--glass-border);
+    }
+    
+    html.pixel-mode .actions {
+      border-top: 2px solid var(--pixel-border);
+    }
+    
+    .btn {
+      padding: var(--space-md);
+      background: var(--accent);
+      border: none;
+      border-radius: 4px;
+      color: var(--bg-dark);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    html.pixel-mode .btn {
+      border-radius: 0;
+      font-family: var(--font-pixel);
+      font-size: 0.5rem;
+      box-shadow: 
+        inset -2px -2px 0 rgba(0, 0, 0, 0.3),
+        inset 2px 2px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    
+    html.pixel-mode .btn:hover {
+      transform: none;
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    html.pixel-mode .btn:active {
+      box-shadow: 
+        inset 2px 2px 0 rgba(0, 0, 0, 0.3),
+        inset -2px -2px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+    
+    /* URL display */
+    .url-display {
+      margin-top: var(--space-md);
+      padding: var(--space-sm);
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      word-break: break-all;
+      max-height: 80px;
+      overflow-y: auto;
+    }
+    
+    html.pixel-mode .url-display {
+      border: 2px solid var(--pixel-border);
+      border-radius: 0;
+      font-family: var(--font-pixel);
+      font-size: 0.35rem;
+    }
+    
+    /* Preview panel */
+    .preview-panel {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .preview-frame {
+      flex: 1;
+      min-height: 500px;
+      background: var(--bg-dark);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    html.pixel-mode .preview-frame {
+      border: 4px solid var(--pixel-border);
+      border-radius: 0;
+    }
+    
+    .preview-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: var(--space-xl);
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      padding: var(--space-md) var(--space-xl);
+      background: var(--accent);
+      color: var(--bg-dark);
+      border-radius: 4px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: var(--z-toast);
+    }
+    
+    html.pixel-mode .toast {
+      border-radius: 0;
+      font-family: var(--font-pixel);
+      font-size: 0.45rem;
+    }
+    
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    
+    /* Header */
+    .maker-header {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-md);
+    }
+    
+    .maker-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    
+    html.pixel-mode .maker-title {
+      font-family: var(--font-pixel);
+      font-size: 0.8rem;
+    }
+    
+    .back-link {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    
+    html.pixel-mode .back-link {
+      font-family: var(--font-pixel);
+      font-size: 0.4rem;
+    }
+    
+    .back-link:hover {
+      color: var(--accent);
+    }
+    
+    /* Character count */
+    .char-count {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: var(--space-xs);
+    }
+    
+    html.pixel-mode .char-count {
+      font-family: var(--font-pixel);
+      font-size: 0.35rem;
+    }
+    
+    .char-count.warn {
+      color: #f59e0b;
+    }
+    
+    .char-count.error {
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="maker-container">
+    <header class="maker-header">
+      <h1 class="maker-title">Card Maker</h1>
+      <a href="../" class="back-link">← Back to Cards</a>
+    </header>
+    
+    <!-- Controls Panel -->
+    <div class="panel controls-panel">
+      <h2 class="panel-title">Create Your Card</h2>
+      
+      <div class="form-group">
+        <label class="form-label" for="card-type">Card Template</label>
+        <select class="form-select" id="card-type">
+          <option value="_template">Default Template</option>
+          <!-- Additional templates will be added here -->
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="to-field">To</label>
+        <input type="text" class="form-input" id="to-field" placeholder="Recipient name" maxlength="40">
+        <div class="char-count" id="to-count">0/40</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="from-field">From</label>
+        <input type="text" class="form-input" id="from-field" placeholder="Your name" maxlength="40">
+        <div class="char-count" id="from-count">0/40</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="msg-field">Message</label>
+        <textarea class="form-textarea" id="msg-field" placeholder="Your message..." maxlength="240"></textarea>
+        <div class="char-count" id="msg-count">0/240</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Preview Mode</label>
+        <div class="mode-toggle">
+          <button class="mode-btn active" id="mode-glass" data-mode="glass">Glass</button>
+          <button class="mode-btn" id="mode-pixel" data-mode="pixel">Pixel</button>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn" id="copy-btn">📋 Copy Link</button>
+        <button class="btn btn-secondary" id="open-btn">↗ Open in New Tab</button>
+      </div>
+      
+      <div class="url-display" id="url-display">
+        /projects/cards/_template/
+      </div>
+    </div>
+    
+    <!-- Preview Panel -->
+    <div class="panel preview-panel">
+      <h2 class="panel-title">Preview</h2>
+      <div class="preview-frame">
+        <iframe id="preview-iframe" src="../_template/?mode=glass"></iframe>
+      </div>
+    </div>
+  </div>
+  
+  <div class="toast" id="toast">Link copied!</div>
+
+  <!-- Scripts -->
+  <script src="../../shared/assets/js/boot.js"></script>
+  <script src="../../shared/assets/js/pixel-mode.js"></script>
+  
+  <script>
+    // Elements
+    const cardType = document.getElementById('card-type');
+    const toField = document.getElementById('to-field');
+    const fromField = document.getElementById('from-field');
+    const msgField = document.getElementById('msg-field');
+    const modeGlass = document.getElementById('mode-glass');
+    const modePixel = document.getElementById('mode-pixel');
+    const copyBtn = document.getElementById('copy-btn');
+    const openBtn = document.getElementById('open-btn');
+    const urlDisplay = document.getElementById('url-display');
+    const iframe = document.getElementById('preview-iframe');
+    const toast = document.getElementById('toast');
+    
+    // Character counters
+    const toCount = document.getElementById('to-count');
+    const fromCount = document.getElementById('from-count');
+    const msgCount = document.getElementById('msg-count');
+    
+    let currentMode = 'glass';
+    
+    // Load available card templates from index.json
+    async function loadTemplates() {
+      try {
+        const res = await fetch('../index.json');
+        const data = await res.json();
+        
+        // Clear existing options except default
+        cardType.innerHTML = '<option value="_template">Default Template</option>';
+        
+        // Add pages from index
+        if (data.pages && data.pages.length > 0) {
+          data.pages.forEach(page => {
+            const opt = document.createElement('option');
+            opt.value = page.slug;
+            opt.textContent = page.title;
+            cardType.appendChild(opt);
+          });
+        }
+      } catch (e) {
+        console.log('No index.json found, using defaults');
+      }
+    }
+    
+    // Build URL with params
+    function buildUrl(forDisplay = false) {
+      const slug = cardType.value;
+      const params = new URLSearchParams();
+      
+      if (toField.value) params.set('to', toField.value);
+      if (fromField.value) params.set('from', fromField.value);
+      if (msgField.value) params.set('msg', msgField.value);
+      
+      // Add mode for preview (not for final URL)
+      if (!forDisplay) {
+        params.set('mode', currentMode);
+      }
+      
+      const queryString = params.toString();
+      return `/projects/cards/${slug}/${queryString ? '?' + queryString : ''}`;
+    }
+    
+    // Update preview
+    function updatePreview() {
+      const url = buildUrl();
+      iframe.src = url;
+      
+      // Update URL display (without mode param)
+      const displayUrl = buildUrl(true);
+      urlDisplay.textContent = displayUrl;
+    }
+    
+    // Update character count
+    function updateCharCount(input, display, max) {
+      const len = input.value.length;
+      display.textContent = `${len}/${max}`;
+      display.classList.remove('warn', 'error');
+      if (len > max * 0.9) {
+        display.classList.add('warn');
+      }
+      if (len >= max) {
+        display.classList.add('error');
+      }
+    }
+    
+    // Show toast
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+    
+    // Copy URL
+    async function copyUrl() {
+      const url = location.origin + buildUrl(true);
+      try {
+        await navigator.clipboard.writeText(url);
+        showToast('Link copied!');
+      } catch (e) {
+        // Fallback for older browsers
+        const input = document.createElement('input');
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        showToast('Link copied!');
+      }
+    }
+    
+    // Open in new tab
+    function openInTab() {
+      window.open(buildUrl(true), '_blank');
+    }
+    
+    // Toggle preview mode
+    function setMode(mode) {
+      currentMode = mode;
+      modeGlass.classList.toggle('active', mode === 'glass');
+      modePixel.classList.toggle('active', mode === 'pixel');
+      updatePreview();
+    }
+    
+    // Event listeners
+    cardType.addEventListener('change', updatePreview);
+    toField.addEventListener('input', () => {
+      updateCharCount(toField, toCount, 40);
+      updatePreview();
+    });
+    fromField.addEventListener('input', () => {
+      updateCharCount(fromField, fromCount, 40);
+      updatePreview();
+    });
+    msgField.addEventListener('input', () => {
+      updateCharCount(msgField, msgCount, 240);
+      updatePreview();
+    });
+    
+    modeGlass.addEventListener('click', () => setMode('glass'));
+    modePixel.addEventListener('click', () => setMode('pixel'));
+    
+    copyBtn.addEventListener('click', copyUrl);
+    openBtn.addEventListener('click', openInTab);
+    
+    // Initialize
+    async function init() {
+      await loadTemplates();
+      
+      // Init pixel mode for the maker UI itself
+      PixelMode.init();
+      
+      // Initial preview
+      updatePreview();
+    }
+    
+    init();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "id": "menu-template",
+  "title": "Restaurant Menu",
+  "type": "menu",
+  "modeDefault": "glass",
+  "loader": "dom",
+  "theme": "warm",
+  "atmosphere": {
+    "livingWashes": true,
+    "dailyAccent": false
+  },
+  "share": {
+    "ogTitle": "Menu",
+    "ogDescription": "View our menu",
+    "ogImage": "og.png",
+    "noIndex": true
+  },
+  "menu": {
+    "restaurant": "Restaurant Name",
+    "sections": []
+  }
+}
