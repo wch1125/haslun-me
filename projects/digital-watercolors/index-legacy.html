@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0a0908">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Digital Watercolors — Haslun Studio</title>
   <meta name="description" content="Watercolor paintings brought to life. An interactive sketchbook by Haslun Studio.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
@@ -62,15 +59,9 @@
 
     .parallax-layer {
       position: absolute;
-      inset: -30px;
+      inset: -60px;
       will-change: transform;
       transition: transform 0.12s ease-out;
-    }
-
-    @media (max-width: 768px) {
-      .parallax-layer {
-        inset: -20px;
-      }
     }
 
     .parallax-layer img {
@@ -110,64 +101,56 @@
     }
 
     .glass-panel {
-      background: linear-gradient(
-        135deg,
-        rgba(20, 18, 16, 0.55) 0%,
-        rgba(12, 10, 8, 0.45) 50%,
-        rgba(20, 18, 16, 0.55) 100%
-      );
-      backdrop-filter: blur(12px) saturate(1.2);
-      -webkit-backdrop-filter: blur(12px) saturate(1.2);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 3px;
-      padding: 2rem 2.5rem;
-      max-width: 280px;
-      width: 90%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 2px;
+      padding: 3rem 4rem;
+      max-width: 420px;
+      width: 100%;
       text-align: center;
       box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 var(--glass-highlight);
     }
 
     /* ========================================
        BRANDING
        ======================================== */
     .brand {
-      margin-bottom: 1.5rem;
+      margin-bottom: 2.5rem;
     }
 
     .brand-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      color: #ffffff;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-      margin-bottom: 0.4rem;
+      font-size: 2.2rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
     }
 
     .brand-tagline {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.6rem;
-      color: rgba(255, 255, 255, 0.75);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.03em;
     }
 
     .brand-divider {
-      width: 40px;
+      width: 60px;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-      margin: 1.25rem auto 0;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      margin: 1.5rem auto 0;
     }
 
     /* ========================================
        NAVIGATION
        ======================================== */
     .nav-section {
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .nav-section:last-child {
@@ -175,47 +158,52 @@
     }
 
     .nav-label {
-      display: none;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      opacity: 0.7;
     }
 
     .nav-links {
       display: flex;
       flex-direction: column;
-      gap: 0.1rem;
+      gap: 0.25rem;
     }
 
     .nav-link {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       font-weight: 500;
-      color: #ffffff;
+      color: var(--text-primary);
       text-decoration: none;
-      padding: 0.5rem 0.75rem;
+      padding: 0.6rem 1rem;
       border-radius: 2px;
       transition: all 0.2s ease;
       position: relative;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     }
 
     .nav-link:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
+      background: var(--glass-highlight);
+      color: var(--accent);
     }
 
     .nav-link::after {
       content: '';
       position: absolute;
-      bottom: 0.3rem;
+      bottom: 0.4rem;
       left: 50%;
       width: 0;
       height: 1px;
-      background: rgba(255, 255, 255, 0.5);
+      background: var(--accent);
       transition: all 0.2s ease;
       transform: translateX(-50%);
     }
 
     .nav-link:hover::after {
-      width: 50%;
+      width: 40%;
     }
 
     .nav-link.disabled {
@@ -225,7 +213,7 @@
 
     .nav-link .coming-soon {
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.55rem;
+      font-size: 0.6rem;
       font-style: normal;
       text-transform: uppercase;
       letter-spacing: 0.1em;
@@ -238,33 +226,41 @@
     .nav-link[target="_blank"]::before {
       content: '↗';
       position: absolute;
-      right: 0.75rem;
+      right: 1rem;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       opacity: 0;
       transition: opacity 0.2s ease;
     }
 
     .nav-link[target="_blank"]:hover::before {
-      opacity: 0.4;
+      opacity: 0.5;
     }
 
     /* ========================================
        FOOTER
        ======================================== */
     .glass-footer {
-      margin-top: 1.25rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--glass-border);
     }
 
     .glass-footer p {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.55rem;
-      color: rgba(255, 255, 255, 0.5);
-      letter-spacing: 0.02em;
-      line-height: 1.5;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .glass-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .glass-footer a:hover {
+      opacity: 0.8;
     }
 
     /* ========================================
@@ -302,93 +298,19 @@
     /* ========================================
        RESPONSIVE
        ======================================== */
-    @media (max-width: 768px) {
+    @media (max-width: 600px) {
       .glass-panel {
-        padding: 1.75rem 2rem;
-        max-width: 260px;
+        padding: 2rem 1.5rem;
+        margin: 1rem;
       }
 
       .brand-title {
-        font-size: 1.4rem;
-      }
-
-      .brand-tagline {
-        font-size: 0.55rem;
+        font-size: 1.8rem;
       }
 
       .nav-link {
-        font-size: 1rem;
-        padding: 0.55rem 0.5rem;
-      }
-
-      .glass-footer p {
-        font-size: 0.5rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .glass-overlay {
-        padding: 1rem;
-      }
-
-      .glass-panel {
-        padding: 1.5rem 1.5rem;
-        max-width: 240px;
-        backdrop-filter: blur(10px) saturate(1.1);
-        -webkit-backdrop-filter: blur(10px) saturate(1.1);
-      }
-
-      .brand {
-        margin-bottom: 1.25rem;
-      }
-
-      .brand-title {
-        font-size: 1.25rem;
-      }
-
-      .brand-tagline {
-        font-size: 0.5rem;
-        letter-spacing: 0.15em;
-      }
-
-      .brand-divider {
-        margin: 1rem auto 0;
-      }
-
-      .nav-link {
-        font-size: 0.95rem;
-        padding: 0.5rem 0.4rem;
-      }
-
-      .glass-footer {
-        margin-top: 1rem;
-        padding-top: 0.75rem;
-      }
-
-      .glass-footer p {
-        font-size: 0.48rem;
-      }
-    }
-
-    /* Tablet landscape */
-    @media (min-width: 769px) and (max-width: 1024px) {
-      .glass-panel {
-        max-width: 300px;
-      }
-    }
-
-    /* Touch device optimizations */
-    @media (hover: none) and (pointer: coarse) {
-      .nav-link {
-        padding: 0.65rem 0.75rem;
-      }
-
-      .nav-link::after {
-        display: none;
-      }
-
-      .nav-link:active {
-        background: rgba(255, 255, 255, 0.15);
+        font-size: 1.05rem;
+        padding: 0.5rem 0.75rem;
       }
     }
 
@@ -456,7 +378,7 @@
   <!-- Loading -->
   <div class="loading" id="loading">
     <div class="loading-content">
-      <p class="loading-text">loading...</p>
+      <p class="loading-text">paintings that breathe</p>
       <div class="loading-bar">
         <div class="loading-bar-fill" id="loading-fill"></div>
       </div>
@@ -495,23 +417,36 @@
   <div class="glass-overlay">
     <div class="glass-panel">
       <header class="brand">
-        <h1 class="brand-title">Haslun Studio</h1>
-        <p class="brand-tagline">Digital Watercolor Scenes</p>
+        <h1 class="brand-title">Digital Watercolors</h1>
+        <p class="brand-tagline">paintings that breathe</p>
         <div class="brand-divider"></div>
       </header>
 
       <nav>
+        <div class="nav-section" id="scenes-section" style="display: none;">
+          <div class="nav-label">Scenes</div>
+          <div class="nav-links" id="scenes-menu"></div>
+        </div>
+
         <div class="nav-section">
+          <div class="nav-label">Explore</div>
           <div class="nav-links">
-            <a href="scenes/" class="nav-link">Living Scenes</a>
             <a href="gallery/" class="nav-link">Painting Gallery</a>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">Studio</div>
+          <div class="nav-links">
+            <a href="https://haslun.studio" class="nav-link" target="_blank">Main Site</a>
+            <a href="https://haslun.studio/#prints" class="nav-link" target="_blank">Shop Prints</a>
             <a href="https://haslun.studio/watercolor-lab.html" class="nav-link" target="_blank">Color Lab</a>
           </div>
         </div>
       </nav>
 
       <footer class="glass-footer">
-        <p>Original watercolors by Will Haslun<br>© 2025 Haslun Studio</p>
+        <p>Watercolors by <a href="https://haslun.studio" target="_blank">Haslun Studio</a></p>
       </footer>
     </div>
   </div>
@@ -527,7 +462,7 @@
     const Parallax = {
       viewport: null,
       layers: [],
-      maxShift: window.innerWidth <= 768 ? 10 : 15,
+      maxShift: 35,
       atmosphereColor: '#4a5568', // Payne's Grey
       
       init() {
@@ -752,6 +687,7 @@
     preloadImages().then(() => {
       Parallax.init();
       Atmosphere.init();
+      buildScenesMenu();
     });
   </script>
 

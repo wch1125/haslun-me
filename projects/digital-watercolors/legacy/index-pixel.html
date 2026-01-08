@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Watercolors — Haslun Studio</title>
+  <meta name="description" content="Watercolor paintings brought to life. An interactive sketchbook by Haslun Studio.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #1a1a1a;
+      --bg-card: #242424;
+      --terracotta: #c4703f;
+      --terracotta-light: #d4845a;
+      --text-primary: #f5f5f5;
+      --text-muted: #a0a0a0;
+      --pixel-shadow: #0a0a0a;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ========================================
+       LOADING SCREEN
+       ======================================== */
+    /* ========================================
+       PIXEL CANVAS LOADING SCREEN
+       ======================================== */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background: #101112;
+      display: grid;
+      place-items: center;
+      z-index: 1000;
+    }
+
+    .loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 200ms steps(6, end), visibility 200ms steps(6, end);
+    }
+
+    /* Scale up the low-res canvas with nearest-neighbor */
+    .loading-screen canvas {
+      width: min(92vw, 960px);
+      height: auto;
+      aspect-ratio: 16 / 9;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      -ms-interpolation-mode: nearest-neighbor;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .loading-screen.hidden {
+        transition: opacity 0.1s linear, visibility 0.1s linear;
+      }
+    }
+
+    /* Animated Background */
+    .background-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .background-animation canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      height: 100%;
+      width: auto;
+      max-width: none;
+    }
+
+    /* ========================================
+       HERO OVERLAY + WINDOW
+       ======================================== */
+    .hero-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      perspective: 1200px;
+      z-index: 2;
+    }
+
+    /* Vignette behind window */
+    .hero-overlay::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center,
+        rgba(0,0,0,0.0) 0%,
+        rgba(0,0,0,0.25) 50%,
+        rgba(0,0,0,0.6) 100%);
+      pointer-events: none;
+    }
+
+    .hero-window {
+      pointer-events: auto;
+      transform-style: preserve-3d;
+      transform: translate3d(0, 0, 0);
+      max-width: min(420px, 90vw);
+      transition: transform 0.08s ease-out;
+      image-rendering: pixelated;
+    }
+
+    /* Pixel scrim behind menu for readability */
+    .hero-window::before {
+      content: "";
+      position: absolute;
+      inset: -16px;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.3), rgba(0,0,0,0.6)),
+        linear-gradient(45deg, 
+          rgba(255,255,255,0.04) 25%, transparent 25% 50%, 
+          rgba(255,255,255,0.04) 50% 75%, transparent 75%
+        ) 0 0/8px 8px;
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.5);
+    }
+
+    /* Pixel-panel base styles */
+    .hero-header,
+    .hero-menu {
+      position: relative;
+      /* Dithered fill instead of glass blur */
+      background:
+        linear-gradient(45deg, 
+          rgba(0,0,0,0.15) 25%, transparent 25% 50%, 
+          rgba(0,0,0,0.15) 50% 75%, transparent 75%
+        ) 0 0/6px 6px,
+        linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(255,255,255,0) 30%),
+        linear-gradient(to bottom, rgba(28, 18, 10, 0.96), rgba(22, 14, 8, 0.94));
+      background-color: rgba(22, 12, 6, 0.95);
+      image-rendering: pixelated;
+    }
+
+    /* Chunky pixel border via layered box-shadows */
+    .hero-header {
+      padding: 1.25rem 2rem 1rem;
+      border: none;
+      box-shadow:
+        /* outer dark outline */
+        0 0 0 4px #0a0604,
+        /* gold mid-border */
+        0 0 0 8px #a08050,
+        /* inner highlight */
+        0 0 0 10px rgba(255,255,255,0.08),
+        /* inner shadow for depth */
+        inset 0 -1px 0 rgba(0,0,0,0.4);
+    }
+
+    .hero-menu {
+      padding: 0;
+      border: none;
+      box-shadow:
+        /* outer dark outline */
+        0 0 0 4px #0a0604,
+        /* gold mid-border */
+        0 0 0 8px #a08050,
+        /* inner highlight */
+        0 0 0 10px rgba(255,255,255,0.08),
+        /* blocky drop shadow */
+        10px 10px 0 0 rgba(0,0,0,0.35),
+        /* inner shadow for depth */
+        inset 0 1px 0 rgba(0,0,0,0.5);
+      margin-top: -4px; /* connect to header */
+    }
+
+    /* Pixel corner accents */
+    .hero-header::before {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #c9a86c;
+      top: 6px;
+      left: 6px;
+      box-shadow:
+        calc(100% - 12px) 0 0 #c9a86c,
+        0 0 0 1px rgba(0,0,0,0.5),
+        calc(100% - 12px) 0 0 1px rgba(0,0,0,0.5);
+    }
+
+    .hero-menu::before {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #c9a86c;
+      bottom: 6px;
+      left: 6px;
+      box-shadow:
+        calc(100% - 12px) 0 0 #c9a86c,
+        0 0 0 1px rgba(0,0,0,0.5),
+        calc(100% - 12px) 0 0 1px rgba(0,0,0,0.5);
+    }
+
+    /* Remove old ::after pseudo-elements */
+    .hero-header::after,
+    .hero-menu::after {
+      display: none;
+    }
+
+    /* Title typography */
+    .hero-title {
+      margin: 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: clamp(1.1rem, 2.8vw, 1.4rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-align: center;
+      color: #fef5e3;
+      /* Pixel-style text shadow */
+      text-shadow:
+        2px 2px 0 rgba(0,0,0,0.9),
+        -1px -1px 0 rgba(0,0,0,0.3);
+    }
+
+    .hero-subtitle {
+      margin: 0.4rem 0 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      text-align: center;
+      color: rgba(250,235,200,0.8);
+      letter-spacing: 0.08em;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.8);
+    }
+
+    /* Menu panel styles */
+    .menu-header {
+      background:
+        linear-gradient(45deg, 
+          rgba(0,0,0,0.1) 25%, transparent 25% 50%, 
+          rgba(0,0,0,0.1) 50% 75%, transparent 75%
+        ) 0 0/4px 4px,
+        linear-gradient(180deg, rgba(100,70,35,0.95) 0%, rgba(60,42,22,0.98) 100%);
+      padding: 0.5rem 1rem;
+      border-top: 2px solid rgba(0,0,0,0.6);
+      border-bottom: 2px solid rgba(0,0,0,0.4);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .menu-header h2 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #d4c4a4;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.7);
+      margin: 0;
+      text-align: center;
+    }
+
+    .menu-section {
+      padding: 0.6rem 0.75rem;
+      /* Pixel-style dashed border */
+      border-bottom: 2px dashed rgba(100,80,50,0.4);
+    }
+
+    .menu-section:last-child {
+      border-bottom: none;
+    }
+
+    .menu-section-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(200,180,140,0.7);
+      margin-bottom: 0.35rem;
+      padding-left: 0.5rem;
+      font-weight: 500;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+    }
+
+    .menu-items {
+      display: flex;
+      gap: 4px;
+      flex-direction: column;
+    }
+
+    .menu-item {
+      position: relative;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #e8dcc8;
+      text-decoration: none;
+      padding: 0.5rem 0.7rem 0.5rem 1.6rem;
+      /* Pixel-style button background */
+      background:
+        linear-gradient(to bottom, rgba(160,128,80,0.12), rgba(160,128,80,0.06));
+      /* Chunky pixel border */
+      border: none;
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px rgba(100,80,50,0.7);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.8);
+      transition: none; /* Pixel feel = no smooth transitions */
+    }
+
+    /* Arrow indicator on hover/focus */
+    .menu-item::before {
+      content: '▶';
+      position: absolute;
+      left: 0.5rem;
+      font-size: 0.5rem;
+      color: #c9a86c;
+      opacity: 0;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .menu-item:hover,
+    .menu-item:focus-visible {
+      outline: none;
+      color: #fff;
+      background:
+        linear-gradient(to bottom, rgba(180,140,60,0.25), rgba(180,140,60,0.12));
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #c9a86c,
+        0 0 0 6px rgba(200,100,40,0.4);
+    }
+
+    .menu-item:hover::before,
+    .menu-item:focus-visible::before {
+      opacity: 1;
+      animation: pixelBob 600ms steps(2, end) infinite;
+    }
+
+    .menu-item:active {
+      transform: translate(2px, 2px);
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #c9a86c;
+    }
+
+    @keyframes pixelBob {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(2px); }
+    }
+
+    .menu-item.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .menu-item.disabled:hover {
+      background: linear-gradient(to bottom, rgba(160,128,80,0.12), rgba(160,128,80,0.06));
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px rgba(100,80,50,0.7);
+      color: #e8dcc8;
+    }
+
+    .menu-item.disabled:hover::before {
+      opacity: 0;
+    }
+
+    .coming-soon {
+      font-size: 0.6rem;
+      color: rgba(200,180,140,0.5);
+      font-style: italic;
+      margin-left: auto;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.6);
+    }
+
+    .menu-item.scene-link {
+      background:
+        linear-gradient(to bottom, rgba(180,140,60,0.15), rgba(180,140,60,0.08));
+    }
+
+    .menu-item.scene-link:hover {
+      background:
+        linear-gradient(to bottom, rgba(180,140,60,0.25), rgba(180,140,60,0.12));
+    }
+
+    /* Footer - pixel style */
+    .footer {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      text-align: center;
+      padding: 0.4rem 1rem;
+      background:
+        linear-gradient(45deg, 
+          rgba(0,0,0,0.1) 25%, transparent 25% 50%, 
+          rgba(0,0,0,0.1) 50% 75%, transparent 75%
+        ) 0 0/4px 4px,
+        rgba(22, 12, 6, 0.9);
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px rgba(100,80,50,0.6);
+    }
+
+    .footer p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.75rem;
+      color: rgba(200,180,140,0.8);
+      margin: 0;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.6);
+    }
+
+    .footer a {
+      color: #c9a86c;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: #e8dcc8;
+    }
+
+    /* Hero window entrance animation */
+    @keyframes pixelOpen {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    .hero-window {
+      animation: pixelOpen 300ms steps(6, end) forwards;
+    }
+
+    /* ========================================
+       ATMOSPHERE SYSTEM (Pigment Engine)
+       ======================================== */
+    
+    /* Living wash overlay - sits between background and UI */
+    .wash-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 8s ease-in-out, background-color 8s ease-in-out;
+      mix-blend-mode: multiply;
+    }
+
+    .wash-overlay.active {
+      opacity: 0.08;
+    }
+
+    /* Scene transition wash */
+    .transition-wash {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s ease-in-out;
+    }
+
+    .transition-wash.entering {
+      opacity: 0.85;
+      transition: opacity 0.4s ease-in;
+    }
+
+    .transition-wash.leaving {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+    }
+
+    /* Daily accent - CSS custom properties set by engine */
+    :root {
+      --daily-accent: #c9a86c;
+      --daily-accent-light: #d4b87a;
+      --daily-wash: rgba(200, 168, 108, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .hero-window {
+        max-width: 92vw;
+      }
+
+      .hero-window::before {
+        inset: -10px;
+      }
+
+      .hero-header {
+        padding: 1rem 1.25rem 0.75rem;
+      }
+
+      .hero-title {
+        font-size: 1.1rem;
+        letter-spacing: 0.12em;
+      }
+
+      .hero-subtitle {
+        font-size: 0.8rem;
+      }
+      
+      .menu-header h2 {
+        font-size: 0.65rem;
+      }
+      
+      .menu-item {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.5rem 0.4rem 1.4rem;
+      }
+    }
+
+    /* Respect reduced-motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .hero-window {
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+      }
+      
+      .loading-drop,
+      .loading-drop::after,
+      .menu-item::before {
+        animation: none !important;
+      }
+    }
+
+    /* iOS motion permission button - pixel style */
+    .motion-permission {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 100;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: #d4c4a4;
+      background:
+        linear-gradient(45deg, 
+          rgba(0,0,0,0.1) 25%, transparent 25% 50%, 
+          rgba(0,0,0,0.1) 50% 75%, transparent 75%
+        ) 0 0/4px 4px,
+        rgba(22, 12, 6, 0.95);
+      border: none;
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #a08050;
+      padding: 0.5rem 0.8rem;
+      cursor: pointer;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.6);
+    }
+
+    .motion-permission:hover {
+      color: #fef5e3;
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #c9a86c,
+        0 0 0 6px rgba(200,100,40,0.3);
+    }
+
+    .motion-permission:active {
+      transform: translate(2px, 2px);
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #c9a86c;
+    }
+
+    /* ========================================
+       PIXEL MODE TOGGLE
+       ======================================== */
+    .pixel-mode-toggle {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: #8a8a8a;
+      background:
+        linear-gradient(45deg, 
+          rgba(0,0,0,0.1) 25%, transparent 25% 50%, 
+          rgba(0,0,0,0.1) 50% 75%, transparent 75%
+        ) 0 0/4px 4px,
+        rgba(20, 18, 16, 0.95);
+      border: none;
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #3a3a3c;
+      padding: 0.5rem 0.7rem;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .pixel-mode-toggle:hover {
+      color: #c9a86c;
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #c9a86c;
+    }
+
+    .pixel-mode-toggle.active {
+      color: #101112;
+      background: #c9a86c;
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #e8d8b8;
+    }
+
+    .pixel-mode-toggle .toggle-icon {
+      font-size: 0.8rem;
+    }
+
+    /* ========================================
+       PIXEL MODE (Option B)
+       Uses Press Start 2P font + scaled viewport
+       ======================================== */
+    body.pixel-mode {
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    body.pixel-mode .hero-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    body.pixel-mode .hero-subtitle {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      letter-spacing: 0;
+    }
+
+    body.pixel-mode .menu-header h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6rem;
+    }
+
+    body.pixel-mode .menu-section-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+    }
+
+    body.pixel-mode .menu-item {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem;
+      line-height: 1.8;
+      padding: 0.6rem 0.8rem 0.6rem 1.8rem;
+    }
+
+    body.pixel-mode .menu-item::before {
+      font-size: 0.5rem;
+      left: 0.5rem;
+    }
+
+    body.pixel-mode .footer p {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem;
+      line-height: 1.6;
+    }
+
+    body.pixel-mode .pixel-mode-toggle {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .pixel-mode-toggle {
+        bottom: 0.5rem;
+        right: 0.5rem;
+        padding: 0.4rem 0.5rem;
+        font-size: 0.5rem;
+      }
+
+      body.pixel-mode .hero-title {
+        font-size: 0.7rem;
+      }
+
+      body.pixel-mode .menu-item {
+        font-size: 0.45rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen (pixel canvas) -->
+  <div class="loading-screen" id="loading-screen">
+    <canvas id="loader-canvas" width="320" height="180"></canvas>
+  </div>
+
+  <div class="background-animation">
+    <canvas id="bg-canvas"></canvas>
+  </div>
+
+  <!-- Atmosphere: Living wash overlay (pigment engine) -->
+  <div class="wash-overlay" id="wash-overlay"></div>
+  
+  <!-- Atmosphere: Scene transition wash -->
+  <div class="transition-wash" id="transition-wash"></div>
+
+  <!-- Hero Overlay with 3D parallax -->
+  <div class="hero-overlay" id="hero-overlay">
+    <div class="hero-window" id="hero-window">
+      <header class="hero-header">
+        <h1 class="hero-title">Digital Watercolors</h1>
+        <p class="hero-subtitle">Paintings that breathe</p>
+      </header>
+
+      <section class="hero-menu">
+        <div class="menu-header">
+          <h2>✦ Menu ✦</h2>
+        </div>
+        
+        <!-- Scenes section - populated by JavaScript -->
+        <div class="menu-section" id="scenes-section" style="display: none;">
+          <div class="menu-section-label">Scenes</div>
+          <div class="menu-items" id="scenes-menu"></div>
+        </div>
+
+        <!-- Static links -->
+        <div class="menu-section">
+          <div class="menu-section-label">Explore</div>
+          <div class="menu-items">
+            <a href="gallery/" class="menu-item">Painting Gallery</a>
+          </div>
+        </div>
+
+        <div class="menu-section">
+          <div class="menu-section-label">Studio</div>
+          <div class="menu-items">
+            <a href="https://haslun.studio" class="menu-item" target="_blank">Main Site</a>
+            <a href="https://haslun.studio/#prints" class="menu-item" target="_blank">Shop Prints</a>
+            <a href="https://haslun.studio/watercolor-lab.html" class="menu-item" target="_blank">Color Lab</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Pixel mode toggle (bottom corner) -->
+  <button class="pixel-mode-toggle" id="pixel-mode-toggle" aria-label="Toggle pixel mode">
+    <span class="toggle-icon">◼</span>
+    <span class="toggle-label">PIXEL</span>
+  </button>
+
+  <div class="footer">
+    <p>Watercolors by <a href="https://haslun.studio" target="_blank">Haslun Studio</a></p>
+  </div>
+
+  <!-- Load scenes config and watercolor engine -->
+  <script src="scenes.js"></script>
+  <script src="watercolor-engine/watercolor-engine.js"></script>
+  
+  <script>
+    // ========================================
+    // PIXEL CANVAS LOADER
+    // Renders loading screen at low res, scales up pixelated
+    // ========================================
+    const PixelLoader = {
+      canvas: null,
+      ctx: null,
+      W: 320,
+      H: 180,
+      progress: 0,
+      startTime: 0,
+      animationId: null,
+      
+      // Haslun palette (fallback, engine may override)
+      palette: ['#c4703f', '#d4845a', '#b8986b', '#8b9a7d', '#5a7247', '#4a6a8a'],
+      
+      // Bayer 4x4 dither matrix
+      dither4: [
+        [0, 8, 2, 10],
+        [12, 4, 14, 6],
+        [3, 11, 1, 9],
+        [15, 7, 13, 5],
+      ],
+      
+      init() {
+        this.canvas = document.getElementById('loader-canvas');
+        if (!this.canvas) return;
+        
+        this.ctx = this.canvas.getContext('2d', { alpha: false });
+        this.startTime = performance.now();
+        
+        // Try to get palette from watercolor engine
+        if (typeof WatercolorEngine !== 'undefined') {
+          try {
+            const engine = new WatercolorEngine();
+            const haslunPalette = engine.getHaslunPalette();
+            if (haslunPalette && haslunPalette.length > 0) {
+              this.palette = haslunPalette.map(p => p.hex);
+            }
+          } catch (e) {
+            // Use fallback palette
+          }
+        }
+        
+        this.animate();
+      },
+      
+      // Stepped timing for game-y feel
+      stepPulse(t, steps = 8) {
+        return Math.floor((t % 1) * steps) / steps;
+      },
+      
+      // Color utilities
+      hexToRgb(hex) {
+        const h = hex.replace('#', '');
+        return [
+          parseInt(h.slice(0, 2), 16),
+          parseInt(h.slice(2, 4), 16),
+          parseInt(h.slice(4, 6), 16)
+        ];
+      },
+      
+      rgbToHex(r, g, b) {
+        const clamp = v => Math.max(0, Math.min(255, Math.round(v)));
+        return '#' + [r, g, b].map(v => clamp(v).toString(16).padStart(2, '0')).join('');
+      },
+      
+      // Dithered rectangle fill
+      fillDithered(x, y, w, h, baseHex, strength = 12) {
+        const rgb = this.hexToRgb(baseHex);
+        for (let j = 0; j < h; j++) {
+          for (let i = 0; i < w; i++) {
+            const t = this.dither4[(y + j) & 3][(x + i) & 3] / 15;
+            const n = (t - 0.5) * strength;
+            this.ctx.fillStyle = this.rgbToHex(rgb[0] + n, rgb[1] + n, rgb[2] + n);
+            this.ctx.fillRect(x + i, y + j, 1, 1);
+          }
+        }
+      },
+      
+      // Draw text with pixel outline
+      drawOutlinedText(text, x, y, fill, stroke, font) {
+        this.ctx.font = font;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        
+        // 4-direction outline
+        this.ctx.fillStyle = stroke;
+        this.ctx.fillText(text, x - 1, y);
+        this.ctx.fillText(text, x + 1, y);
+        this.ctx.fillText(text, x, y - 1);
+        this.ctx.fillText(text, x, y + 1);
+        
+        // Fill
+        this.ctx.fillStyle = fill;
+        this.ctx.fillText(text, x, y);
+      },
+      
+      // Draw a chunky pixel "pill" shape
+      drawPill(x, y, w, h, color) {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(x, y, w, h);
+        // Bottom shadow
+        this.ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        this.ctx.fillRect(x, y + h - 2, w, 2);
+        // Top highlight
+        this.ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        this.ctx.fillRect(x, y, w, 1);
+      },
+      
+      setProgress(p) {
+        this.progress = Math.min(1, Math.max(0, p));
+      },
+      
+      draw(now) {
+        const t = (now - this.startTime) / 1000;
+        const ctx = this.ctx;
+        const W = this.W;
+        const H = this.H;
+        
+        // Background with subtle dither
+        ctx.fillStyle = '#101112';
+        ctx.fillRect(0, 0, W, H);
+        this.fillDithered(0, 0, W, H, '#151617', 8);
+        
+        // Palette pills (animated bob)
+        const pillW = 12;
+        const pillH = 16;
+        const gap = 8;
+        const total = this.palette.length;
+        const rowW = total * pillW + (total - 1) * gap;
+        const rowY = 42;
+        let px = Math.floor((W - rowW) / 2);
+        
+        for (let i = 0; i < total; i++) {
+          // Stepped bob animation, offset per pill
+          const phase = (t * 0.7 + i * 0.15) % 1;
+          const bob = this.stepPulse(phase, 6) < 0.5 ? 0 : -3;
+          this.drawPill(px, rowY + bob, pillW, pillH, this.palette[i]);
+          px += pillW + gap;
+        }
+        
+        // Title
+        this.drawOutlinedText(
+          'Digital Watercolors',
+          W / 2, 82,
+          '#f4e4c1', '#1a0f05',
+          '600 14px Cormorant Garamond, Georgia, serif'
+        );
+        
+        // Studio subtitle
+        this.drawOutlinedText(
+          'HASLUN STUDIO',
+          W / 2, 100,
+          '#8a7a5a', '#1a0f05',
+          '500 7px DM Sans, system-ui, sans-serif'
+        );
+        
+        // Divider line
+        const divW = 100;
+        ctx.fillStyle = '#3a2b22';
+        ctx.fillRect((W - divW) / 2, 112, divW, 2);
+        ctx.fillStyle = '#5a4336';
+        ctx.fillRect((W - divW) / 2, 112, divW, 1);
+        
+        // Tagline
+        ctx.globalAlpha = 0.85;
+        this.drawOutlinedText(
+          'paintings that breathe',
+          W / 2, 126,
+          '#7a6a5a', '#1a0f05',
+          'italic 8px Cormorant Garamond, Georgia, serif'
+        );
+        ctx.globalAlpha = 1;
+        
+        // Progress bar
+        const barW = 100;
+        const barH = 6;
+        const barX = (W - barW) / 2;
+        const barY = 145;
+        
+        // Bar background
+        ctx.fillStyle = '#2a2520';
+        ctx.fillRect(barX, barY, barW, barH);
+        
+        // Bar border (chunky)
+        ctx.fillStyle = '#3d3530';
+        ctx.fillRect(barX - 2, barY - 2, barW + 4, 2); // top
+        ctx.fillRect(barX - 2, barY + barH, barW + 4, 2); // bottom
+        ctx.fillRect(barX - 2, barY, 2, barH); // left
+        ctx.fillRect(barX + barW, barY, 2, barH); // right
+        
+        // Bar fill (stepped, not smooth)
+        const fillW = Math.floor(this.progress * barW);
+        if (fillW > 0) {
+          // Draw fill with palette gradient
+          for (let i = 0; i < fillW; i++) {
+            const idx = Math.floor((i / barW) * this.palette.length);
+            ctx.fillStyle = this.palette[Math.min(idx, this.palette.length - 1)];
+            ctx.fillRect(barX + i, barY, 1, barH);
+          }
+        }
+        
+        // "Loading..." text (blinking)
+        const blink = Math.floor(t * 2.5) % 2 === 0;
+        if (blink && this.progress < 1) {
+          this.drawOutlinedText(
+            'loading...',
+            W / 2, 164,
+            '#5a5a5c', '#101112',
+            '6px DM Sans, system-ui, sans-serif'
+          );
+        }
+      },
+      
+      animate() {
+        this.draw(performance.now());
+        this.animationId = requestAnimationFrame(() => this.animate());
+      },
+      
+      stop() {
+        if (this.animationId) {
+          cancelAnimationFrame(this.animationId);
+          this.animationId = null;
+        }
+      },
+      
+      hide() {
+        this.stop();
+        const screen = document.getElementById('loading-screen');
+        if (screen) {
+          screen.classList.add('hidden');
+          // Remove from DOM after transition
+          setTimeout(() => screen.remove(), 250);
+        }
+      }
+    };
+
+    // Start loader immediately
+    PixelLoader.init();
+
+    // ========================================
+    // ATMOSPHERE SYSTEM (Pigment Engine)
+    // Silent infrastructure - colors are felt, not announced
+    // ========================================
+    const Atmosphere = {
+      engine: null,
+      washOverlay: null,
+      transitionWash: null,
+      currentWashIndex: 0,
+      washInterval: null,
+      
+      // Pigments suitable for ambient washes (transparent/semi-transparent only)
+      glazingPigments: [],
+      
+      init() {
+        if (typeof WatercolorEngine === 'undefined') {
+          console.warn('Watercolor engine not loaded, atmosphere disabled');
+          return;
+        }
+        
+        this.engine = new WatercolorEngine();
+        this.washOverlay = document.getElementById('wash-overlay');
+        this.transitionWash = document.getElementById('transition-wash');
+        this.glazingPigments = this.engine.getGlazingPigments();
+        
+        // Set daily accent colors
+        this.setDailyAccent();
+        
+        // Start living washes after a delay
+        setTimeout(() => this.startLivingWashes(), 3000);
+      },
+      
+      // ----------------------------------------
+      // DAILY GENERATIVE SWATCH
+      // Deterministic palette based on date
+      // ----------------------------------------
+      getDailySeed() {
+        const now = new Date();
+        // Create seed from year + day of year
+        const start = new Date(now.getFullYear(), 0, 0);
+        const diff = now - start;
+        const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+        return now.getFullYear() * 1000 + dayOfYear;
+      },
+      
+      seededRandom(seed) {
+        // Simple seeded PRNG (mulberry32)
+        return function() {
+          let t = seed += 0x6D2B79F5;
+          t = Math.imul(t ^ t >>> 15, t | 1);
+          t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+          return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+      },
+      
+      setDailyAccent() {
+        const seed = this.getDailySeed();
+        const random = this.seededRandom(seed);
+        
+        // Pick 2-3 pigments for today
+        const count = 2 + Math.floor(random() * 2); // 2 or 3
+        const todaysPigments = [];
+        const available = [...this.glazingPigments];
+        
+        for (let i = 0; i < count && available.length > 0; i++) {
+          const idx = Math.floor(random() * available.length);
+          todaysPigments.push(available.splice(idx, 1)[0]);
+        }
+        
+        if (todaysPigments.length === 0) return;
+        
+        // Glaze them together
+        const glazed = this.engine.glazeMultiple(todaysPigments);
+        const glazedLight = this.engine.lerp(this.engine.paperWhite, glazed, 0.6);
+        const glazedWash = this.engine.lerp(this.engine.paperWhite, glazed, 0.15);
+        
+        // Set CSS custom properties
+        document.documentElement.style.setProperty('--daily-accent', glazed);
+        document.documentElement.style.setProperty('--daily-accent-light', glazedLight);
+        document.documentElement.style.setProperty('--daily-wash', glazedWash);
+        
+        // Store for other uses
+        this.dailyPalette = {
+          pigments: todaysPigments,
+          glazed,
+          glazedLight,
+          glazedWash
+        };
+      },
+      
+      // ----------------------------------------
+      // LIVING BACKGROUND WASHES
+      // Subtle, breathing color shifts
+      // ----------------------------------------
+      startLivingWashes() {
+        if (!this.washOverlay || this.glazingPigments.length === 0) return;
+        
+        // Initial wash
+        this.applyNextWash();
+        
+        // Cycle every 25-40 seconds
+        const cycleTime = 25000 + Math.random() * 15000;
+        this.washInterval = setInterval(() => {
+          this.applyNextWash();
+        }, cycleTime);
+      },
+      
+      applyNextWash() {
+        if (!this.washOverlay) return;
+        
+        // Pick 1-2 transparent pigments
+        const count = 1 + Math.floor(Math.random() * 2);
+        const pigments = [];
+        
+        for (let i = 0; i < count; i++) {
+          const idx = Math.floor(Math.random() * this.glazingPigments.length);
+          pigments.push(this.glazingPigments[idx]);
+        }
+        
+        // Glaze over paper white
+        const washColor = this.engine.glazeMultiple(pigments);
+        
+        // Apply with very low opacity (handled by CSS)
+        this.washOverlay.style.backgroundColor = washColor;
+        this.washOverlay.classList.add('active');
+      },
+      
+      // ----------------------------------------
+      // SCENE TRANSITION WASHES
+      // Called when navigating between scenes
+      // ----------------------------------------
+      
+      // Pigment associations for different moods/destinations
+      transitionPalettes: {
+        warm: ['Indian Yellow', 'Yellow Ochre', 'Orange'],
+        cool: ['Ultramarine', 'Prussian Blue', "Payne's Grey"],
+        earth: ['Burnt Umber', 'Sepia', 'Yellow Ochre'],
+        vibrant: ['Magenta', 'Cyan', 'Brilliant Green'],
+        neutral: ["Payne's Grey", 'Sepia']
+      },
+      
+      async transitionTo(destination, mood = 'neutral') {
+        if (!this.transitionWash || !this.engine) {
+          // Fallback: just navigate
+          window.location.href = destination;
+          return;
+        }
+        
+        // Pick pigment based on mood
+        const palette = this.transitionPalettes[mood] || this.transitionPalettes.neutral;
+        const pigmentName = palette[Math.floor(Math.random() * palette.length)];
+        const pigment = this.engine.findPigment(pigmentName);
+        
+        if (pigment) {
+          const washColor = this.engine.glaze(this.engine.paperWhite, pigment);
+          this.transitionWash.style.backgroundColor = washColor;
+        }
+        
+        // Animate in
+        this.transitionWash.classList.add('entering');
+        
+        // Navigate after wash covers screen
+        await new Promise(resolve => setTimeout(resolve, 400));
+        window.location.href = destination;
+      },
+      
+      // For incoming transitions (call on page load)
+      transitionIn() {
+        if (!this.transitionWash) return;
+        
+        // If we arrived via transition, fade out the wash
+        this.transitionWash.classList.remove('entering');
+        this.transitionWash.classList.add('leaving');
+        
+        setTimeout(() => {
+          this.transitionWash.classList.remove('leaving');
+        }, 600);
+      }
+    };
+
+    // ========================================
+    // HUB ANIMATION
+    // ========================================
+    const hubConfig = {
+      frameCount: 20,
+      framePath: 'hub-frames/frame-',
+      frameExtension: '.png',
+      frameDelay: 120,
+      pingPong: true
+    };
+
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const state = {
+      frames: [],
+      currentFrame: 0,
+      direction: 1,
+      lastFrameTime: 0,
+      loaded: 0
+    };
+
+    function preloadFrames() {
+      return new Promise((resolve) => {
+        for (let i = 0; i < hubConfig.frameCount; i++) {
+          const img = new Image();
+          const frameNum = String(i).padStart(3, '0');
+          img.src = `${hubConfig.framePath}${frameNum}${hubConfig.frameExtension}`;
+          
+          img.onload = () => {
+            state.loaded++;
+            
+            // Update pixel loader progress
+            const progress = state.loaded / hubConfig.frameCount;
+            PixelLoader.setProgress(progress);
+            
+            if (state.loaded === hubConfig.frameCount) {
+              canvas.width = state.frames[0].width;
+              canvas.height = state.frames[0].height;
+              ctx.imageSmoothingEnabled = false;
+              
+              // Hide loading screen after brief delay
+              setTimeout(() => {
+                PixelLoader.hide();
+              }, 400);
+              
+              resolve();
+            }
+          };
+          
+          state.frames[i] = img;
+        }
+      });
+    }
+
+    function drawFrame() {
+      const img = state.frames[state.currentFrame];
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    }
+
+    function animate(timestamp) {
+      if (timestamp - state.lastFrameTime >= hubConfig.frameDelay) {
+        state.lastFrameTime = timestamp;
+        
+        state.currentFrame += state.direction;
+        
+        if (state.currentFrame >= hubConfig.frameCount - 1) {
+          state.currentFrame = hubConfig.frameCount - 1;
+          state.direction = -1;
+        } else if (state.currentFrame <= 0) {
+          state.currentFrame = 0;
+          state.direction = 1;
+        }
+        
+        drawFrame();
+      }
+      
+      requestAnimationFrame(animate);
+    }
+
+    // ========================================
+    // BUILD SCENES MENU FROM CONFIG
+    // ========================================
+    function buildScenesMenu() {
+      if (typeof SCENES === 'undefined' || SCENES.length === 0) return;
+      
+      const section = document.getElementById('scenes-section');
+      const menu = document.getElementById('scenes-menu');
+      
+      SCENES.forEach(scene => {
+        const item = document.createElement('a');
+        item.className = 'menu-item scene-link' + (scene.ready ? '' : ' disabled');
+        item.href = scene.ready ? `scenes/${scene.id}/` : '#';
+        item.innerHTML = scene.label;
+        
+        if (!scene.ready) {
+          item.innerHTML += '<span class="coming-soon">soon</span>';
+          item.onclick = (e) => e.preventDefault();
+        } else {
+          // Use transition wash for scene navigation
+          item.onclick = (e) => {
+            e.preventDefault();
+            const mood = scene.mood || 'neutral'; // scenes can define mood
+            Atmosphere.transitionTo(item.href, mood);
+          };
+        }
+        
+        menu.appendChild(item);
+      });
+      
+      section.style.display = 'block';
+    }
+
+    // ========================================
+    // 3D PARALLAX FOR HERO WINDOW
+    // ========================================
+    function initHeroParallax() {
+      const heroOverlay = document.getElementById('hero-overlay');
+      const heroWindow = document.getElementById('hero-window');
+      
+      if (!heroOverlay || !heroWindow) return;
+      
+      // Respect reduced-motion preference
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+      
+      const maxRotate = 8;   // degrees
+      const maxShift = 18;   // pixels
+
+      function applyParallax(xNorm, yNorm) {
+        const rotateY = (xNorm - 0.5) * -2 * maxRotate;
+        const rotateX = (yNorm - 0.5) * 2 * maxRotate;
+        const translateX = (xNorm - 0.5) * 2 * maxShift;
+        const translateY = (yNorm - 0.5) * 2 * maxShift;
+
+        heroWindow.style.transform = 
+          `translate3d(${translateX}px, ${translateY}px, 0) ` +
+          `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      }
+      
+      function setupDeviceOrientation() {
+        window.addEventListener('deviceorientation', (e) => {
+          if (e.gamma === null && e.beta === null) return;
+          const xNorm = (e.gamma + 45) / 90;  // gamma: -45 to 45
+          const yNorm = (e.beta - 30) / 60;   // beta: 0 to 60
+          applyParallax(
+            Math.min(1, Math.max(0, xNorm)),
+            Math.min(1, Math.max(0, yNorm))
+          );
+        }, { passive: true });
+      }
+
+      // Desktop: pointer/mouse movement
+      window.addEventListener('pointermove', (e) => {
+        const rect = heroOverlay.getBoundingClientRect();
+        const xNorm = (e.clientX - rect.left) / rect.width;
+        const yNorm = (e.clientY - rect.top) / rect.height;
+        applyParallax(xNorm, yNorm);
+      });
+
+      // Mobile: device tilt (iOS requires permission)
+      if (typeof DeviceOrientationEvent !== 'undefined' &&
+          typeof DeviceOrientationEvent.requestPermission === 'function') {
+        // iOS 13+ requires permission - show button
+        const btn = document.createElement('button');
+        btn.textContent = '✦ Enable tilt ✦';
+        btn.className = 'motion-permission';
+        btn.setAttribute('aria-label', 'Enable device motion for parallax effect');
+        document.body.appendChild(btn);
+
+        btn.onclick = async () => {
+          try {
+            const permission = await DeviceOrientationEvent.requestPermission();
+            if (permission === 'granted') {
+              setupDeviceOrientation();
+              btn.remove();
+            }
+          } catch (err) {
+            console.log('Motion permission denied:', err);
+            btn.remove();
+          }
+        };
+      } else if ('DeviceOrientationEvent' in window) {
+        // Android and other devices - just attach listener
+        setupDeviceOrientation();
+      }
+
+      // Reset on mouse leave
+      heroOverlay.addEventListener('mouseleave', () => {
+        heroWindow.style.transform = 'translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg)';
+      });
+    }
+
+    // ========================================
+    // INIT
+    // ========================================
+    buildScenesMenu();
+    initHeroParallax();
+    
+    // Initialize atmosphere (pigment engine)
+    Atmosphere.init();
+    
+    preloadFrames().then(() => {
+      drawFrame();
+      requestAnimationFrame(animate);
+      
+      // Fade in transition if arriving from another page
+      Atmosphere.transitionIn();
+    });
+
+    // ========================================
+    // PIXEL MODE TOGGLE
+    // ========================================
+    (function() {
+      const toggle = document.getElementById('pixel-mode-toggle');
+      if (!toggle) return;
+      
+      // Check localStorage for saved preference
+      const savedMode = localStorage.getItem('pixelMode');
+      if (savedMode === 'true') {
+        document.body.classList.add('pixel-mode');
+        toggle.classList.add('active');
+      }
+      
+      toggle.addEventListener('click', () => {
+        document.body.classList.toggle('pixel-mode');
+        toggle.classList.toggle('active');
+        
+        // Save preference
+        const isPixelMode = document.body.classList.contains('pixel-mode');
+        localStorage.setItem('pixelMode', isPixelMode);
+      });
+    })();
+  </script>
+
+</body>
+</html>

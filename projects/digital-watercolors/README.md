@@ -52,14 +52,17 @@ The goal is to build an interactive sketchbook where paintings feel alive. Each 
 ```
 digital-watercolors/
 │
-├── index.html                 # Hub page (peacocks + menu + atmosphere)
+├── index.html                 # Landing page (parallax peacocks + glass menu)
 ├── scenes.js                  # Scene registry (edit to add scenes)
 ├── README.md                  # This file
 │
-├── hub-frames/                # Hub background animation
-│   ├── frame-000.png          # 20 frames of breathing peacocks
-│   ├── frame-001.png
-│   └── ...
+├── layers/                    # Parallax background layers
+│   ├── Layer_0.png            # Full art (base/safety)
+│   ├── Layer_1.png            # Background
+│   ├── Layer_2.png            # Far branch
+│   ├── Layer_3.png            # Near branch
+│   ├── Layer_4.png            # Left peacock
+│   └── Layer_5.png            # Right peacock (nearest)
 │
 ├── gallery/                   # Painting gallery with comparison sliders
 │   ├── index.html             # Gallery page
@@ -67,22 +70,23 @@ digital-watercolors/
 │   └── *.png                  # Pixelated versions
 │
 ├── scenes/                    # Individual scene folders
-│   └── mister-softee/         # Example scene (ice cream truck)
-│       ├── index.html         # Scene page (copy as template)
+│   └── mister-softee/         # Example scene
+│       ├── index.html         # Scene page
 │       ├── scene.json         # Scene metadata
-│       ├── frames/            # Animation frames
-│       │   └── frame-000.png
-│       └── audio/             # Ambient sounds (empty until added)
+│       ├── layers/            # Depth-separated layers
+│       └── audio/             # Ambient sounds
 │
 ├── watercolor-engine/         # Pigment data and mixing logic
-│   ├── watercolor-engine.js   # Core engine (glazing, palettes, utils)
+│   ├── watercolor-engine.js   # Core engine
 │   ├── pigments.json          # Schmincke AKADEMIE pigment data
-│   ├── demo.html              # Interactive engine demo
-│   ├── README.md              # Engine documentation
-│   └── AI-README.md           # Condensed docs for AI context
+│   └── demo.html              # Interactive demo
 │
-└── tools/                     # Build/export utilities
-    └── Create-AIPackage.ps1   # PowerShell script to zip for AI sharing
+├── legacy/                    # Previous designs (archived)
+│   ├── index-pixel.html       # Pixel-themed hub (v0.1-0.6)
+│   └── hub-frames/            # Animated peacock frames
+│
+└── tools/                     # Build utilities
+    └── scene-builder.py       # GUI for creating layered scenes
 ```
 
 ---
@@ -159,7 +163,118 @@ engine.getHaslunPalette()                // Signature colors
 
 ---
 
-## Adding a New Scene
+## Creating Layered Scenes
+
+### The Scene Builder Tool
+
+Run `python scene-builder.py` to open the GUI:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Scene Builder                                               │
+├─────────────────────────────────────────────────────────────┤
+│  Scene ID:    [mister-softee_______]  (folder name)         │
+│  Title:       [Mister Softee________]                       │
+│  Subtitle:    [Central Park, Summer_]                       │
+├─────────────────────────────────────────────────────────────┤
+│  PALETTE                                                     │
+│  Primary:     [Indian Yellow     ▼]                         │
+│  Secondary:   [Permanent Green   ▼]                         │
+│  Atmosphere:  [Payne's Grey      ▼]  (depth haze)           │
+├─────────────────────────────────────────────────────────────┤
+│  LAYERS (back to front)                                      │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ 0: bg         — static PNG (farthest)               │    │
+│  │ 1: trees      — static PNG (far)                    │    │
+│  │ 2: truck      — 20 frames (mid)                     │    │
+│  │ 3: figures    — static PNG (nearest)                │    │
+│  └─────────────────────────────────────────────────────┘    │
+│  [+ Static] [+ Animated] [Remove] [↑ Up] [↓ Down]           │
+├─────────────────────────────────────────────────────────────┤
+│  Output: /path/to/digital-watercolors/scenes   [Browse]     │
+│                                                              │
+│                    [ Generate Scene ]                        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Your Workflow
+
+```
+1. PAINT                    2. PHOTOGRAPH              3. SEPARATE LAYERS
+   Watercolor on paper  →      Scan at high res    →     Photoshop lasso tool
+                                                          isolate depth layers
+
+4. PIXELATE                 5. ANIMATE (optional)      6. RUN SCENE BUILDER
+   Each layer separately →     Aseprite for any    →     Pick pigments,
+   256px, nearest neighbor     breathing layers          add layers, generate
+
+                            ↓
+
+7. OUTPUT: Ready-to-use scene folder with:
+   - scene.json (auto-configured)
+   - index.html (parallax + atmosphere)
+   - layers/ (your PNGs, organized)
+```
+
+### Photoshop Layer Separation Tips
+
+1. **Start with background**: Select everything behind main subject (sky, distant buildings)
+2. **Work forward**: Far trees → main subject → foreground figures
+3. **Feather selections**: 1-2px feather prevents hard edges
+4. **Export with transparency**: PNG-24 for all layers except solid background
+5. **Keep consistent canvas size**: All layers should be same dimensions
+
+### What the Scene Builder Does Automatically
+
+| Task | How It Works |
+|------|--------------|
+| **Parallax values** | Calculated from layer order (far=0.1, near=1.0) |
+| **Atmosphere opacity** | Far layers get haze, near layers stay crisp |
+| **Folder structure** | Creates `layers/`, `audio/`, organized files |
+| **Frame naming** | Renames your frames to `frame-000.png` format |
+| **scene.json** | Full config with all settings |
+| **index.html** | Working scene page with parallax + engine |
+
+### Scene.json Schema
+
+```json
+{
+  "title": "Mister Softee",
+  "subtitle": "Central Park, Summer",
+  "palette": {
+    "primary": "Indian Yellow",
+    "secondary": "Permanent Green", 
+    "atmosphere": "Payne's Grey"
+  },
+  "layers": [
+    {
+      "id": "bg",
+      "file": "layers/bg.png",
+      "depth": 0,
+      "parallax": 0.1,
+      "atmosphereOpacity": 0.08,
+      "animated": false
+    },
+    {
+      "id": "truck",
+      "file": "layers/truck/frame-{000}.png",
+      "depth": 2,
+      "parallax": 0.6,
+      "atmosphereOpacity": 0.02,
+      "animated": true,
+      "frameCount": 20
+    }
+  ],
+  "animation": {
+    "frameDelay": 120,
+    "pingPong": true
+  }
+}
+```
+
+---
+
+## Adding a New Scene (Simple Method)
 
 ### 1. Create folder structure
 ```
@@ -242,6 +357,51 @@ Tested in:
 ---
 
 ## Version History
+
+### v0.7.0 — Parallax Landing Page (2025-01-08)
+**Added:**
+- New landing page with parallax peacock layers (6 depth layers)
+- Glass overlay menu (semi-transparent, backdrop blur)
+- Smooth parallax on mouse move and device tilt
+- Atmospheric depth haze using pigment engine
+- Elegant loading screen with progress bar
+
+**Changed:**
+- Moved pixel-themed hub to `legacy/index-pixel.html`
+- Moved hub-frames to `legacy/` folder
+- New design uses `layers/` folder for parallax images
+
+**Design Philosophy:**
+- Clean, sophisticated glass overlay instead of pixel panels
+- Parallax creates depth without competing with menu
+- Atmosphere system still runs (subtle background washes)
+
+**Files added:** `index.html` (new), `layers/Layer_0-5.png`
+**Files moved:** `legacy/index-pixel.html`, `legacy/hub-frames/`
+
+---
+
+### v0.6.0 — Scene Builder & Layered Scenes (2025-01-07)
+**Added:**
+- `scene-builder.py` — GUI tool for creating layered scenes
+- Layered scene template with:
+  - Depth-based parallax (mouse/tilt)
+  - Atmospheric glazing from pigment engine
+  - Multi-layer animation support
+  - Auto-calculated parallax values
+- Photoshop workflow documentation
+
+**Scene Builder Features:**
+- Pigment picker (24 Schmincke colors)
+- Atmosphere selector for depth haze
+- Static + animated layer support
+- Auto-generates scene.json and index.html
+- Organizes files into proper folder structure
+
+**Files added:** `scene-builder.py`
+**Files modified:** `README.md`
+
+---
 
 ### v0.5.0 — Gallery & Pixel Mode Toggle (2025-01-07)
 **Added:**
