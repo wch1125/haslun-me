@@ -8,7 +8,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
   
   <style>
     * {
@@ -600,6 +600,126 @@
         0 0 0 2px #0a0604,
         0 0 0 4px #c9a86c;
     }
+
+    /* ========================================
+       PIXEL MODE TOGGLE
+       ======================================== */
+    .pixel-mode-toggle {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: #8a8a8a;
+      background:
+        linear-gradient(45deg, 
+          rgba(0,0,0,0.1) 25%, transparent 25% 50%, 
+          rgba(0,0,0,0.1) 50% 75%, transparent 75%
+        ) 0 0/4px 4px,
+        rgba(20, 18, 16, 0.95);
+      border: none;
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #3a3a3c;
+      padding: 0.5rem 0.7rem;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .pixel-mode-toggle:hover {
+      color: #c9a86c;
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #c9a86c;
+    }
+
+    .pixel-mode-toggle.active {
+      color: #101112;
+      background: #c9a86c;
+      box-shadow:
+        0 0 0 2px #0a0604,
+        0 0 0 4px #e8d8b8;
+    }
+
+    .pixel-mode-toggle .toggle-icon {
+      font-size: 0.8rem;
+    }
+
+    /* ========================================
+       PIXEL MODE (Option B)
+       Uses Press Start 2P font + scaled viewport
+       ======================================== */
+    body.pixel-mode {
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    body.pixel-mode .hero-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    body.pixel-mode .hero-subtitle {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      letter-spacing: 0;
+    }
+
+    body.pixel-mode .menu-header h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6rem;
+    }
+
+    body.pixel-mode .menu-section-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+    }
+
+    body.pixel-mode .menu-item {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem;
+      line-height: 1.8;
+      padding: 0.6rem 0.8rem 0.6rem 1.8rem;
+    }
+
+    body.pixel-mode .menu-item::before {
+      font-size: 0.5rem;
+      left: 0.5rem;
+    }
+
+    body.pixel-mode .footer p {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem;
+      line-height: 1.6;
+    }
+
+    body.pixel-mode .pixel-mode-toggle {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .pixel-mode-toggle {
+        bottom: 0.5rem;
+        right: 0.5rem;
+        padding: 0.4rem 0.5rem;
+        font-size: 0.5rem;
+      }
+
+      body.pixel-mode .hero-title {
+        font-size: 0.7rem;
+      }
+
+      body.pixel-mode .menu-item {
+        font-size: 0.45rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -640,9 +760,16 @@
 
         <!-- Static links -->
         <div class="menu-section">
+          <div class="menu-section-label">Explore</div>
+          <div class="menu-items">
+            <a href="gallery/" class="menu-item">Painting Gallery</a>
+          </div>
+        </div>
+
+        <div class="menu-section">
           <div class="menu-section-label">Studio</div>
           <div class="menu-items">
-            <a href="https://haslun.studio" class="menu-item" target="_blank">Gallery</a>
+            <a href="https://haslun.studio" class="menu-item" target="_blank">Main Site</a>
             <a href="https://haslun.studio/#prints" class="menu-item" target="_blank">Shop Prints</a>
             <a href="https://haslun.studio/watercolor-lab.html" class="menu-item" target="_blank">Color Lab</a>
           </div>
@@ -650,6 +777,12 @@
       </section>
     </div>
   </div>
+
+  <!-- Pixel mode toggle (bottom corner) -->
+  <button class="pixel-mode-toggle" id="pixel-mode-toggle" aria-label="Toggle pixel mode">
+    <span class="toggle-icon">◼</span>
+    <span class="toggle-label">PIXEL</span>
+  </button>
 
   <div class="footer">
     <p>Watercolors by <a href="https://haslun.studio" target="_blank">Haslun Studio</a></p>
@@ -1292,6 +1425,30 @@
       // Fade in transition if arriving from another page
       Atmosphere.transitionIn();
     });
+
+    // ========================================
+    // PIXEL MODE TOGGLE
+    // ========================================
+    (function() {
+      const toggle = document.getElementById('pixel-mode-toggle');
+      if (!toggle) return;
+      
+      // Check localStorage for saved preference
+      const savedMode = localStorage.getItem('pixelMode');
+      if (savedMode === 'true') {
+        document.body.classList.add('pixel-mode');
+        toggle.classList.add('active');
+      }
+      
+      toggle.addEventListener('click', () => {
+        document.body.classList.toggle('pixel-mode');
+        toggle.classList.toggle('active');
+        
+        // Save preference
+        const isPixelMode = document.body.classList.contains('pixel-mode');
+        localStorage.setItem('pixelMode', isPixelMode);
+      });
+    })();
   </script>
 
 </body>

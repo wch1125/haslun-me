@@ -61,6 +61,11 @@ digital-watercolors/
 │   ├── frame-001.png
 │   └── ...
 │
+├── gallery/                   # Painting gallery with comparison sliders
+│   ├── index.html             # Gallery page
+│   ├── *-hd.webp              # High-resolution originals
+│   └── *.png                  # Pixelated versions
+│
 ├── scenes/                    # Individual scene folders
 │   └── mister-softee/         # Example scene (ice cream truck)
 │       ├── index.html         # Scene page (copy as template)
@@ -237,6 +242,27 @@ Tested in:
 ---
 
 ## Version History
+
+### v0.5.0 — Gallery & Pixel Mode Toggle (2025-01-07)
+**Added:**
+- **Gallery page** with comparison sliders (HD ↔ pixel)
+- **Pixel mode toggle** in bottom-right corner (persists via localStorage)
+- Press Start 2P font for pixel mode
+- Four paintings with HD/pixel pairs:
+  - Mister Softee
+  - Natural History Museum
+  - Grand Central Terminal
+  - Autumn Stroll (Central Park Mall)
+
+**How comparison slider works:**
+- GPU-accelerated via `clip-path` (no re-rendering)
+- Touch and mouse drag support
+- Click to jump to position
+
+**Files added:** `gallery/index.html`, `gallery/*.webp`, `gallery/*.png`
+**Files modified:** `index.html`
+
+---
 
 ### v0.4.0 — Pixel Canvas Loader (2025-01-07)
 **Added:**
