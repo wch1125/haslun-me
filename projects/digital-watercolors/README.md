@@ -23,16 +23,17 @@ The goal is to build an interactive sketchbook where paintings feel alive. Each 
 ## What's Been Built
 
 ### Core Experience
-- **Hub page** — Animated peacock painting with parallax menu
-- **Pixel-panel UI** — Chunky borders, dithered fills, stepped animations
+- **Landing page** — Parallax peacock painting with 6 depth layers
+- **Glass overlay menu** — Museum-quality semi-transparent panel
+- **Gallery** — HD ↔ pixel comparison sliders for each painting
 - **Scene framework** — Template system for adding new animated paintings
-- **Loading screen** — Branded loader with progress bar
+- **Loading screen** — Minimal branded loader with progress bar
 
 ### Atmosphere System (Pigment Engine Integration)
 - **Daily generative swatch** — Date-seeded palette that changes each day
-- **Living background washes** — Subtle glazed overlays that shift every 25-40 seconds
+- **Living background washes** — Subtle glazed overlays that shift every 30 seconds
+- **Atmospheric depth** — Far parallax layers get Payne's Grey haze
 - **Transition washes** — Scene navigation uses pigment-based color washes
-- **CSS custom properties** — `--daily-accent`, `--daily-accent-light`, `--daily-wash`
 
 ### Watercolor Engine
 - **24 Schmincke AKADEMIE pigments** with real transparency data
@@ -43,7 +44,8 @@ The goal is to build an interactive sketchbook where paintings feel alive. Each 
 ### Accessibility & Performance
 - **iOS motion permission** — Proper `DeviceOrientationEvent.requestPermission()` handling
 - **Reduced motion support** — Respects `prefers-reduced-motion`
-- **Mobile optimization** — No backdrop-filter blur on small screens
+- **Mobile optimization** — Responsive design, touch-optimized interactions
+- **Layer 0 safety net** — Full art base layer catches any gaps in parallax
 
 ---
 
@@ -52,41 +54,45 @@ The goal is to build an interactive sketchbook where paintings feel alive. Each 
 ```
 digital-watercolors/
 │
-├── index.html                 # Landing page (parallax peacocks + glass menu)
-├── scenes.js                  # Scene registry (edit to add scenes)
+├── index.html                 # Landing page (parallax + glass menu)
+├── index-legacy.html          # Backup of previous version
+├── scenes.js                  # Scene registry
 ├── README.md                  # This file
+├── _directory-tree.txt        # Project structure reference
 │
-├── layers/                    # Parallax background layers
-│   ├── Layer_0.png            # Full art (base/safety)
-│   ├── Layer_1.png            # Background
-│   ├── Layer_2.png            # Far branch
+├── layers/                    # Parallax background layers (peacocks)
+│   ├── Layer_0.png            # Full art (base/safety net)
+│   ├── Layer_1.png            # Background (orange + silhouettes)
+│   ├── Layer_2.png            # Far branch with flowers
 │   ├── Layer_3.png            # Near branch
 │   ├── Layer_4.png            # Left peacock
 │   └── Layer_5.png            # Right peacock (nearest)
 │
 ├── gallery/                   # Painting gallery with comparison sliders
-│   ├── index.html             # Gallery page
+│   ├── index.html             # Gallery page (HD ↔ pixel sliders)
 │   ├── *-hd.webp              # High-resolution originals
 │   └── *.png                  # Pixelated versions
 │
 ├── scenes/                    # Individual scene folders
-│   └── mister-softee/         # Example scene
-│       ├── index.html         # Scene page
-│       ├── scene.json         # Scene metadata
-│       ├── layers/            # Depth-separated layers
-│       └── audio/             # Ambient sounds
+│   └── mister-softee/         # Example scene (WIP)
+│       ├── index.html
+│       ├── scene.json
+│       ├── frames/
+│       └── audio/
 │
 ├── watercolor-engine/         # Pigment data and mixing logic
-│   ├── watercolor-engine.js   # Core engine
-│   ├── pigments.json          # Schmincke AKADEMIE pigment data
-│   └── demo.html              # Interactive demo
+│   ├── watercolor-engine.js   # Core engine (glazing, palettes)
+│   ├── pigments.json          # 24 Schmincke AKADEMIE pigments
+│   ├── demo.html              # Interactive demo
+│   └── AI-README.md           # Condensed docs for AI context
 │
 ├── legacy/                    # Previous designs (archived)
 │   ├── index-pixel.html       # Pixel-themed hub (v0.1-0.6)
-│   └── hub-frames/            # Animated peacock frames
+│   └── hub-frames/            # Animated peacock pixel frames
 │
-└── tools/                     # Build utilities
-    └── scene-builder.py       # GUI for creating layered scenes
+└── tools/
+    ├── scene-builder.py       # GUI for creating layered scenes
+    └── Create-AIPackage.ps1   # Zip utility for AI sharing
 ```
 
 ---
@@ -357,6 +363,25 @@ Tested in:
 ---
 
 ## Version History
+
+### v0.8.0 — Refined Glass Panel & Mobile (2025-01-08)
+**Changed:**
+- **Glass panel** — Museum-quality appearance with gradient background, refined blur
+- **Typography** — White text with subtle shadows for better legibility
+- **Menu simplified** — Living Scenes, Painting Gallery, Color Lab only
+- **Branding** — "Haslun Studio / Digital Watercolor Scenes"
+- **Footer** — "Original watercolors by Will Haslun © 2025 Haslun Studio"
+- **Parallax intensity** — Reduced to 20% for subtlety
+
+**Mobile/Tablet:**
+- Responsive breakpoints at 768px and 480px
+- Touch-optimized tap targets
+- Reduced parallax on small screens
+- iOS web app meta tags
+
+**Files modified:** `index.html`
+
+---
 
 ### v0.7.0 — Parallax Landing Page (2025-01-08)
 **Added:**

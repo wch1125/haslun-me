@@ -267,6 +267,16 @@
       line-height: 1.5;
     }
 
+    .glass-footer a {
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .glass-footer a:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
     /* ========================================
        ATMOSPHERE WASH OVERLAY
        ======================================== */
@@ -467,22 +477,24 @@
   <div class="parallax-scene">
     <div class="parallax-viewport" id="viewport">
       <div class="parallax-layer layer-0" data-parallax="0">
-        <img src="layers/Layer_0.png" alt="" id="img-0">
+        <img src="layers/Layer_0.png" alt="">
       </div>
       <div class="parallax-layer layer-1" data-parallax="0.15" data-atmosphere="0.05">
-        <img src="layers/Layer_1.png" alt="" id="img-1">
+        <img src="layers/Layer_1.png" alt="">
       </div>
       <div class="parallax-layer layer-2" data-parallax="0.35" data-atmosphere="0.02">
-        <img src="layers/Layer_2.png" alt="" id="img-2">
+        <img src="layers/Layer_2.png" alt="">
       </div>
-      <div class="parallax-layer layer-3" data-parallax="0.55" data-atmosphere="0.01">
-        <img src="layers/Layer_3.png" alt="" id="img-3">
+      <div class="parallax-layer layer-3" data-parallax="0.55" data-atmosphere="0.01"
+           data-animated="false" data-frames="20" data-folder="layers/Layer_3">
+        <img src="layers/Layer_3.png" alt="">
       </div>
-      <div class="parallax-layer layer-4" data-parallax="0.8">
-        <img src="layers/Layer_4.png" alt="" id="img-4">
+      <div class="parallax-layer layer-4" data-parallax="0.8"
+           data-animated="false" data-frames="20" data-folder="layers/Layer_4">
+        <img src="layers/Layer_4.png" alt="">
       </div>
       <div class="parallax-layer layer-5" data-parallax="1.0">
-        <img src="layers/Layer_5.png" alt="" id="img-5">
+        <img src="layers/Layer_5.png" alt="">
       </div>
     </div>
   </div>
@@ -504,14 +516,14 @@
         <div class="nav-section">
           <div class="nav-links">
             <a href="scenes/" class="nav-link">Living Scenes</a>
-            <a href="gallery/" class="nav-link">Painting Gallery</a>
+            <a href="gallery/" class="nav-link">Pixel Sliders</a>
             <a href="https://haslun.studio/watercolor-lab.html" class="nav-link" target="_blank">Color Lab</a>
           </div>
         </div>
       </nav>
 
       <footer class="glass-footer">
-        <p>Original watercolors by Will Haslun<br>© 2025 Haslun Studio</p>
+        <p>Web design and original watercolors by Will Haslun<br>© 2025 <a href="https://haslun.studio" target="_blank">Haslun.Studio</a></p>
       </footer>
     </div>
   </div>
@@ -530,12 +542,72 @@
       maxShift: window.innerWidth <= 768 ? 10 : 15,
       atmosphereColor: '#4a5568', // Payne's Grey
       
+      // Animation state
+      animatedLayers: [],
+      frameIndex: 0,
+      frameDirection: 1,
+      frameDelay: 120,
+      lastFrameTime: 0,
+      
       init() {
         this.viewport = document.getElementById('viewport');
         this.layers = Array.from(document.querySelectorAll('.parallax-layer'));
         
         this.applyAtmosphere();
+        this.setupAnimatedLayers();
         this.setupListeners();
+        
+        // Start animation loop if there are animated layers
+        if (this.animatedLayers.length > 0) {
+          this.animate();
+        }
+      },
+      
+      setupAnimatedLayers() {
+        // Find layers with data-animated="true"
+        this.layers.forEach(layer => {
+          if (layer.dataset.animated === 'true') {
+            const frameCount = parseInt(layer.dataset.frames) || 20;
+            const folder = layer.dataset.folder;
+            const img = layer.querySelector('img');
+            
+            // Preload all frames
+            const frames = [];
+            for (let i = 0; i < frameCount; i++) {
+              const frameSrc = `${folder}/frame-${String(i).padStart(3, '0')}.png`;
+              const frameImg = new Image();
+              frameImg.src = frameSrc;
+              frames.push(frameSrc);
+            }
+            
+            this.animatedLayers.push({
+              element: layer,
+              img: img,
+              frames: frames,
+              frameCount: frameCount
+            });
+          }
+        });
+      },
+      
+      animate(timestamp = 0) {
+        // Update animated layers
+        if (timestamp - this.lastFrameTime >= this.frameDelay) {
+          this.lastFrameTime = timestamp;
+          
+          this.animatedLayers.forEach(layer => {
+            const frameIdx = this.frameIndex % layer.frameCount;
+            layer.img.src = layer.frames[frameIdx];
+          });
+          
+          // Ping-pong animation
+          const maxFrames = Math.max(...this.animatedLayers.map(l => l.frameCount));
+          this.frameIndex += this.frameDirection;
+          if (this.frameIndex >= maxFrames - 1) this.frameDirection = -1;
+          if (this.frameIndex <= 0) this.frameDirection = 1;
+        }
+        
+        requestAnimationFrame((t) => this.animate(t));
       },
       
       applyAtmosphere() {
@@ -714,6 +786,7 @@
     // IMAGE PRELOADER
     // ========================================
     function preloadImages() {
+      // Build image list - all static layer images first
       const images = [
         'layers/Layer_0.png',
         'layers/Layer_1.png',
@@ -723,18 +796,36 @@
         'layers/Layer_5.png'
       ];
       
+      // Check for animated layers and add their frames
+      document.querySelectorAll('.parallax-layer[data-animated="true"]').forEach(layer => {
+        const frameCount = parseInt(layer.dataset.frames) || 20;
+        const folder = layer.dataset.folder;
+        for (let i = 0; i < frameCount; i++) {
+          images.push(`${folder}/frame-${String(i).padStart(3, '0')}.png`);
+        }
+      });
+      
+      // Dedupe
+      const uniqueImages = [...new Set(images)];
+      
       const loading = document.getElementById('loading');
       const loadingFill = document.getElementById('loading-fill');
       let loaded = 0;
       
       return new Promise((resolve) => {
-        images.forEach(src => {
+        if (uniqueImages.length === 0) {
+          loading.classList.add('hidden');
+          resolve();
+          return;
+        }
+        
+        uniqueImages.forEach(src => {
           const img = new Image();
-          img.onload = () => {
+          img.onload = img.onerror = () => {
             loaded++;
-            loadingFill.style.width = `${(loaded / images.length) * 100}%`;
+            loadingFill.style.width = `${(loaded / uniqueImages.length) * 100}%`;
             
-            if (loaded === images.length) {
+            if (loaded === uniqueImages.length) {
               setTimeout(() => {
                 loading.classList.add('hidden');
                 resolve();
