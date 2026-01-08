@@ -1,7 +1,6 @@
-E:\HASLUN-DOMAINS\LIVE-SITES\HASLUN-ME\PROJECTS\DIGITAL-WATERCOLORS
+DIGITAL-WATERCOLORS
 │   ai-package.bat
 │   AI-ZIP-GUIDE.md
-│   index-legacy.html
 │   index.html
 │   README.md
 │   scene-builder.py
@@ -9,60 +8,45 @@ E:\HASLUN-DOMAINS\LIVE-SITES\HASLUN-ME\PROJECTS\DIGITAL-WATERCOLORS
 │   scenes.js
 │   _directory-tree.txt
 │
+├───assets
+│   ├───css
+│   │       base.css
+│   │       glass-overlay.css
+│   │       loader.css
+│   │       parallax.css
+│   │       pixel-overlay.css
+│   │
+│   └───js
+│           atmosphere.js
+│           loader.js
+│           parallax.js
+│           pixel-mode.js
+│
 ├───gallery
-│       autumn-stroll-through-central-park-hd.webp
-│       Central-Park-Mall-in-Autumn.png
-│       Central_Park_Boathouse.png
-│       grand-central-terminal-with-flag-hd.webp
-│       Grand-Central-Terminal-with-Flag.png
 │       index.html
-│       malayan-peacocks-hd.webp
-│       mister-softee-hd.webp
-│       Mister-Softee_400px_.png
-│       natural-history-museum-entrance-hd.webp
-│       Natural-History-Museum-Entrance__400px_.png
+│       *-hd.webp (HD originals)
+│       *.png (pixelated versions)
 │
 ├───layers
-│       Layer_0.png
-│       Layer_1.png
-│       Layer_2.png
-│       Layer_3.png
-│       Layer_4.png
-│       Layer_5.png
+│       Layer_0.png (full art base)
+│       Layer_1.png (background)
+│       Layer_2.png (far branch)
+│       Layer_3.png (near branch)
+│       Layer_4.png (left peacock)
+│       Layer_5.png (right peacock)
 │
 ├───legacy
-│   │   index-pixel.html
+│   │   index-pixel.html (pixel-themed hub v0.1-0.6)
 │   │
 │   └───hub-frames
-│           frame-000.png
-│           frame-001.png
-│           frame-002.png
-│           frame-003.png
-│           frame-004.png
-│           frame-005.png
-│           frame-006.png
-│           frame-007.png
-│           frame-008.png
-│           frame-009.png
-│           frame-010.png
-│           frame-011.png
-│           frame-012.png
-│           frame-013.png
-│           frame-014.png
-│           frame-015.png
-│           frame-016.png
-│           frame-017.png
-│           frame-018.png
-│           frame-019.png
+│           frame-000.png ... frame-019.png
 │
 ├───scenes
 │   └───mister-softee
 │       │   index.html
 │       │   scene.json
-│       │
 │       ├───audio
 │       └───frames
-│               frame-000.png
 │
 ├───tools
 │       Create-AIPackage.ps1

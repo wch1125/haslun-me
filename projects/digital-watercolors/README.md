@@ -54,11 +54,24 @@ The goal is to build an interactive sketchbook where paintings feel alive. Each 
 ```
 digital-watercolors/
 │
-├── index.html                 # Landing page (parallax + glass menu)
-├── index-legacy.html          # Backup of previous version
+├── index.html                 # Landing page (modular, uses assets/)
 ├── scenes.js                  # Scene registry
 ├── README.md                  # This file
 ├── _directory-tree.txt        # Project structure reference
+│
+├── assets/                    # Shared CSS and JavaScript modules
+│   ├── css/
+│   │   ├── base.css           # Reset, variables, utilities
+│   │   ├── parallax.css       # Layer and atmosphere styles
+│   │   ├── loader.css         # Loading screen styles
+│   │   ├── glass-overlay.css  # Elegant glass panel menu
+│   │   └── pixel-overlay.css  # Retro pixel panel styles
+│   │
+│   └── js/
+│       ├── parallax.js        # rAF-based parallax with animation
+│       ├── atmosphere.js      # Pigment washes, visibility-aware
+│       ├── loader.js          # DOM and canvas loader options
+│       └── pixel-mode.js      # Toggle between glass/pixel UI
 │
 ├── layers/                    # Parallax background layers (peacocks)
 │   ├── Layer_0.png            # Full art (base/safety net)
@@ -86,7 +99,7 @@ digital-watercolors/
 │   ├── demo.html              # Interactive demo
 │   └── AI-README.md           # Condensed docs for AI context
 │
-├── legacy/                    # Previous designs (archived)
+├── legacy/                    # Previous designs (still maintained)
 │   ├── index-pixel.html       # Pixel-themed hub (v0.1-0.6)
 │   └── hub-frames/            # Animated peacock pixel frames
 │
@@ -363,6 +376,34 @@ Tested in:
 ---
 
 ## Version History
+
+### v0.9.0 — Modular Architecture (2025-01-08)
+**Architecture:**
+- Extracted shared CSS into `assets/css/` (base, parallax, loader, glass-overlay, pixel-overlay)
+- Extracted shared JavaScript into `assets/js/` (parallax, atmosphere, loader, pixel-mode)
+- All pages now use external modules for maintainability
+
+**Performance (per ChatGPT review):**
+- **rAF parallax loop** — Single requestAnimationFrame handles parallax + animation
+- **Smooth interpolation** — Lerp-based movement (smoothing: 0.08) instead of CSS transitions
+- **Visibility-aware washes** — Atmosphere pauses when tab is hidden, resumes on focus
+- **GPU compositing** — Using translate3d() for hardware acceleration
+- **Resize handler** — maxShift updates on viewport changes
+
+**Features:**
+- **Pixel mode toggle** — Bottom-right button switches between glass and pixel UI
+- **Canvas loader option** — Loader.js supports both DOM and pixel canvas modes
+- **Chunky stepped loader** — Progress bar uses CSS steps() for retro feel
+
+**Code hygiene:**
+- Removed dead `buildScenesMenu()` function
+- Deleted redundant `index-legacy.html` from root
+- Legacy pixel version remains in `legacy/index-pixel.html` (still maintained)
+
+**Files added:** `assets/css/*.css`, `assets/js/*.js`
+**Files removed:** `index-legacy.html` (root)
+
+---
 
 ### v0.8.0 — Refined Glass Panel & Mobile (2025-01-08)
 **Changed:**
