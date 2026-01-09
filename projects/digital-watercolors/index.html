@@ -50,9 +50,9 @@
 
   <!-- Peacock Stage (dreamy wash + blur background) -->
   <div class="peacock-stage" aria-hidden="true">
-    <img src="assets/img/peacocks-breathe.gif" alt="" class="peacock-back" />
+    <img src="assets/img/peacocks-breathe.gif" alt="" class="peacock-back" decoding="async" />
     <div class="peacock-wash"></div>
-    <img src="assets/img/peacocks-breathe.gif" alt="" class="peacock-front" />
+    <img src="assets/img/peacocks-breathe.gif" alt="" class="peacock-front" decoding="async" fetchpriority="high" />
   </div>
 
   <!-- Atmosphere wash overlays -->
@@ -130,7 +130,7 @@
     }
     
     // HUD menu toggle (both burger + welcome trigger)
-    // Fixed: clearTimeout race condition, rAF for consistent transitions
+    // Production-ready: clearTimeout, rAF, aria-hidden, focus management, scroll lock
     function initHudMenu() {
       const hud = document.getElementById('hud');
       const btn = document.getElementById('hudToggle');
@@ -140,30 +140,55 @@
       if (!hud || !btn || !panel) return;
 
       let closeTimer = null;
+      
+      // Set initial aria state
+      panel.setAttribute('aria-hidden', 'true');
+      
+      // Scroll lock helpers (mobile only)
+      const isMobile = () => window.matchMedia('(max-width: 520px)').matches;
+      const lockScroll = () => { if (isMobile()) document.documentElement.style.overflow = 'hidden'; };
+      const unlockScroll = () => { document.documentElement.style.overflow = ''; };
+      
+      // Focus helpers
+      const firstFocusable = () => panel.querySelector('a, button, [tabindex]:not([tabindex="-1"])');
 
       const open = () => {
         if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
 
         panel.hidden = false;
+        panel.setAttribute('aria-hidden', 'false');
         btn.setAttribute('aria-expanded', 'true');
         hud.classList.add('is-open');
         if (welcome) welcome.classList.add('is-hidden');
+        
+        lockScroll();
 
         // Ensure transition runs (rAF forces reflow)
-        requestAnimationFrame(() => panel.classList.add('open'));
+        requestAnimationFrame(() => {
+          panel.classList.add('open');
+          // Focus first link for accessibility
+          const f = firstFocusable();
+          if (f) f.focus({ preventScroll: true });
+        });
       };
 
       const close = () => {
         panel.classList.remove('open');
+        panel.setAttribute('aria-hidden', 'true');
         btn.setAttribute('aria-expanded', 'false');
         hud.classList.remove('is-open');
         if (welcome) welcome.classList.remove('is-hidden');
+        
+        unlockScroll();
+        
+        // Return focus to burger
+        btn.focus({ preventScroll: true });
 
         if (closeTimer) clearTimeout(closeTimer);
         closeTimer = setTimeout(() => {
           panel.hidden = true;
           closeTimer = null;
-        }, 160);
+        }, 170);
       };
 
       btn.addEventListener('click', () => {
@@ -192,6 +217,7 @@
     }
     
     // Micro-parallax on background blur layer only (adds depth, stays tasteful)
+    // Production-ready: running flag, touchend re-center, proper visibility handling
     function initBackgroundParallax() {
       const back = document.querySelector('.peacock-back');
       const wash = document.querySelector('.peacock-wash');
@@ -203,19 +229,27 @@
 
       let tx = 0.5, ty = 0.5, cx = 0.5, cy = 0.5;
       let raf = null;
+      let running = true;
 
       const onMove = (x, y) => {
         tx = x / window.innerWidth;
         ty = y / window.innerHeight;
       };
+      
+      // Re-center on touch end so background doesn't "stick"
+      const recenter = () => { tx = 0.5; ty = 0.5; };
 
       window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY), { passive: true });
       window.addEventListener('touchmove', (e) => {
         const t = e.touches[0];
         onMove(t.clientX, t.clientY);
       }, { passive: true });
+      window.addEventListener('touchend', recenter, { passive: true });
+      window.addEventListener('touchcancel', recenter, { passive: true });
 
       function loop() {
+        if (!running) return;
+        
         cx += (tx - cx) * 0.08;
         cy += (ty - cy) * 0.08;
 
@@ -223,7 +257,7 @@
         const dx = (cx - 0.5) * max;
         const dy = (cy - 0.5) * max * 0.6;
 
-        back.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.04)`;
+        back.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.08)`;
         if (wash) wash.style.transform = `translate3d(${dx * 0.4}px, ${dy * 0.4}px, 0)`;
 
         raf = requestAnimationFrame(loop);
@@ -231,8 +265,15 @@
       loop();
 
       document.addEventListener('visibilitychange', () => {
-        if (document.hidden && raf) { cancelAnimationFrame(raf); raf = null; }
-        if (!document.hidden && !raf) loop();
+        if (document.hidden) {
+          running = false;
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          return;
+        }
+        if (!reduce) {
+          running = true;
+          raf = requestAnimationFrame(loop);
+        }
       });
     }
     

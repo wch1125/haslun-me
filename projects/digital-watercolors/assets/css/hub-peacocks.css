@@ -18,16 +18,19 @@
 /* Back layer: fills screen, gently blurred */
 .peacock-back {
   position: absolute;
-  inset: -6%;
-  width: 112%;
-  height: 112%;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
   object-fit: cover;
+  background: transparent;
 
   /* "slight" blur: keep this low */
   filter: blur(10px) saturate(1.05) contrast(1.02);
   opacity: 0.55;
 
-  transform: translate3d(0, 0, 0) scale(1.04);
+  /* GPU-friendly */
+  will-change: transform, filter;
+  transform: translate3d(0, 0, 0) scale(1.08);
 }
 
 /* Dreamy wash film: makes the empty space feel painted */
@@ -49,6 +52,10 @@
 
   /* This blend makes it feel like a wash on paper */
   mix-blend-mode: multiply;
+  
+  /* GPU-friendly */
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
 }
 
 /* Subtle vignette to avoid "frame edges" */
@@ -69,6 +76,7 @@
   width: 100vw;
   height: 100vh;
   object-fit: contain;
+  background: transparent;
 
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -113,6 +121,13 @@
   transition: opacity 140ms ease, transform 140ms ease;
 }
 
+/* Larger click target without changing visuals */
+.welcome-trigger::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+}
+
 .welcome-trigger:hover {
   opacity: 0.92;
   transform: translate(-50%, -50%) scale(1.02);
@@ -142,6 +157,7 @@
   z-index: 5;
   display: grid;
   gap: 10px;
+  padding: 0;
   pointer-events: none;
 }
 
@@ -394,10 +410,33 @@ html.pixel-mode .hud-link:hover {
   }
 }
 
+/* ===== Accessibility: focus-visible for keyboard users ===== */
+.hud-button:focus-visible,
+.hud-link:focus-visible,
+.welcome-trigger:focus-visible {
+  outline: 2px solid rgba(245, 184, 48, 0.85);
+  outline-offset: 3px;
+}
+
+html.pixel-mode .hud-button:focus-visible,
+html.pixel-mode .hud-link:focus-visible,
+html.pixel-mode .welcome-trigger:focus-visible {
+  outline: 2px solid #F5B830;
+  outline-offset: 4px;
+}
+
+/* ===== Fallback: degrade gracefully if mix-blend-mode unsupported ===== */
+@supports not (mix-blend-mode: multiply) {
+  .peacock-wash {
+    mix-blend-mode: normal;
+    opacity: 0.55;
+  }
+}
+
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
   .peacock-back {
-    transform: translate3d(0, 0, 0) scale(1.04) !important;
+    transform: translate3d(0, 0, 0) scale(1.08) !important;
   }
   
   .peacock-wash {
@@ -413,6 +452,6 @@ html.pixel-mode .hud-link:hover {
   }
   
   .welcome-trigger {
-    animation: none;
+    animation: none !important;
   }
 }
