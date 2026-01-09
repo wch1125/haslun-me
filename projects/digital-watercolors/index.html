@@ -93,36 +93,21 @@
     Welcome!
   </button>
 
-  <!-- MOBILE: Top bar (branding only) -->
+  <!-- MOBILE: Top nameplate -->
   <div class="mobile-topbar">
     <span>Haslun Studio</span>
   </div>
 
-  <!-- MOBILE: Seal button (overlays the painted seal) -->
-  <button id="sealMenuBtn" class="seal-menu-btn" aria-label="Open menu" aria-expanded="false">
-    <span class="seal-menu-bars" aria-hidden="true">
-      <i></i><i></i><i></i>
-    </span>
-  </button>
+  <!-- MOBILE: Seal hotspot (invisible, larger hit target) -->
+  <button id="sealHotspot" class="seal-hotspot" aria-label="Open menu" aria-expanded="false"></button>
 
-  <!-- MOBILE: Drawer menu -->
-  <div id="menuDrawer" class="menu-drawer" aria-hidden="true">
-    <div class="menu-drawer__header">
-      <div class="menu-drawer__title">Digital Watercolors</div>
-      <div class="menu-drawer__subtitle">Haslun Studio</div>
-      <button id="menuCloseBtn" class="menu-drawer__close" aria-label="Close menu">✕</button>
-    </div>
-
-    <nav class="menu-drawer__content">
-      <a class="menu-drawer__link" href="scenes/">Living Scenes</a>
-      <a class="menu-drawer__link" href="gallery/">Pixel Sliders</a>
-      <a class="menu-drawer__link" href="https://haslun.studio/watercolor-lab.html" target="_blank" rel="noopener">Color Lab</a>
-      <a class="menu-drawer__link" href="https://haslun.studio" target="_blank" rel="noopener">Haslun.studio</a>
-    </nav>
-  </div>
-
-  <!-- MOBILE: Backdrop -->
-  <div id="menuBackdrop" class="menu-backdrop" hidden></div>
+  <!-- MOBILE: Seal-anchored menu (rises from seal) -->
+  <nav id="sealMenu" class="seal-menu" aria-hidden="true">
+    <a class="seal-menu__item" href="scenes/">Living Scenes</a>
+    <a class="seal-menu__item" href="gallery/">Pixel Sliders</a>
+    <a class="seal-menu__item" href="https://haslun.studio/watercolor-lab.html" target="_blank" rel="noopener">Color Lab</a>
+    <a class="seal-menu__item" href="https://haslun.studio" target="_blank" rel="noopener">Haslun.studio</a>
+  </nav>
 
   <!-- Scripts -->
   <script src="watercolor-engine/watercolor-engine.js"></script>
@@ -163,96 +148,40 @@
       initMobileDrawer();
     }
 
-    // Mobile drawer menu (seal button)
+    // Mobile seal menu (simple toggle, no drawer)
     function initMobileDrawer() {
-      const sealBtn = document.getElementById('sealMenuBtn');
-      const drawer = document.getElementById('menuDrawer');
-      const backdrop = document.getElementById('menuBackdrop');
-      const closeBtn = document.getElementById('menuCloseBtn');
+      const sealHotspot = document.getElementById('sealHotspot');
+      const sealMenu = document.getElementById('sealMenu');
 
-      if (!sealBtn || !drawer) return;
+      if (!sealHotspot || !sealMenu) return;
 
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      // Scroll lock
-      const lockScroll = () => { document.documentElement.style.overflow = 'hidden'; };
-      const unlockScroll = () => { document.documentElement.style.overflow = ''; };
-
-      function openDrawer() {
-        drawer.classList.add('is-open');
-        drawer.setAttribute('aria-hidden', 'false');
-        sealBtn.setAttribute('aria-expanded', 'true');
-        if (backdrop) backdrop.hidden = false;
-        lockScroll();
+      function openSealMenu() {
+        sealMenu.classList.add('is-open');
+        sealMenu.setAttribute('aria-hidden', 'false');
+        sealHotspot.setAttribute('aria-expanded', 'true');
       }
 
-      function closeDrawer() {
-        drawer.classList.remove('is-open');
-        drawer.setAttribute('aria-hidden', 'true');
-        sealBtn.setAttribute('aria-expanded', 'false');
-        if (backdrop) backdrop.hidden = true;
-        unlockScroll();
-        resetDrawerParallax();
+      function closeSealMenu() {
+        sealMenu.classList.remove('is-open');
+        sealMenu.setAttribute('aria-hidden', 'true');
+        sealHotspot.setAttribute('aria-expanded', 'false');
       }
 
-      sealBtn.addEventListener('click', () => {
-        drawer.classList.contains('is-open') ? closeDrawer() : openDrawer();
+      sealHotspot.addEventListener('click', () => {
+        sealMenu.classList.contains('is-open') ? closeSealMenu() : openSealMenu();
       });
 
-      if (backdrop) backdrop.addEventListener('click', closeDrawer);
-      if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+      // Tap outside closes
+      document.addEventListener('pointerdown', (e) => {
+        if (!sealMenu.classList.contains('is-open')) return;
+        const hit = sealMenu.contains(e.target) || sealHotspot.contains(e.target);
+        if (!hit) closeSealMenu();
+      }, { passive: true });
 
+      // ESC closes
       window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer();
+        if (e.key === 'Escape') closeSealMenu();
       });
-
-      // Micro-parallax for drawer
-      function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
-
-      function applyDrawerParallax(xNorm, yNorm) {
-        if (!drawer.classList.contains('is-open') || prefersReducedMotion) return;
-
-        const maxRotate = 2.5;
-        const maxShift = 8;
-
-        const dx = (xNorm - 0.5) * 2;
-        const dy = (yNorm - 0.5) * 2;
-
-        const rotateY = dx * -maxRotate;
-        const rotateX = dy * maxRotate;
-        const translateX = dx * maxShift;
-        const translateY = dy * maxShift;
-
-        drawer.style.transform =
-          `translate3d(${translateX}px, ${translateY}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        drawer.style.setProperty('--shadow-x', `${-translateX * 0.4}px`);
-        drawer.style.setProperty('--shadow-y', `${translateY * 0.8 + 10}px`);
-      }
-
-      function resetDrawerParallax() {
-        drawer.style.transform = '';
-        drawer.style.removeProperty('--shadow-x');
-        drawer.style.removeProperty('--shadow-y');
-      }
-
-      // Pointer/touch parallax
-      window.addEventListener('pointermove', (e) => {
-        if (!drawer.classList.contains('is-open')) return;
-        const rect = drawer.getBoundingClientRect();
-        const xNorm = clamp((e.clientX - rect.left) / rect.width, 0, 1);
-        const yNorm = clamp((e.clientY - rect.top) / rect.height, 0, 1);
-        applyDrawerParallax(xNorm, yNorm);
-      }, { passive: true });
-
-      // Device tilt parallax (works on Android + older iOS, silently ignored on newer iOS)
-      // No permission prompt — just listen and it works where supported
-      window.addEventListener('deviceorientation', (e) => {
-        if (!drawer.classList.contains('is-open') || prefersReducedMotion) return;
-        if (e.gamma == null || e.beta == null) return;
-        const xNorm = clamp((e.gamma + 20) / 40, 0, 1);
-        const yNorm = clamp((e.beta - 20) / 40, 0, 1);
-        applyDrawerParallax(xNorm, yNorm);
-      }, { passive: true });
     }
     
     // HUD menu toggle (both burger + welcome trigger)
