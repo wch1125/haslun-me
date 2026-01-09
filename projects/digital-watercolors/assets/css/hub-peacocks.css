@@ -1,6 +1,7 @@
 /**
  * Hub Peacocks CSS
  * Styles for the GIF-based landing page with docked HUD menu
+ * v1.1.1 — Per ChatGPT review: burger visible, smaller panel, mobile bottom-sheet
  */
 
 /* ===== Peacock background ===== */
@@ -10,15 +11,15 @@
   z-index: 0;
   display: grid;
   place-items: center;
-  background: #f8f6f1; /* Warm white letterbox fill */
+  background: #f8f6f1; /* warm white letterbox */
 }
 
 .peacock-gif {
   width: 100vw;
   height: 100vh;
-  object-fit: contain;          /* Show full image, letterbox if needed */
+  object-fit: contain;          /* show full top & bottom */
   object-position: center;
-  image-rendering: pixelated;   /* preserves pixel vibe */
+  image-rendering: pixelated;
   image-rendering: crisp-edges;
   -ms-interpolation-mode: nearest-neighbor;
 }
@@ -34,65 +35,56 @@
   pointer-events: none;
 }
 
-/* ===== Welcome text (center, opens menu) ===== */
+/* ===== Welcome trigger (center, subtle pixel whisper) ===== */
 .welcome-trigger {
   position: fixed;
   left: 50%;
-  top: 50%;
+  top: 52%;
   transform: translate(-50%, -50%);
   z-index: 4;
-  
-  background: none;
-  border: none;
-  padding: 12px 20px;
+
+  border: 0;
+  background: transparent;
   cursor: pointer;
-  
+
   font-family: "Press Start 2P", ui-monospace, monospace;
-  font-size: 10px;
-  color: rgba(248, 246, 241, 0.75);
-  text-shadow: 
-    1px 1px 0 rgba(10, 9, 8, 0.6),
-    2px 2px 0 rgba(10, 9, 8, 0.3);
-  letter-spacing: 0.15em;
-  
-  transition: all 0.3s ease;
+  font-size: 12px;
+  line-height: 1;
+  color: rgba(40, 80, 160, 0.72); /* peacock-ish, subtle */
+  text-shadow:
+    1px 1px 0 rgba(252, 250, 245, 0.75),
+    2px 2px 0 rgba(0, 0, 0, 0.25);
+
+  padding: 8px 10px;
+  border-radius: 10px;
+
+  opacity: 0.75;
+  transition: opacity 140ms ease, transform 140ms ease;
 }
 
 .welcome-trigger:hover {
-  color: rgba(248, 246, 241, 0.95);
-  text-shadow: 
-    1px 1px 0 rgba(10, 9, 8, 0.8),
-    2px 2px 0 rgba(10, 9, 8, 0.4),
-    0 0 20px rgba(201, 168, 108, 0.3);
-  transform: translate(-50%, -50%) scale(1.05);
+  opacity: 0.92;
+  transform: translate(-50%, -50%) scale(1.02);
 }
 
-.welcome-trigger:active {
-  transform: translate(-50%, -50%) scale(0.98);
-}
-
-/* Subtle breathing animation */
-@keyframes welcomeBreath {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 0.9; }
+/* Gentle breathe animation */
+@keyframes welcomeBreathe {
+  0%, 100% { opacity: 0.70; }
+  50% { opacity: 0.90; }
 }
 
 .welcome-trigger {
-  animation: welcomeBreath 4s ease-in-out infinite;
+  animation: welcomeBreathe 2.6s ease-in-out infinite;
 }
 
-.welcome-trigger:hover {
-  animation: none;
-  opacity: 1;
-}
-
-/* Hide welcome when menu is open */
-.welcome-trigger.hidden {
+/* Hide Welcome when menu open */
+.hud.is-open ~ .welcome-trigger,
+.welcome-trigger.is-hidden {
   opacity: 0;
   pointer-events: none;
 }
 
-/* ===== Docked HUD menu (non-blocking) ===== */
+/* ===== Docked HUD menu ===== */
 .hud {
   position: fixed;
   left: max(12px, env(safe-area-inset-left));
@@ -100,23 +92,87 @@
   z-index: 5;
   display: grid;
   gap: 10px;
-  pointer-events: none; /* only the panel accepts clicks */
+  pointer-events: none;
 }
 
+.hud-button,
 .hud-panel {
   pointer-events: auto;
 }
 
-/* Hide the button - we use welcome text instead */
+/* Burger button (visible!) */
 .hud-button {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  cursor: pointer;
+
+  background: rgba(10, 9, 8, 0.55);
+  color: rgba(245, 245, 245, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.10),
+    0 10px 30px rgba(0, 0, 0, 0.35);
+  
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
+.hud-button:hover {
+  background: rgba(10, 9, 8, 0.7);
+}
+
+.hud-button:active {
+  transform: scale(0.98);
+}
+
+.hud-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.hud-label {
+  font-family: var(--font-body, "DM Sans", system-ui, sans-serif);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Swatch row in burger (signature touch) */
+.hud-swatches {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 6px;
+  opacity: 0.85;
+}
+
+.hud-swatches i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.hud-swatches i:nth-child(1) { background: rgba(245, 184, 48, 0.75); }  /* Indian Yellow */
+.hud-swatches i:nth-child(2) { background: rgba(0, 136, 176, 0.70); }   /* Cyan */
+.hud-swatches i:nth-child(3) { background: rgba(40, 80, 160, 0.65); }   /* Ultramarine */
+.hud-swatches i:nth-child(4) { background: rgba(96, 64, 48, 0.60); }    /* Umber */
+.hud-swatches i:nth-child(5) { background: rgba(56, 72, 88, 0.60); }    /* Payne */
+
+/* Menu panel — smaller, less blocking */
 .hud-panel {
-  width: min(320px, calc(100vw - 24px));
+  width: min(290px, calc(100vw - 24px));
+  max-height: min(420px, calc(100vh - 90px));
+  overflow: auto;
   padding: 14px 14px 12px;
 
-  background: rgba(10, 9, 8, 0.62);
+  /* Lighter glass — doesn't feel like heavy block */
+  background: rgba(20, 12, 8, 0.45);
   color: rgba(245, 245, 245, 0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -134,7 +190,7 @@
 .hud-panel.open {
   opacity: 1;
   transform: scale(1);
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition: opacity 140ms ease, transform 140ms ease;
 }
 
 .hud-brand {
@@ -162,13 +218,14 @@
   padding: 8px 0 10px;
 }
 
+/* More compact links */
 .hud-link {
   display: block;
-  padding: 10px 10px;
+  padding: 9px 10px;
   border-radius: 12px;
   text-decoration: none;
   color: rgba(245, 245, 245, 0.92);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
   font-family: var(--font-body, "DM Sans", system-ui, sans-serif);
   transition: background 0.15s ease;
 }
@@ -186,19 +243,13 @@
 
 /* ===== Pixel mode treatment ===== */
 html.pixel-mode .welcome-trigger {
-  color: rgba(248, 246, 241, 0.85);
-  text-shadow: 
+  color: rgba(201, 168, 108, 0.85);
+  text-shadow:
     2px 2px 0 #0a0604,
     4px 4px 0 rgba(0, 0, 0, 0.3);
 }
 
-html.pixel-mode .welcome-trigger:hover {
-  color: #c9a86c;
-  text-shadow: 
-    2px 2px 0 #0a0604,
-    4px 4px 0 rgba(0, 0, 0, 0.4);
-}
-
+html.pixel-mode .hud-button,
 html.pixel-mode .hud-panel {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -211,6 +262,16 @@ html.pixel-mode .hud-panel {
   background:
     linear-gradient(45deg, rgba(0, 0, 0, 0.18) 25%, transparent 25% 50%, rgba(0, 0, 0, 0.18) 50% 75%, transparent 75%) 0 0/8px 8px,
     rgba(22, 12, 6, 0.92);
+}
+
+html.pixel-mode .hud-button:hover {
+  background:
+    linear-gradient(45deg, rgba(0, 0, 0, 0.18) 25%, transparent 25% 50%, rgba(0, 0, 0, 0.18) 50% 75%, transparent 75%) 0 0/8px 8px,
+    rgba(32, 22, 12, 0.95);
+}
+
+html.pixel-mode .hud-swatches i {
+  border-radius: 0;
 }
 
 html.pixel-mode .hud-label,
@@ -246,19 +307,39 @@ html.pixel-mode .hud-link:hover {
   background: rgba(201, 168, 108, 0.2);
 }
 
-/* ===== Mobile tweaks ===== */
+/* ===== Mobile: bottom sheet ===== */
 @media (max-width: 520px) {
   .hud {
-    left: max(10px, env(safe-area-inset-left));
-    top: max(10px, env(safe-area-inset-top));
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    padding: 0 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
   }
-  
+
+  .hud-button {
+    border-radius: 14px;
+  }
+
   .hud-panel {
-    width: min(300px, calc(100vw - 20px));
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: max(64px, calc(env(safe-area-inset-bottom) + 54px));
+    width: auto;
+    max-height: 55vh;
+    transform-origin: bottom left;
   }
   
   .welcome-trigger {
-    font-size: 8px;
+    font-size: 10px;
+  }
+  
+  html.pixel-mode .hud-button {
+    border-radius: 0;
   }
 }
 

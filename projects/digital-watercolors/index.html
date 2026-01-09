@@ -64,15 +64,18 @@
   <div class="transition-wash" id="transition-wash"></div>
 
   <!-- Welcome trigger (center, opens menu) -->
-  <button class="welcome-trigger" id="welcomeTrigger" aria-expanded="false" aria-controls="hudPanel">
+  <button class="welcome-trigger" id="welcomeTrigger" type="button" aria-label="Open menu">
     Welcome!
   </button>
 
-  <!-- Docked Menu (non-blocking) -->
+  <!-- Docked Menu -->
   <div class="hud" id="hud">
     <button class="hud-button" id="hudToggle" aria-expanded="false" aria-controls="hudPanel">
       <span class="hud-icon">≡</span>
       <span class="hud-label">Menu</span>
+      <span class="hud-swatches" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i>
+      </span>
     </button>
 
     <div class="hud-panel" id="hudPanel" hidden>
@@ -127,48 +130,52 @@
       initHudMenu();
     }
     
-    // HUD menu toggle (mobile-safe)
+    // HUD menu toggle (both burger + welcome trigger)
     function initHudMenu() {
-      const welcomeBtn = document.getElementById('welcomeTrigger');
+      const hud = document.getElementById('hud');
+      const btn = document.getElementById('hudToggle');
       const panel = document.getElementById('hudPanel');
-      if (!welcomeBtn || !panel) return;
+      const welcome = document.getElementById('welcomeTrigger');
+
+      if (!hud || !btn || !panel) return;
 
       const open = () => {
         panel.hidden = false;
-        welcomeBtn.setAttribute('aria-expanded', 'true');
-        welcomeBtn.classList.add('hidden');
-        // Force reflow before adding class for animation
-        panel.offsetHeight;
+        btn.setAttribute('aria-expanded', 'true');
         panel.classList.add('open');
+        hud.classList.add('is-open');
+        if (welcome) welcome.classList.add('is-hidden');
       };
 
       const close = () => {
         panel.classList.remove('open');
-        welcomeBtn.setAttribute('aria-expanded', 'false');
-        // Allow animation to finish before hiding
-        setTimeout(() => { 
-          panel.hidden = true;
-          welcomeBtn.classList.remove('hidden');
-        }, 120);
+        btn.setAttribute('aria-expanded', 'false');
+        hud.classList.remove('is-open');
+        if (welcome) welcome.classList.remove('is-hidden');
+        setTimeout(() => { panel.hidden = true; }, 140);
       };
 
-      welcomeBtn.addEventListener('click', () => {
-        const isOpen = welcomeBtn.getAttribute('aria-expanded') === 'true';
+      btn.addEventListener('click', () => {
+        const isOpen = btn.getAttribute('aria-expanded') === 'true';
         isOpen ? close() : open();
       });
 
+      if (welcome) {
+        welcome.addEventListener('click', open);
+      }
+
       // Click outside closes
       document.addEventListener('pointerdown', (e) => {
-        const isOpen = welcomeBtn.getAttribute('aria-expanded') === 'true';
+        const isOpen = btn.getAttribute('aria-expanded') === 'true';
         if (!isOpen) return;
-        if (panel.contains(e.target) || welcomeBtn.contains(e.target)) return;
+        if (panel.contains(e.target) || btn.contains(e.target)) return;
         close();
       });
 
       // ESC closes
       document.addEventListener('keydown', (e) => {
         if (e.key !== 'Escape') return;
-        const isOpen = welcomeBtn.getAttribute('aria-expanded') === 'true';
+        const isOpen = btn.getAttribute('aria-expanded') === 'true';
         if (isOpen) close();
       });
     }
