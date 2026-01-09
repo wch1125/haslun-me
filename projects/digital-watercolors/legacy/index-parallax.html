@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0908">
+  <title>Digital Watercolors — Haslun Studio</title>
+  <meta name="description" content="Watercolor paintings brought to life. An interactive sketchbook by Haslun Studio.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+  
+  <!-- Early boot: apply pixel mode before first paint to prevent FOUC -->
+  <script>
+    (function() {
+      try {
+        // Use namespaced key for multi-app compatibility
+        var isPixelMode = localStorage.getItem('haslun:pixelMode') === 'true';
+        if (isPixelMode) {
+          document.documentElement.classList.add('pixel-mode');
+        }
+        window.__haslunBoot = { pixelMode: isPixelMode };
+      } catch (e) {
+        window.__haslunBoot = { pixelMode: false };
+      }
+    })();
+  </script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/parallax.css">
+  <link rel="stylesheet" href="../assets/css/loader.css">
+  <link rel="stylesheet" href="../assets/css/glass-overlay.css">
+  <link rel="stylesheet" href="../assets/css/pixel-overlay.css">
+</head>
+<body>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="loading-content">
+      <p class="loading-text">loading...</p>
+      <div class="loading-bar">
+        <div class="loading-bar-fill" id="loading-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parallax Background -->
+  <div class="parallax-scene">
+    <div class="parallax-viewport" id="viewport">
+      <div class="parallax-layer layer-0" data-parallax="0">
+        <img src="../layers/Layer_0.png" alt="">
+      </div>
+      <div class="parallax-layer layer-1" data-parallax="0.15" data-atmosphere="0.05">
+        <img src="../layers/Layer_1.png" alt="">
+      </div>
+      <div class="parallax-layer layer-2" data-parallax="0.35" data-atmosphere="0.02">
+        <img src="../layers/Layer_2.png" alt="">
+      </div>
+      <div class="parallax-layer layer-3" data-parallax="0.55" data-atmosphere="0.01"
+           data-animated="false" data-frames="20" data-folder="../layers/Layer_3">
+        <img src="../layers/Layer_3.png" alt="">
+      </div>
+      <div class="parallax-layer layer-4" data-parallax="0.8"
+           data-animated="false" data-frames="20" data-folder="../layers/Layer_4">
+        <img src="../layers/Layer_4.png" alt="">
+      </div>
+      <div class="parallax-layer layer-5" data-parallax="1.0">
+        <img src="../layers/Layer_5.png" alt="">
+      </div>
+    </div>
+  </div>
+
+  <!-- Atmosphere wash overlays -->
+  <div class="wash-overlay" id="wash-overlay"></div>
+  <div class="transition-wash" id="transition-wash"></div>
+
+  <!-- Glass Menu Overlay -->
+  <div class="glass-overlay">
+    <div class="glass-panel">
+      <header class="brand">
+        <h1 class="brand-title">Haslun Studio</h1>
+        <p class="brand-tagline">Digital Watercolor Scenes</p>
+        <div class="brand-divider"></div>
+      </header>
+
+      <nav>
+        <div class="nav-section">
+          <div class="nav-links">
+            <a href="../scenes/" class="nav-link">Living Scenes</a>
+            <a href="../gallery/" class="nav-link">Pixel Sliders</a>
+            <a href="https://haslun.studio/watercolor-lab.html" class="nav-link" target="_blank">Color Lab</a>
+          </div>
+        </div>
+      </nav>
+
+      <footer class="glass-footer">
+        <p>Web design and original watercolors by Will Haslun<br>© 2025 <a href="https://haslun.studio" target="_blank">Haslun.Studio</a></p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../watercolor-engine/watercolor-engine.js"></script>
+  <script src="../assets/js/loader.js"></script>
+  <script src="../assets/js/parallax.js"></script>
+  <script src="../assets/js/atmosphere.js"></script>
+  <script src="../assets/js/pixel-mode.js"></script>
+  
+  <script>
+    // Image list for preloading
+    const imagesToLoad = [
+      '../layers/Layer_0.png',
+      '../layers/Layer_1.png',
+      '../layers/Layer_2.png',
+      '../layers/Layer_3.png',
+      '../layers/Layer_4.png',
+      '../layers/Layer_5.png'
+    ];
+    
+    // Add animated layer frames if enabled
+    document.querySelectorAll('.parallax-layer[data-animated="true"]').forEach(layer => {
+      const frameCount = parseInt(layer.dataset.frames) || 20;
+      const folder = layer.dataset.folder;
+      for (let i = 0; i < frameCount; i++) {
+        imagesToLoad.push(`${folder}/frame-${String(i).padStart(3, '0')}.png`);
+      }
+    });
+    
+    // Initialize
+    async function init() {
+      // Use boot flag set by early script (prevents FOUC)
+      const isPixelMode = window.__haslunBoot?.pixelMode || false;
+      
+      // Initialize loader with appropriate mode
+      Loader.init(isPixelMode ? 'canvas' : 'dom');
+      
+      // Preload images
+      await Loader.preloadImages(imagesToLoad);
+      
+      // Initialize parallax
+      Parallax.init();
+      
+      // Initialize atmosphere and apply to parallax layers
+      const atmosphereColor = Atmosphere.init();
+      if (atmosphereColor) {
+        Parallax.applyAtmosphere(atmosphereColor);
+      }
+      
+      // Initialize pixel mode toggle (will sync with boot state)
+      PixelMode.init();
+    }
+    
+    init();
+  </script>
+
+</body>
+</html>

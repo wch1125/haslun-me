@@ -32,9 +32,8 @@
   
   <!-- Stylesheets -->
   <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/parallax.css">
   <link rel="stylesheet" href="assets/css/loader.css">
-  <link rel="stylesheet" href="assets/css/glass-overlay.css">
+  <link rel="stylesheet" href="assets/css/hub-peacocks.css">
   <link rel="stylesheet" href="assets/css/pixel-overlay.css">
 </head>
 <body>
@@ -49,57 +48,48 @@
     </div>
   </div>
 
-  <!-- Parallax Background -->
-  <div class="parallax-scene">
-    <div class="parallax-viewport" id="viewport">
-      <div class="parallax-layer layer-0" data-parallax="0">
-        <img src="layers/Layer_0.png" alt="">
-      </div>
-      <div class="parallax-layer layer-1" data-parallax="0.15" data-atmosphere="0.05">
-        <img src="layers/Layer_1.png" alt="">
-      </div>
-      <div class="parallax-layer layer-2" data-parallax="0.35" data-atmosphere="0.02">
-        <img src="layers/Layer_2.png" alt="">
-      </div>
-      <div class="parallax-layer layer-3" data-parallax="0.55" data-atmosphere="0.01"
-           data-animated="false" data-frames="20" data-folder="layers/Layer_3">
-        <img src="layers/Layer_3.png" alt="">
-      </div>
-      <div class="parallax-layer layer-4" data-parallax="0.8"
-           data-animated="false" data-frames="20" data-folder="layers/Layer_4">
-        <img src="layers/Layer_4.png" alt="">
-      </div>
-      <div class="parallax-layer layer-5" data-parallax="1.0">
-        <img src="layers/Layer_5.png" alt="">
-      </div>
-    </div>
+  <!-- Peacock GIF Background -->
+  <div class="peacock-stage" aria-hidden="true">
+    <img
+      src="assets/img/peacocks-breathe.gif"
+      alt=""
+      class="peacock-gif"
+      decoding="async"
+      fetchpriority="high"
+    />
   </div>
 
   <!-- Atmosphere wash overlays -->
   <div class="wash-overlay" id="wash-overlay"></div>
   <div class="transition-wash" id="transition-wash"></div>
 
-  <!-- Glass Menu Overlay -->
-  <div class="glass-overlay">
-    <div class="glass-panel">
-      <header class="brand">
-        <h1 class="brand-title">Haslun Studio</h1>
-        <p class="brand-tagline">Digital Watercolor Scenes</p>
-        <div class="brand-divider"></div>
+  <!-- Welcome trigger (center, opens menu) -->
+  <button class="welcome-trigger" id="welcomeTrigger" aria-expanded="false" aria-controls="hudPanel">
+    Welcome!
+  </button>
+
+  <!-- Docked Menu (non-blocking) -->
+  <div class="hud" id="hud">
+    <button class="hud-button" id="hudToggle" aria-expanded="false" aria-controls="hudPanel">
+      <span class="hud-icon">≡</span>
+      <span class="hud-label">Menu</span>
+    </button>
+
+    <div class="hud-panel" id="hudPanel" hidden>
+      <header class="hud-brand">
+        <div class="hud-title">Digital Watercolors</div>
+        <div class="hud-subtitle">paintings that breathe</div>
       </header>
 
-      <nav>
-        <div class="nav-section">
-          <div class="nav-links">
-            <a href="scenes/" class="nav-link">Living Scenes</a>
-            <a href="gallery/" class="nav-link">Pixel Sliders</a>
-            <a href="https://haslun.studio/watercolor-lab.html" class="nav-link" target="_blank">Color Lab</a>
-          </div>
-        </div>
+      <nav class="hud-nav">
+        <a class="hud-link" href="scenes/">Living Scenes</a>
+        <a class="hud-link" href="gallery/">Pixel Sliders</a>
+        <a class="hud-link" href="https://haslun.studio/watercolor-lab.html" target="_blank" rel="noopener">Color Lab</a>
+        <a class="hud-link" href="https://haslun.studio" target="_blank" rel="noopener">Haslun.studio</a>
       </nav>
 
-      <footer class="glass-footer">
-        <p>Web design and original watercolors by Will Haslun<br>© 2025 <a href="https://haslun.studio" target="_blank">Haslun.Studio</a></p>
+      <footer class="hud-footer">
+        <span>© 2025 Haslun</span>
       </footer>
     </div>
   </div>
@@ -107,29 +97,14 @@
   <!-- Scripts -->
   <script src="watercolor-engine/watercolor-engine.js"></script>
   <script src="assets/js/loader.js"></script>
-  <script src="assets/js/parallax.js"></script>
   <script src="assets/js/atmosphere.js"></script>
   <script src="assets/js/pixel-mode.js"></script>
   
   <script>
     // Image list for preloading
     const imagesToLoad = [
-      'layers/Layer_0.png',
-      'layers/Layer_1.png',
-      'layers/Layer_2.png',
-      'layers/Layer_3.png',
-      'layers/Layer_4.png',
-      'layers/Layer_5.png'
+      'assets/img/peacocks-breathe.gif'
     ];
-    
-    // Add animated layer frames if enabled
-    document.querySelectorAll('.parallax-layer[data-animated="true"]').forEach(layer => {
-      const frameCount = parseInt(layer.dataset.frames) || 20;
-      const folder = layer.dataset.folder;
-      for (let i = 0; i < frameCount; i++) {
-        imagesToLoad.push(`${folder}/frame-${String(i).padStart(3, '0')}.png`);
-      }
-    });
     
     // Initialize
     async function init() {
@@ -142,17 +117,60 @@
       // Preload images
       await Loader.preloadImages(imagesToLoad);
       
-      // Initialize parallax
-      Parallax.init();
+      // Initialize atmosphere (subtle wash over the GIF)
+      Atmosphere.init({ initialDelay: 3000 });
       
-      // Initialize atmosphere and apply to parallax layers
-      const atmosphereColor = Atmosphere.init();
-      if (atmosphereColor) {
-        Parallax.applyAtmosphere(atmosphereColor);
-      }
-      
-      // Initialize pixel mode toggle (will sync with boot state)
+      // Initialize pixel mode toggle
       PixelMode.init();
+      
+      // Initialize HUD menu
+      initHudMenu();
+    }
+    
+    // HUD menu toggle (mobile-safe)
+    function initHudMenu() {
+      const welcomeBtn = document.getElementById('welcomeTrigger');
+      const panel = document.getElementById('hudPanel');
+      if (!welcomeBtn || !panel) return;
+
+      const open = () => {
+        panel.hidden = false;
+        welcomeBtn.setAttribute('aria-expanded', 'true');
+        welcomeBtn.classList.add('hidden');
+        // Force reflow before adding class for animation
+        panel.offsetHeight;
+        panel.classList.add('open');
+      };
+
+      const close = () => {
+        panel.classList.remove('open');
+        welcomeBtn.setAttribute('aria-expanded', 'false');
+        // Allow animation to finish before hiding
+        setTimeout(() => { 
+          panel.hidden = true;
+          welcomeBtn.classList.remove('hidden');
+        }, 120);
+      };
+
+      welcomeBtn.addEventListener('click', () => {
+        const isOpen = welcomeBtn.getAttribute('aria-expanded') === 'true';
+        isOpen ? close() : open();
+      });
+
+      // Click outside closes
+      document.addEventListener('pointerdown', (e) => {
+        const isOpen = welcomeBtn.getAttribute('aria-expanded') === 'true';
+        if (!isOpen) return;
+        if (panel.contains(e.target) || welcomeBtn.contains(e.target)) return;
+        close();
+      });
+
+      // ESC closes
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        const isOpen = welcomeBtn.getAttribute('aria-expanded') === 'true';
+        if (isOpen) close();
+      });
     }
     
     init();

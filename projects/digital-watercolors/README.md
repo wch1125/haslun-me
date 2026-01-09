@@ -45,9 +45,15 @@ The goal is to build an interactive sketchbook where paintings feel alive. Each 
 
 ## What's Been Built
 
+### Hub Page (v1.1 — GIF-based)
+- **Animated peacock GIF** — Full-screen breathing animation created in Aseprite
+- **Docked HUD menu** — Non-blocking corner menu that doesn't hide the art
+- **Mobile-safe** — Safe-area aware, click-outside-to-close, ESC key support
+- **Pixel/glass modes** — Menu adapts to both visual styles
+
+The old parallax version is preserved in `legacy/index-parallax.html`.
+
 ### Core Experience
-- **Landing page** — Parallax peacock painting with 6 depth layers
-- **Glass overlay menu** — Museum-quality semi-transparent panel
 - **Gallery** — HD ↔ pixel comparison sliders for each painting
 - **Scene framework** — Template system for adding new animated paintings
 - **Loading screen** — Minimal branded loader with progress bar
@@ -68,7 +74,6 @@ The goal is to build an interactive sketchbook where paintings feel alive. Each 
 - **iOS motion permission** — Proper `DeviceOrientationEvent.requestPermission()` handling
 - **Reduced motion support** — Respects `prefers-reduced-motion`
 - **Mobile optimization** — Responsive design, touch-optimized interactions
-- **Layer 0 safety net** — Full art base layer catches any gaps in parallax
 
 ---
 
@@ -77,18 +82,22 @@ The goal is to build an interactive sketchbook where paintings feel alive. Each 
 ```
 digital-watercolors/
 │
-├── index.html                 # Landing page (modular, uses assets/)
+├── index.html                 # Landing page (GIF-based with docked HUD)
 ├── scenes.js                  # Scene registry
 ├── README.md                  # This file
 ├── _directory-tree.txt        # Project structure reference
 │
-├── assets/                    # Shared CSS and JavaScript modules
+├── assets/
 │   ├── css/
 │   │   ├── base.css           # Reset, variables, utilities
+│   │   ├── hub-peacocks.css   # GIF stage + HUD menu styles (NEW)
 │   │   ├── parallax.css       # Layer and atmosphere styles
 │   │   ├── loader.css         # Loading screen styles
 │   │   ├── glass-overlay.css  # Elegant glass panel menu
 │   │   └── pixel-overlay.css  # Retro pixel panel styles
+│   │
+│   ├── img/
+│   │   └── peacocks-breathe.gif  # Animated hub GIF (Aseprite)
 │   │
 │   └── js/
 │       ├── parallax.js        # rAF-based parallax with animation
@@ -96,7 +105,7 @@ digital-watercolors/
 │       ├── loader.js          # DOM and canvas loader options
 │       └── pixel-mode.js      # Toggle between glass/pixel UI
 │
-├── layers/                    # Parallax background layers (peacocks)
+├── layers/                    # Parallax background layers (for legacy/future)
 │   ├── Layer_0.png            # Full art (base/safety net)
 │   ├── Layer_1.png            # Background (orange + silhouettes)
 │   ├── Layer_2.png            # Far branch with flowers
@@ -123,6 +132,8 @@ digital-watercolors/
 │   └── AI-README.md           # Condensed docs for AI context
 │
 ├── legacy/                    # Previous designs (still maintained)
+│   ├── index-parallax.html    # Parallax version with glass overlay
+│   ├── index-pixel.html       # Canvas frame-based version
 │   ├── index-pixel.html       # Pixel-themed hub (v0.1-0.6)
 │   └── hub-frames/            # Animated peacock pixel frames
 │
@@ -399,6 +410,25 @@ Tested in:
 ---
 
 ## Version History
+
+### v1.1.0 — GIF-Based Hub with Docked Menu (2025-01-09)
+**New Hub Page:**
+- **Animated peacock GIF** — Full-screen breathing animation created in Aseprite
+- **Docked HUD menu** — Non-blocking corner menu that doesn't hide the artwork
+- **Responsive design** — Safe-area aware, mobile-friendly
+- **Pixel mode support** — Menu adapts styling for both glass and pixel modes
+
+**Menu Features:**
+- Click to expand/collapse
+- Click outside to close
+- ESC key to close
+- Smooth scale/opacity animation
+
+**Files added:** `assets/css/hub-peacocks.css`, `assets/img/peacocks-breathe.gif`
+**Files modified:** `index.html`
+**Files preserved:** `legacy/index-parallax.html` (previous glass overlay version)
+
+---
 
 ### v0.9.2 — Multi-Project Architecture (2025-01-08)
 **Architecture:**
