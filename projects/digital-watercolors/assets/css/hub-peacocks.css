@@ -1,30 +1,81 @@
 /**
  * Hub Peacocks CSS
  * Styles for the GIF-based landing page with docked HUD menu
- * v1.1.1 — Per ChatGPT review: burger visible, smaller panel, mobile bottom-sheet
+ * v1.1.2 — Dreamy wash + blur background, bug fixes per ChatGPT review
  */
 
-/* ===== Peacock background ===== */
+/* ===== Peacock background stage ===== */
 .peacock-stage {
   position: fixed;
   inset: 0;
   z-index: 0;
-  display: grid;
-  place-items: center;
-  background: #f8f6f1; /* warm white letterbox */
+  overflow: hidden;
+
+  /* warm paper base so it never feels like a harsh border */
+  background: #f6f2ea;
 }
 
-.peacock-gif {
+/* Back layer: fills screen, gently blurred */
+.peacock-back {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  object-fit: cover;
+
+  /* "slight" blur: keep this low */
+  filter: blur(10px) saturate(1.05) contrast(1.02);
+  opacity: 0.55;
+
+  transform: translate3d(0, 0, 0) scale(1.04);
+}
+
+/* Dreamy wash film: makes the empty space feel painted */
+.peacock-wash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  /* Layered gradients = watercolor atmosphere */
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 210, 160, 0.22), transparent 52%),
+    radial-gradient(circle at 70% 35%, rgba(90, 160, 210, 0.18), transparent 56%),
+    radial-gradient(circle at 55% 80%, rgba(80, 60, 40, 0.10), transparent 58%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.06));
+
+  /* tiny softening, not heavy */
+  filter: blur(2px);
+  opacity: 0.9;
+
+  /* This blend makes it feel like a wash on paper */
+  mix-blend-mode: multiply;
+}
+
+/* Subtle vignette to avoid "frame edges" */
+.peacock-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 58%, rgba(0, 0, 0, 0.16) 100%);
+  opacity: 0.28;
+}
+
+/* Front layer: always show full painting */
+.peacock-front {
+  position: absolute;
+  inset: 0;
+  margin: auto;
   width: 100vw;
   height: 100vh;
-  object-fit: contain;          /* show full top & bottom */
-  object-position: center;
+  object-fit: contain;
+
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   -ms-interpolation-mode: nearest-neighbor;
 }
 
-/* Keep wash overlays above GIF */
+/* Keep wash overlays above stage */
 .wash-overlay { 
   z-index: 1;
   pointer-events: none;
@@ -39,7 +90,7 @@
 .welcome-trigger {
   position: fixed;
   left: 50%;
-  top: 52%;
+  top: 58%; /* moved down to avoid birds' faces */
   transform: translate(-50%, -50%);
   z-index: 4;
 
@@ -77,8 +128,7 @@
   animation: welcomeBreathe 2.6s ease-in-out infinite;
 }
 
-/* Hide Welcome when menu open */
-.hud.is-open ~ .welcome-trigger,
+/* Hide Welcome when menu open (JS class only — sibling selector removed) */
 .welcome-trigger.is-hidden {
   opacity: 0;
   pointer-events: none;
@@ -100,7 +150,7 @@
   pointer-events: auto;
 }
 
-/* Burger button (visible!) */
+/* Burger button */
 .hud-button {
   display: inline-flex;
   align-items: center;
@@ -164,15 +214,15 @@
 .hud-swatches i:nth-child(4) { background: rgba(96, 64, 48, 0.60); }    /* Umber */
 .hud-swatches i:nth-child(5) { background: rgba(56, 72, 88, 0.60); }    /* Payne */
 
-/* Menu panel — smaller, less blocking */
+/* Menu panel — lighter glass, less blocking */
 .hud-panel {
   width: min(290px, calc(100vw - 24px));
   max-height: min(420px, calc(100vh - 90px));
   overflow: auto;
   padding: 14px 14px 12px;
 
-  /* Lighter glass — doesn't feel like heavy block */
-  background: rgba(20, 12, 8, 0.45);
+  /* Lighter glass — doesn't bulldoze composition */
+  background: rgba(20, 12, 8, 0.38);
   color: rgba(245, 245, 245, 0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -180,7 +230,7 @@
   border-radius: 18px;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.10),
-    0 16px 48px rgba(0, 0, 0, 0.40);
+    0 12px 36px rgba(0, 0, 0, 0.30);
 
   transform-origin: top left;
   transform: scale(0.96);
@@ -218,20 +268,20 @@
   padding: 8px 0 10px;
 }
 
-/* More compact links */
+/* More compact links, slightly lighter */
 .hud-link {
   display: block;
   padding: 9px 10px;
   border-radius: 12px;
   text-decoration: none;
   color: rgba(245, 245, 245, 0.92);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.07);
   font-family: var(--font-body, "DM Sans", system-ui, sans-serif);
   transition: background 0.15s ease;
 }
 
 .hud-link:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .hud-footer {
@@ -336,6 +386,7 @@ html.pixel-mode .hud-link:hover {
   
   .welcome-trigger {
     font-size: 10px;
+    top: 56%; /* slightly higher on mobile */
   }
   
   html.pixel-mode .hud-button {
@@ -345,8 +396,12 @@ html.pixel-mode .hud-link:hover {
 
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
-  .peacock-gif {
-    animation: none;
+  .peacock-back {
+    transform: translate3d(0, 0, 0) scale(1.04) !important;
+  }
+  
+  .peacock-wash {
+    transform: none !important;
   }
   
   .hud-panel {

@@ -48,25 +48,16 @@
     </div>
   </div>
 
-  <!-- Peacock GIF Background -->
+  <!-- Peacock Stage (dreamy wash + blur background) -->
   <div class="peacock-stage" aria-hidden="true">
-    <img
-      src="assets/img/peacocks-breathe.gif"
-      alt=""
-      class="peacock-gif"
-      decoding="async"
-      fetchpriority="high"
-    />
+    <img src="assets/img/peacocks-breathe.gif" alt="" class="peacock-back" />
+    <div class="peacock-wash"></div>
+    <img src="assets/img/peacocks-breathe.gif" alt="" class="peacock-front" />
   </div>
 
   <!-- Atmosphere wash overlays -->
   <div class="wash-overlay" id="wash-overlay"></div>
   <div class="transition-wash" id="transition-wash"></div>
-
-  <!-- Welcome trigger (center, opens menu) -->
-  <button class="welcome-trigger" id="welcomeTrigger" type="button" aria-label="Open menu">
-    Welcome!
-  </button>
 
   <!-- Docked Menu -->
   <div class="hud" id="hud">
@@ -96,6 +87,11 @@
       </footer>
     </div>
   </div>
+
+  <!-- Welcome trigger (after HUD so CSS sibling selector works) -->
+  <button class="welcome-trigger" id="welcomeTrigger" type="button" aria-label="Open menu">
+    Welcome!
+  </button>
 
   <!-- Scripts -->
   <script src="watercolor-engine/watercolor-engine.js"></script>
@@ -128,9 +124,13 @@
       
       // Initialize HUD menu
       initHudMenu();
+      
+      // Initialize background parallax (depth effect)
+      initBackgroundParallax();
     }
     
     // HUD menu toggle (both burger + welcome trigger)
+    // Fixed: clearTimeout race condition, rAF for consistent transitions
     function initHudMenu() {
       const hud = document.getElementById('hud');
       const btn = document.getElementById('hudToggle');
@@ -139,12 +139,18 @@
 
       if (!hud || !btn || !panel) return;
 
+      let closeTimer = null;
+
       const open = () => {
+        if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+
         panel.hidden = false;
         btn.setAttribute('aria-expanded', 'true');
-        panel.classList.add('open');
         hud.classList.add('is-open');
         if (welcome) welcome.classList.add('is-hidden');
+
+        // Ensure transition runs (rAF forces reflow)
+        requestAnimationFrame(() => panel.classList.add('open'));
       };
 
       const close = () => {
@@ -152,7 +158,12 @@
         btn.setAttribute('aria-expanded', 'false');
         hud.classList.remove('is-open');
         if (welcome) welcome.classList.remove('is-hidden');
-        setTimeout(() => { panel.hidden = true; }, 140);
+
+        if (closeTimer) clearTimeout(closeTimer);
+        closeTimer = setTimeout(() => {
+          panel.hidden = true;
+          closeTimer = null;
+        }, 160);
       };
 
       btn.addEventListener('click', () => {
@@ -177,6 +188,51 @@
         if (e.key !== 'Escape') return;
         const isOpen = btn.getAttribute('aria-expanded') === 'true';
         if (isOpen) close();
+      });
+    }
+    
+    // Micro-parallax on background blur layer only (adds depth, stays tasteful)
+    function initBackgroundParallax() {
+      const back = document.querySelector('.peacock-back');
+      const wash = document.querySelector('.peacock-wash');
+      if (!back) return;
+
+      // Respect reduced motion
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) return;
+
+      let tx = 0.5, ty = 0.5, cx = 0.5, cy = 0.5;
+      let raf = null;
+
+      const onMove = (x, y) => {
+        tx = x / window.innerWidth;
+        ty = y / window.innerHeight;
+      };
+
+      window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY), { passive: true });
+      window.addEventListener('touchmove', (e) => {
+        const t = e.touches[0];
+        onMove(t.clientX, t.clientY);
+      }, { passive: true });
+
+      function loop() {
+        cx += (tx - cx) * 0.08;
+        cy += (ty - cy) * 0.08;
+
+        const max = window.innerWidth < 520 ? 6 : 12; // subtle
+        const dx = (cx - 0.5) * max;
+        const dy = (cy - 0.5) * max * 0.6;
+
+        back.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.04)`;
+        if (wash) wash.style.transform = `translate3d(${dx * 0.4}px, ${dy * 0.4}px, 0)`;
+
+        raf = requestAnimationFrame(loop);
+      }
+      loop();
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && raf) { cancelAnimationFrame(raf); raf = null; }
+        if (!document.hidden && !raf) loop();
       });
     }
     
