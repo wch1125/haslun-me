@@ -173,7 +173,6 @@
       if (!sealBtn || !drawer) return;
 
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      let tiltEnabled = false;
 
       // Scroll lock
       const lockScroll = () => { document.documentElement.style.overflow = 'hidden'; };
@@ -185,7 +184,6 @@
         sealBtn.setAttribute('aria-expanded', 'true');
         if (backdrop) backdrop.hidden = false;
         lockScroll();
-        tryEnableTilt();
       }
 
       function closeDrawer() {
@@ -237,7 +235,7 @@
         drawer.style.removeProperty('--shadow-y');
       }
 
-      // Pointer parallax
+      // Pointer/touch parallax
       window.addEventListener('pointermove', (e) => {
         if (!drawer.classList.contains('is-open')) return;
         const rect = drawer.getBoundingClientRect();
@@ -246,27 +244,10 @@
         applyDrawerParallax(xNorm, yNorm);
       }, { passive: true });
 
-      // iOS tilt permission
-      async function enableDeviceTiltIfNeeded() {
-        if (prefersReducedMotion) return false;
-        if (typeof DeviceOrientationEvent !== 'undefined' &&
-            typeof DeviceOrientationEvent.requestPermission === 'function') {
-          try {
-            const result = await DeviceOrientationEvent.requestPermission();
-            return result === 'granted';
-          } catch { return false; }
-        }
-        return true;
-      }
-
-      async function tryEnableTilt() {
-        if (tiltEnabled) return;
-        tiltEnabled = await enableDeviceTiltIfNeeded();
-      }
-
-      // Device tilt parallax
+      // Device tilt parallax (works on Android + older iOS, silently ignored on newer iOS)
+      // No permission prompt — just listen and it works where supported
       window.addEventListener('deviceorientation', (e) => {
-        if (!tiltEnabled || !drawer.classList.contains('is-open') || prefersReducedMotion) return;
+        if (!drawer.classList.contains('is-open') || prefersReducedMotion) return;
         if (e.gamma == null || e.beta == null) return;
         const xNorm = clamp((e.gamma + 20) / 40, 0, 1);
         const yNorm = clamp((e.beta - 20) / 40, 0, 1);
