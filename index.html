@@ -289,6 +289,22 @@
             position: absolute;
             border-radius: 50%;
             opacity: 0;
+            transition: border-radius 0.1s ease;
+        }
+
+        /* Glitched ember state */
+        .firefly.glitched {
+            border-radius: 0 !important;
+            filter: blur(0) !important;
+            animation: emberGlitch 0.15s steps(2) forwards;
+        }
+
+        @keyframes emberGlitch {
+            0% { transform: translate(var(--x), var(--y)) skewX(0deg); }
+            25% { transform: translate(var(--x), var(--y)) skewX(20deg) scaleX(2); }
+            50% { transform: translate(var(--x), var(--y)) skewX(-15deg) scaleY(0.5); }
+            75% { transform: translate(var(--x), var(--y)) skewX(10deg); }
+            100% { transform: translate(var(--x), var(--y)) skewX(0deg); }
         }
 
         /* Parallax layers */
@@ -1299,6 +1315,236 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ============================================
+           ODST EASTER EGG FEATURES
+           ============================================ */
+
+        /* 1. Boot sequence text */
+        .boot-sequence {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
+
+        .boot-sequence.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .boot-text {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            animation: bootFlicker 0.1s ease infinite;
+        }
+
+        @keyframes bootFlicker {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* 2. Click ping ripple */
+        .ping-ripple {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: pingExpand 0.6s ease-out forwards;
+        }
+
+        @keyframes pingExpand {
+            0% {
+                opacity: 0.6;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(3);
+            }
+        }
+
+        /* 3. Status line in footer */
+        .status-line {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .status-item .label {
+            color: var(--text-dim);
+        }
+
+        .status-item .value {
+            color: var(--status-live);
+        }
+
+        .status-item .value.amber {
+            color: var(--accent);
+        }
+
+        /* 4. Glitch intensify on hover */
+        .domain-link:hover ~ .glitch-intensify,
+        .domain-item:hover ~ .glitch-intensify {
+            --glitch-active: 1;
+        }
+
+        /* 5. Last access in codex */
+        .codex-line.last-access .codex-value {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* ============================================
+           MOBILE HAUNTED GLITCH FEATURES
+           ============================================ */
+
+        /* Touch ripple glitch burst */
+        .touch-glitch-burst {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            z-index: 9997;
+            opacity: 0;
+        }
+
+        .touch-glitch-burst::before,
+        .touch-glitch-burst::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid var(--accent);
+            opacity: 0;
+        }
+
+        .touch-glitch-burst::before {
+            animation: glitchBurst1 0.3s ease-out forwards;
+        }
+
+        .touch-glitch-burst::after {
+            animation: glitchBurst2 0.3s ease-out 0.05s forwards;
+        }
+
+        @keyframes glitchBurst1 {
+            0% { transform: scale(0.2) skewX(0deg); opacity: 0.8; }
+            50% { transform: scale(1) skewX(15deg); opacity: 0.4; }
+            100% { transform: scale(1.5) skewX(-5deg); opacity: 0; }
+        }
+
+        @keyframes glitchBurst2 {
+            0% { transform: scale(0.3) skewY(0deg); opacity: 0.6; }
+            50% { transform: scale(0.8) skewY(-10deg); opacity: 0.3; }
+            100% { transform: scale(1.2) skewY(5deg); opacity: 0; }
+        }
+
+        /* Viewport entry glitch */
+        .domain-item.viewport-glitch .domain-name {
+            animation: viewportGlitch 0.2s steps(2) forwards;
+        }
+
+        @keyframes viewportGlitch {
+            0% { transform: translateX(0); filter: blur(0); }
+            25% { transform: translateX(-3px); filter: blur(1px); }
+            50% { transform: translateX(2px); filter: blur(0.5px); }
+            75% { transform: translateX(-1px); filter: blur(0); }
+            100% { transform: translateX(0); filter: blur(0); }
+        }
+
+        /* Proximity glow for touch-near elements */
+        .domain-item.proximity-active {
+            --proximity: 0;
+        }
+
+        .domain-item.proximity-active .domain-link::before {
+            opacity: calc(var(--proximity) * 0.5) !important;
+            box-shadow: inset 0 0 30px var(--accent-glow), 0 0 20px var(--accent-glow);
+        }
+
+        .domain-item.proximity-active .domain-name .glitch-char {
+            animation: proximityFlicker 0.1s steps(1) infinite;
+            animation-play-state: running;
+        }
+
+        @keyframes proximityFlicker {
+            0%, 90% { opacity: 1; }
+            91%, 100% { opacity: 0.7; }
+        }
+
+        /* Tilt-triggered screen corruption */
+        .tilt-corruption {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9996;
+            opacity: 0;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(201, 166, 107, 0.03) 25%,
+                transparent 50%,
+                rgba(201, 166, 107, 0.02) 75%,
+                transparent 100%
+            );
+            background-size: 200% 100%;
+            mix-blend-mode: overlay;
+        }
+
+        .tilt-corruption.active {
+            opacity: 1;
+            animation: tiltCorrupt 0.3s ease-out forwards;
+        }
+
+        @keyframes tiltCorrupt {
+            0% { background-position: 0% 0%; opacity: 0.8; }
+            100% { background-position: 200% 0%; opacity: 0; }
+        }
+
+        /* Ambient random glitch flash */
+        .ambient-glitch {
+            position: fixed;
+            width: 60px;
+            height: 2px;
+            background: var(--accent);
+            pointer-events: none;
+            z-index: 9995;
+            opacity: 0;
+            animation: ambientFlash 0.15s steps(2) forwards;
+        }
+
+        @keyframes ambientFlash {
+            0% { opacity: 0.8; transform: scaleX(0.5); }
+            30% { opacity: 1; transform: scaleX(1.5); }
+            60% { opacity: 0.6; transform: scaleX(0.8); }
+            100% { opacity: 0; transform: scaleX(1); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
@@ -1308,10 +1554,36 @@
             .firefly-field {
                 display: none;
             }
+
+            .boot-sequence {
+                display: none;
+            }
+
+            .ping-ripple,
+            .touch-glitch-burst,
+            .tilt-corruption,
+            .ambient-glitch {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .status-line {
+                gap: 1rem;
+                font-size: 0.5rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Boot Sequence -->
+    <div class="boot-sequence" id="boot-sequence">
+        <span class="boot-text">Establishing uplink...</span>
+    </div>
+
+    <!-- Tilt Corruption Overlay -->
+    <div class="tilt-corruption" id="tilt-corruption" aria-hidden="true"></div>
+
     <!-- Admin Mode Toggle (uncomment to enable)
     <button class="admin-toggle" id="admin-toggle" aria-label="Toggle admin mode">⚙ Admin</button>
     <div class="admin-bar">Admin Mode — Toggles persist locally</div>
@@ -1340,7 +1612,7 @@
                 <span class="glitch-char">D</span><span class="glitch-char">O</span><span class="glitch-char">M</span><span class="glitch-char">A</span><span class="glitch-char">I</span><span class="glitch-char">N</span><span class="glitch-char">S</span>
             </h1>
             <div class="meta-row">
-                <span><span class="dot"></span> 5 domains, 7 subpaths</span>
+                <span><span class="dot"></span> 4 domains, 5 subpaths</span>
             </div>
         </header>
 
@@ -1360,6 +1632,11 @@
                 <span class="codex-label">Last Update</span>
                 <span class="codex-divider">:</span>
                 <span class="codex-value" id="codex-update"></span>
+            </div>
+            <div class="codex-line last-access">
+                <span class="codex-label">Last Access</span>
+                <span class="codex-divider">:</span>
+                <span class="codex-value" id="codex-last-access"></span>
             </div>
         </div>
 
@@ -1500,7 +1777,7 @@
         <!-- Footer -->
         <footer class="footer">
             <div class="footer-links">
-                <a href="mailto:will@haslun.me" class="footer-link">Email</a>
+                <a href="/cdn-cgi/l/email-protection#ee99878282ae868f9d829b80c0838b" class="footer-link">Email</a>
                 <span class="footer-divider">/</span>
                 <a href="https://instagram.com/watercolorwill" class="footer-link" target="_blank" rel="noopener">Instagram</a>
                 <span class="footer-divider">/</span>
@@ -1518,6 +1795,11 @@
                 </svg>
                 Theme
             </button>
+            <div class="status-line">
+                <span class="status-item"><span class="label">Signal</span><span class="value">STRONG</span></span>
+                <span class="status-item"><span class="label">Encryption</span><span class="value">ACTIVE</span></span>
+                <span class="status-item"><span class="label">Session</span><span class="value amber" id="session-timer">00:00:00</span></span>
+            </div>
         </footer>
     </div>
 
@@ -1529,7 +1811,7 @@
         <span><span class="key">esc</span> Clear</span>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Theme Toggle
         const themeToggle = document.getElementById('theme-toggle');
         const html = document.documentElement;
@@ -2143,10 +2425,30 @@
         // ============================================
         // INFO CODEX TYPEWRITER EFFECT
         // ============================================
+        
+        // Calculate last access text
+        const storedLastVisit = localStorage.getItem('last-visit');
+        const currentTime = Date.now();
+        let lastAccessText = 'First visit';
+        
+        if (storedLastVisit) {
+            const diff = currentTime - parseInt(storedLastVisit);
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) lastAccessText = days === 1 ? '1 day ago' : `${days} days ago`;
+            else if (hours > 0) lastAccessText = hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+            else if (minutes > 0) lastAccessText = minutes === 1 ? '1 min ago' : `${minutes} mins ago`;
+            else lastAccessText = 'Just now';
+        }
+        
         const codexData = [
             { id: 'codex-location', text: 'Upper West Side, NYC' },
             { id: 'codex-creator', text: '_WCH_' },
-            { id: 'codex-update', text: '01 - 14 - 26' }
+            { id: 'codex-update', text: '01 - 14 - 26' },
+            { id: 'codex-last-access', text: lastAccessText }
         ];
 
         function typeWriter(element, text, speed = 50) {
@@ -2284,6 +2586,357 @@
         
         // Always start the animation loop
         updateParallax();
+
+        // ============================================
+        // ODST FEATURES
+        // ============================================
+
+        // 1. Boot Sequence
+        const bootSequence = document.getElementById('boot-sequence');
+        if (bootSequence && !sessionStorage.getItem('boot-shown')) {
+            setTimeout(() => {
+                bootSequence.classList.add('hidden');
+                sessionStorage.setItem('boot-shown', 'true');
+            }, 1200);
+        } else if (bootSequence) {
+            bootSequence.classList.add('hidden');
+        }
+
+        // 2. Click Ping Ripple (on empty space)
+        document.addEventListener('click', (e) => {
+            // Only trigger on empty space (not on interactive elements)
+            if (e.target.closest('a, button, input, .domain-link, .footer-link, .theme-toggle')) return;
+            
+            const ping = document.createElement('div');
+            ping.className = 'ping-ripple';
+            ping.style.left = (e.clientX - 10) + 'px';
+            ping.style.top = (e.clientY - 10) + 'px';
+            document.body.appendChild(ping);
+            
+            setTimeout(() => ping.remove(), 600);
+        });
+
+        // 3. Session Timer
+        const sessionTimer = document.getElementById('session-timer');
+        const sessionStart = Date.now();
+        
+        function updateSessionTimer() {
+            const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+            const hours = Math.floor(elapsed / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
+            const seconds = (elapsed % 60).toString().padStart(2, '0');
+            if (sessionTimer) {
+                sessionTimer.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }
+        
+        setInterval(updateSessionTimer, 1000);
+        updateSessionTimer();
+
+        // 4. Glitch Intensify on Hover
+        let glitchIntensityTimeout = null;
+        document.querySelectorAll('.domain-link').forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                // Trigger several rapid glitches
+                clearTimeout(glitchIntensityTimeout);
+                for (let i = 0; i < 4; i++) {
+                    setTimeout(() => {
+                        if (typeof glitchRandomChar === 'function') glitchRandomChar();
+                        if (typeof glitchSecondaryChar === 'function') glitchSecondaryChar();
+                    }, i * 50);
+                }
+            });
+        });
+
+        // 5. Last Access Timestamp
+        const lastAccessEl = document.getElementById('codex-last-access');
+        const lastVisit = localStorage.getItem('last-visit');
+        const now = Date.now();
+        
+        function getRelativeTime(timestamp) {
+            const diff = now - timestamp;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return days === 1 ? '1 day ago' : `${days} days ago`;
+            if (hours > 0) return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+            if (minutes > 0) return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+            return 'Just now';
+        }
+        
+        if (lastAccessEl) {
+            if (lastVisit) {
+                lastAccessEl.textContent = getRelativeTime(parseInt(lastVisit));
+            } else {
+                lastAccessEl.textContent = 'First visit';
+            }
+        }
+        
+        // Store this visit for next time
+        localStorage.setItem('last-visit', now.toString());
+
+        // ============================================
+        // MOBILE HAUNTED GLITCH FEATURES
+        // ============================================
+
+        const isMobileDevice = 'ontouchstart' in window || window.innerWidth <= 640;
+
+        // Option A: Touch/Tap Location Glitches
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('a, button, input')) return;
+            
+            const touch = e.touches[0];
+            
+            // Create glitch burst at touch location
+            const burst = document.createElement('div');
+            burst.className = 'touch-glitch-burst';
+            burst.style.left = (touch.clientX - 50) + 'px';
+            burst.style.top = (touch.clientY - 50) + 'px';
+            document.body.appendChild(burst);
+            
+            setTimeout(() => burst.remove(), 350);
+            
+            // Also trigger some text glitches
+            if (typeof glitchRandomChar === 'function') {
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => glitchRandomChar(), i * 40);
+                }
+            }
+        }, { passive: true });
+
+        // Option B: Scroll Position Glitches - Elements glitch as they enter viewport
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const viewportObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.glitched) {
+                    entry.target.dataset.glitched = 'true';
+                    entry.target.classList.add('viewport-glitch');
+                    
+                    // Glitch nearby embers too
+                    glitchNearbyEmbers(entry.target.getBoundingClientRect());
+                    
+                    setTimeout(() => {
+                        entry.target.classList.remove('viewport-glitch');
+                    }, 200);
+                }
+            });
+        }, observerOptions);
+
+        // Observe domain items
+        document.querySelectorAll('.domain-item').forEach(item => {
+            viewportObserver.observe(item);
+        });
+
+        // Reset glitched state when scrolling back up (so it triggers again)
+        let lastScrollY = window.scrollY;
+        window.addEventListener('scroll', () => {
+            if (window.scrollY < lastScrollY - 100) {
+                // Scrolling up significantly - reset some items
+                document.querySelectorAll('.domain-item[data-glitched]').forEach(item => {
+                    if (item.getBoundingClientRect().top > window.innerHeight) {
+                        delete item.dataset.glitched;
+                    }
+                });
+            }
+            lastScrollY = window.scrollY;
+        }, { passive: true });
+
+        // Option C: Device Tilt Glitches
+        const tiltCorruption = document.getElementById('tilt-corruption');
+        let lastTiltTime = 0;
+        const tiltThreshold = 25; // degrees
+        let lastGamma = 0;
+        let lastBeta = 0;
+
+        function handleTiltGlitch(e) {
+            if (e.gamma === null || e.beta === null) return;
+            
+            const now = Date.now();
+            const gammaDelta = Math.abs(e.gamma - lastGamma);
+            const betaDelta = Math.abs(e.beta - lastBeta);
+            
+            // Detect sharp tilt movement
+            if ((gammaDelta > tiltThreshold || betaDelta > tiltThreshold) && now - lastTiltTime > 500) {
+                lastTiltTime = now;
+                
+                // Trigger screen corruption
+                if (tiltCorruption) {
+                    tiltCorruption.classList.remove('active');
+                    void tiltCorruption.offsetWidth; // Force reflow
+                    tiltCorruption.classList.add('active');
+                    
+                    setTimeout(() => tiltCorruption.classList.remove('active'), 300);
+                }
+                
+                // Trigger multiple text glitches
+                if (typeof glitchRandomChar === 'function') {
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => {
+                            glitchRandomChar();
+                            if (typeof glitchSecondaryChar === 'function') glitchSecondaryChar();
+                        }, i * 30);
+                    }
+                }
+                
+                // Glitch some embers
+                glitchRandomEmbers(3);
+            }
+            
+            lastGamma = e.gamma;
+            lastBeta = e.beta;
+        }
+
+        if (isMobileDevice) {
+            window.addEventListener('deviceorientation', handleTiltGlitch);
+        }
+
+        // Option D: Random Ambient Glitches (more frequent on mobile)
+        function createAmbientGlitch() {
+            const glitch = document.createElement('div');
+            glitch.className = 'ambient-glitch';
+            glitch.style.left = (Math.random() * window.innerWidth) + 'px';
+            glitch.style.top = (Math.random() * window.innerHeight) + 'px';
+            glitch.style.transform = `rotate(${Math.random() * 360}deg)`;
+            glitch.style.width = (30 + Math.random() * 60) + 'px';
+            document.body.appendChild(glitch);
+            
+            setTimeout(() => glitch.remove(), 200);
+        }
+
+        function scheduleAmbientGlitch() {
+            const delay = isMobileDevice ? (2000 + Math.random() * 4000) : (4000 + Math.random() * 8000);
+            setTimeout(() => {
+                createAmbientGlitch();
+                // Sometimes do a burst
+                if (Math.random() < 0.3) {
+                    setTimeout(createAmbientGlitch, 50);
+                    setTimeout(createAmbientGlitch, 100);
+                }
+                scheduleAmbientGlitch();
+            }, delay);
+        }
+
+        scheduleAmbientGlitch();
+
+        // Option E: Proximity to Elements - Track finger during touch drag
+        let activeTouchId = null;
+        const domainItemsForProximity = document.querySelectorAll('.domain-item');
+
+        function updateProximity(touchX, touchY) {
+            domainItemsForProximity.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                const distance = Math.sqrt(
+                    Math.pow(touchX - centerX, 2) + 
+                    Math.pow(touchY - centerY, 2)
+                );
+                
+                const maxDistance = 150;
+                const proximity = Math.max(0, 1 - (distance / maxDistance));
+                
+                if (proximity > 0) {
+                    item.classList.add('proximity-active');
+                    item.style.setProperty('--proximity', proximity.toFixed(2));
+                    
+                    // Trigger glitches when very close
+                    if (proximity > 0.7 && Math.random() < 0.1) {
+                        if (typeof glitchSecondaryChar === 'function') glitchSecondaryChar();
+                    }
+                } else {
+                    item.classList.remove('proximity-active');
+                }
+            });
+        }
+
+        function clearAllProximity() {
+            domainItemsForProximity.forEach(item => {
+                item.classList.remove('proximity-active');
+            });
+        }
+
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                const touch = e.touches[0];
+                updateProximity(touch.clientX, touch.clientY);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => {
+            clearAllProximity();
+        });
+
+        document.addEventListener('touchcancel', () => {
+            clearAllProximity();
+        });
+
+        // ============================================
+        // EMBER GLITCH INTEGRATION
+        // ============================================
+
+        // Glitch embers near a specific location
+        function glitchNearbyEmbers(rect) {
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            fireflies.forEach(f => {
+                const distance = Math.sqrt(
+                    Math.pow(f.x - centerX, 2) + 
+                    Math.pow(f.y - centerY, 2)
+                );
+                
+                if (distance < 200 && Math.random() < 0.5) {
+                    glitchEmber(f);
+                }
+            });
+        }
+
+        // Glitch random embers
+        function glitchRandomEmbers(count = 2) {
+            const candidates = fireflies.filter(() => Math.random() < 0.3);
+            candidates.slice(0, count).forEach(f => glitchEmber(f));
+        }
+
+        // Glitch a single ember
+        function glitchEmber(firefly) {
+            if (!firefly || !firefly.element) return;
+            
+            const el = firefly.element;
+            el.style.setProperty('--x', firefly.x + 'px');
+            el.style.setProperty('--y', firefly.y + 'px');
+            el.classList.add('glitched');
+            
+            // Brief color shift
+            const originalHue = firefly.hue;
+            firefly.hue = originalHue + (Math.random() - 0.5) * 60;
+            
+            setTimeout(() => {
+                el.classList.remove('glitched');
+                firefly.hue = originalHue;
+            }, 150);
+        }
+
+        // Periodically glitch a random ember (ambient)
+        function scheduleEmberGlitch() {
+            const delay = isMobileDevice ? (3000 + Math.random() * 5000) : (5000 + Math.random() * 10000);
+            setTimeout(() => {
+                if (fireflies.length > 0 && Math.random() < 0.6) {
+                    const randomEmber = fireflies[Math.floor(Math.random() * fireflies.length)];
+                    glitchEmber(randomEmber);
+                }
+                scheduleEmberGlitch();
+            }, delay);
+        }
+
+        scheduleEmberGlitch();
     </script>
 </body>
 </html>
