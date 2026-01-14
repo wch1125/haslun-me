@@ -275,36 +275,274 @@
             50% { opacity: 0.8; }
         }
 
-        /* Firefly particles */
-        .firefly-field {
+        /* Pixel Ghost Field */
+        .ghost-field {
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 1;
             overflow: hidden;
-            transition: transform 0.1s ease-out;
         }
 
-        .firefly {
+        .pixel-ghost {
             position: absolute;
-            border-radius: 50%;
             opacity: 0;
-            transition: border-radius 0.1s ease;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            filter: drop-shadow(0 0 4px var(--accent));
         }
 
-        /* Glitched ember state */
-        .firefly.glitched {
-            border-radius: 0 !important;
-            filter: blur(0) !important;
-            animation: emberGlitch 0.15s steps(2) forwards;
+        /* Ghost glitch states */
+        .pixel-ghost.materializing {
+            animation: ghostMaterialize 0.4s steps(4) forwards;
         }
 
-        @keyframes emberGlitch {
-            0% { transform: translate(var(--x), var(--y)) skewX(0deg); }
-            25% { transform: translate(var(--x), var(--y)) skewX(20deg) scaleX(2); }
-            50% { transform: translate(var(--x), var(--y)) skewX(-15deg) scaleY(0.5); }
-            75% { transform: translate(var(--x), var(--y)) skewX(10deg); }
-            100% { transform: translate(var(--x), var(--y)) skewX(0deg); }
+        .pixel-ghost.dematerializing {
+            animation: ghostDematerialize 0.3s steps(3) forwards;
+        }
+
+        .pixel-ghost.glitching {
+            animation: ghostGlitch 0.2s steps(2) infinite;
+        }
+
+        .pixel-ghost.phasing {
+            animation: ghostPhase 0.15s steps(2) forwards;
+        }
+
+        @keyframes ghostMaterialize {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.3) translateY(10px);
+                filter: blur(4px) drop-shadow(0 0 8px var(--accent));
+            }
+            25% { 
+                opacity: 0.3; 
+                transform: scale(0.6) translateY(5px) skewX(10deg);
+                filter: blur(2px) drop-shadow(0 0 6px var(--accent));
+            }
+            50% { 
+                opacity: 0.6; 
+                transform: scale(1.1) translateY(-2px) skewX(-5deg);
+                filter: blur(1px) drop-shadow(0 0 4px var(--accent));
+            }
+            75% { 
+                opacity: 0.8; 
+                transform: scale(0.95) translateY(0) skewX(2deg);
+                filter: blur(0) drop-shadow(0 0 3px var(--accent));
+            }
+            100% { 
+                opacity: var(--ghost-opacity, 0.6); 
+                transform: scale(1) translateY(0);
+                filter: drop-shadow(0 0 4px var(--accent));
+            }
+        }
+
+        @keyframes ghostDematerialize {
+            0% { 
+                opacity: var(--ghost-opacity, 0.6); 
+                transform: scale(1);
+                filter: drop-shadow(0 0 4px var(--accent));
+            }
+            33% { 
+                opacity: 0.4; 
+                transform: scale(1.2) skewX(-15deg);
+                filter: blur(1px) drop-shadow(0 0 8px var(--accent));
+            }
+            66% { 
+                opacity: 0.2; 
+                transform: scale(0.5) skewX(20deg) translateY(-10px);
+                filter: blur(3px) drop-shadow(0 0 12px var(--accent));
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(0.1) translateY(-20px);
+                filter: blur(6px);
+            }
+        }
+
+        @keyframes ghostGlitch {
+            0% { 
+                transform: translate(var(--x), var(--y)) skewX(0deg);
+                filter: drop-shadow(0 0 4px var(--accent)) hue-rotate(0deg);
+            }
+            25% { 
+                transform: translate(calc(var(--x) + 3px), var(--y)) skewX(15deg) scaleX(1.3);
+                filter: drop-shadow(-2px 0 4px cyan) drop-shadow(2px 0 4px magenta) hue-rotate(30deg);
+            }
+            50% { 
+                transform: translate(calc(var(--x) - 2px), var(--y)) skewX(-10deg) scaleY(0.8);
+                filter: drop-shadow(0 0 8px var(--accent)) hue-rotate(-20deg);
+            }
+            75% { 
+                transform: translate(calc(var(--x) + 1px), var(--y)) skewX(5deg);
+                filter: drop-shadow(2px 0 4px cyan) drop-shadow(-2px 0 4px magenta) hue-rotate(15deg);
+            }
+            100% { 
+                transform: translate(var(--x), var(--y)) skewX(0deg);
+                filter: drop-shadow(0 0 4px var(--accent)) hue-rotate(0deg);
+            }
+        }
+
+        @keyframes ghostPhase {
+            0% { 
+                opacity: var(--ghost-opacity, 0.6);
+                transform: translateX(0);
+                filter: drop-shadow(0 0 4px var(--accent));
+            }
+            50% { 
+                opacity: 0.1;
+                transform: translateX(20px);
+                filter: blur(4px) drop-shadow(0 0 12px cyan);
+            }
+            100% { 
+                opacity: var(--ghost-opacity, 0.6);
+                transform: translateX(0);
+                filter: drop-shadow(0 0 4px var(--accent));
+            }
+        }
+
+        /* Ghost idle float animation */
+        @keyframes ghostFloat {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg); 
+            }
+            25% { 
+                transform: translateY(-3px) rotate(1deg); 
+            }
+            50% { 
+                transform: translateY(-6px) rotate(-1deg); 
+            }
+            75% { 
+                transform: translateY(-3px) rotate(0.5deg); 
+            }
+        }
+
+        /* ============================================
+           GENGAR - SPECIAL GHOST STYLES
+           ============================================ */
+        
+        .pixel-ghost.gengar {
+            filter: drop-shadow(0 0 8px rgba(88, 64, 120, 0.8)) 
+                    drop-shadow(0 0 16px rgba(88, 64, 120, 0.4));
+            z-index: 15; /* Above most content but can peek behind search */
+        }
+
+        /* Gengar peeking from behind the search bar */
+        .pixel-ghost.peeking-from-search {
+            z-index: 5; /* Behind the container content */
+            filter: drop-shadow(0 0 12px rgba(88, 64, 120, 0.9)) 
+                    drop-shadow(0 0 24px rgba(88, 64, 120, 0.5));
+        }
+
+        /* Gengar glitch is more dramatic */
+        .pixel-ghost.gengar.glitching {
+            animation: gengarGlitch 0.25s steps(3) infinite;
+        }
+
+        @keyframes gengarGlitch {
+            0% { 
+                filter: drop-shadow(0 0 8px rgba(88, 64, 120, 0.8)) hue-rotate(0deg);
+            }
+            20% { 
+                filter: drop-shadow(-4px 0 8px cyan) drop-shadow(4px 0 8px magenta) hue-rotate(40deg);
+            }
+            40% { 
+                filter: drop-shadow(0 0 15px rgba(88, 64, 120, 1)) hue-rotate(-30deg);
+            }
+            60% { 
+                filter: drop-shadow(3px 0 8px cyan) drop-shadow(-3px 0 8px magenta) hue-rotate(20deg);
+            }
+            80% { 
+                filter: drop-shadow(0 0 12px rgba(88, 64, 120, 0.9)) hue-rotate(-10deg);
+            }
+            100% { 
+                filter: drop-shadow(0 0 8px rgba(88, 64, 120, 0.8)) hue-rotate(0deg);
+            }
+        }
+
+        /* Scanline effect overlay */
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            opacity: 0.3;
+        }
+
+        /* CRT flicker */
+        .crt-flicker {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+            background: transparent;
+            animation: crtFlicker 0.1s infinite;
+        }
+
+        @keyframes crtFlicker {
+            0% { opacity: 0.02; }
+            50% { opacity: 0.04; }
+            100% { opacity: 0.02; }
+        }
+
+        /* Occasional screen tear */
+        .screen-tear {
+            position: fixed;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(201, 166, 107, 0.5) 20%,
+                rgba(0, 255, 255, 0.3) 50%,
+                rgba(255, 0, 255, 0.3) 80%,
+                transparent 100%
+            );
+            pointer-events: none;
+            z-index: 9997;
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+
+        .screen-tear.active {
+            animation: screenTear 0.15s steps(1) forwards;
+        }
+
+        @keyframes screenTear {
+            0% { opacity: 0.8; transform: translateX(-100%); }
+            100% { opacity: 0; transform: translateX(100%); }
+        }
+
+        /* Chromatic aberration on hover for the whole page */
+        .chromatic-shift {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9996;
+            opacity: 0;
+            mix-blend-mode: screen;
+        }
+
+        .chromatic-shift.active {
+            animation: chromaticPulse 0.1s ease-out forwards;
+        }
+
+        @keyframes chromaticPulse {
+            0% { 
+                opacity: 0.3;
+                box-shadow: inset -2px 0 0 rgba(255, 0, 0, 0.3), inset 2px 0 0 rgba(0, 255, 255, 0.3);
+            }
+            100% { 
+                opacity: 0;
+                box-shadow: inset -4px 0 0 rgba(255, 0, 0, 0), inset 4px 0 0 rgba(0, 255, 255, 0);
+            }
         }
 
         /* Parallax layers */
@@ -1551,7 +1789,11 @@
                 transition-duration: 0.01ms !important;
             }
             
-            .firefly-field {
+            .ghost-field,
+            .scanlines,
+            .crt-flicker,
+            .screen-tear,
+            .chromatic-shift {
                 display: none;
             }
 
@@ -1589,6 +1831,12 @@
     <div class="admin-bar">Admin Mode — Toggles persist locally</div>
     -->
 
+    <!-- CRT Effects -->
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="crt-flicker" aria-hidden="true"></div>
+    <div class="screen-tear" id="screen-tear" aria-hidden="true"></div>
+    <div class="chromatic-shift" id="chromatic-shift" aria-hidden="true"></div>
+
     <!-- Terminal atmosphere decorations -->
     <div class="ambient-glow parallax-bg parallax-deep" aria-hidden="true"></div>
     <div class="terminal-corner top-left" aria-hidden="true"></div>
@@ -1597,7 +1845,7 @@
     <div class="terminal-corner bottom-right" aria-hidden="true"></div>
     <div class="data-stream left parallax-bg parallax-mid" aria-hidden="true"></div>
     <div class="data-stream right parallax-bg parallax-mid" aria-hidden="true"></div>
-    <div class="firefly-field parallax-bg parallax-deep" id="firefly-field" aria-hidden="true"></div>
+    <div class="ghost-field" id="ghost-field" aria-hidden="true"></div>
     
     <!-- Depth effects -->
     <div class="depth-vignette" aria-hidden="true"></div>
@@ -2119,15 +2367,17 @@
             setTimeout(() => {
                 char.classList.remove('glitching');
                 char.textContent = originalChar;
-            }, 100 + Math.random() * 150);
+            }, 80 + Math.random() * 120);
         }
 
         function scheduleGlitch() {
-            const delay = 2000 + Math.random() * 4000;
+            // Much faster: 800-2000ms instead of 2000-6000ms
+            const delay = 800 + Math.random() * 1200;
             setTimeout(() => {
-                const burstCount = Math.random() > 0.7 ? Math.floor(Math.random() * 3) + 2 : 1;
+                // Higher chance of bursts, bigger bursts
+                const burstCount = Math.random() > 0.4 ? Math.floor(Math.random() * 4) + 2 : 1;
                 for (let i = 0; i < burstCount; i++) {
-                    setTimeout(glitchRandomChar, i * 80);
+                    setTimeout(glitchRandomChar, i * 50);
                 }
                 scheduleGlitch();
             }, delay);
@@ -2153,13 +2403,16 @@
         // Apply glitch capability to additional elements
         makeGlitchable('.domain-name');
         makeGlitchable('.codex-label');
+        makeGlitchable('.codex-value');
         makeGlitchable('.footer-link');
         makeGlitchable('.meta-row span:first-child');
+        makeGlitchable('.domain-tag');
+        makeGlitchable('.status-item .value');
 
         // Update glitchChars reference to include new elements
         const allGlitchChars = document.querySelectorAll('.glitch-char');
 
-        // Secondary glitch loop for other elements (less frequent)
+        // Secondary glitch loop for other elements (now much more frequent)
         function glitchSecondaryChar() {
             const chars = document.querySelectorAll('.glitchable .glitch-char');
             if (chars.length === 0) return;
@@ -2179,17 +2432,17 @@
             setTimeout(() => {
                 char.classList.remove('glitching');
                 char.textContent = originalChar;
-            }, 80 + Math.random() * 120);
+            }, 60 + Math.random() * 100);
         }
 
         function scheduleSecondaryGlitch() {
-            const delay = 3000 + Math.random() * 5000;
+            // Much faster: 600-1500ms instead of 3000-8000ms
+            const delay = 600 + Math.random() * 900;
             setTimeout(() => {
-                if (Math.random() > 0.5) {
-                    const burstCount = Math.floor(Math.random() * 2) + 1;
-                    for (let i = 0; i < burstCount; i++) {
-                        setTimeout(glitchSecondaryChar, i * 60);
-                    }
+                // Always glitch, higher burst chance
+                const burstCount = Math.random() > 0.3 ? Math.floor(Math.random() * 3) + 2 : 1;
+                for (let i = 0; i < burstCount; i++) {
+                    setTimeout(glitchSecondaryChar, i * 40);
                 }
                 scheduleSecondaryGlitch();
             }, delay);
@@ -2198,229 +2451,476 @@
         scheduleSecondaryGlitch();
 
         // ============================================
-        // EMBER PARTICLES - HYBRID PHYSICS + VISUAL VARIETY
+        // PIXEL GHOST PARTICLES - GHOST IN THE SHELL × GENGAR
         // ============================================
-        const fireflyField = document.getElementById('firefly-field');
-        const fireflies = [];
-        // Slightly reduced on mobile but still plenty
+        const ghostField = document.getElementById('ghost-field');
+        const ghosts = [];
         const isMobile = window.innerWidth <= 640;
-        const maxFireflies = isMobile ? 14 : 20;
+        const maxGhosts = isMobile ? 8 : 12;
 
-        // Color palette - warm golds, ambers, and occasional cool accent
-        const emberColors = [
-            { h: 38, s: 60, l: 55 },   // Gold
-            { h: 42, s: 65, l: 50 },   // Amber
-            { h: 35, s: 55, l: 60 },   // Pale gold
-            { h: 30, s: 70, l: 45 },   // Deep amber
-            { h: 45, s: 50, l: 58 },   // Soft yellow-gold
-            { h: 25, s: 60, l: 50 },   // Orange-gold
-            { h: 50, s: 40, l: 65 },   // Cream gold
-            { h: 20, s: 50, l: 55 },   // Copper hint
+        // Ghost pixel art patterns (8x8 - different ghost variants)
+        // Each ghost has multiple "frames" for animation variety
+        const ghostPatterns = [
+            // Classic rounded ghost
+            [
+                '00111100',
+                '01111110',
+                '11111111',
+                '11221122',
+                '11221122',
+                '11111111',
+                '11011011',
+                '10011001'
+            ],
+            // Spiky ghost
+            [
+                '01011010',
+                '11111111',
+                '11221122',
+                '11111111',
+                '11111111',
+                '01111110',
+                '10100101',
+                '00011000'
+            ],
+            // Wide ghost
+            [
+                '11111111',
+                '11221122',
+                '11221122',
+                '11111111',
+                '11111111',
+                '10111101',
+                '10011001',
+                '00000000'
+            ],
+            // Small ghost
+            [
+                '00111100',
+                '01122110',
+                '01122110',
+                '00111100',
+                '00100100',
+                '00000000',
+                '00000000',
+                '00000000'
+            ],
+            // Tall ghost
+            [
+                '00111100',
+                '01111110',
+                '11221122',
+                '11111111',
+                '11111111',
+                '11111111',
+                '01011010',
+                '10000001'
+            ]
         ];
 
-        class Firefly {
-            constructor() {
-                this.element = document.createElement('div');
-                this.element.className = 'firefly';
-                fireflyField.appendChild(this.element);
-                
-                // Random starting position - bias toward upper half
-                this.x = Math.random() * window.innerWidth;
-                this.y = Math.random() * window.innerHeight * 0.7;
-                
-                // Initial velocity - wandering with slight downward bias
-                this.vx = (Math.random() - 0.5) * 0.6;
-                this.vy = (Math.random() - 0.3) * 0.5;
-                
-                // Visual variety
-                const colorChoice = emberColors[Math.floor(Math.random() * emberColors.length)];
-                // Slight random variation on the chosen color
-                this.hue = colorChoice.h + (Math.random() - 0.5) * 10;
-                this.saturation = colorChoice.s + (Math.random() - 0.5) * 15;
-                this.lightness = colorChoice.l + (Math.random() - 0.5) * 10;
-                
-                // Size variety - most small, some medium, rare large
-                const sizeRoll = Math.random();
-                if (sizeRoll < 0.6) {
-                    this.size = 1.5 + Math.random() * 1.5; // Small: 1.5-3px
-                } else if (sizeRoll < 0.9) {
-                    this.size = 3 + Math.random() * 2; // Medium: 3-5px
-                } else {
-                    this.size = 5 + Math.random() * 2; // Large: 5-7px (rare)
+        // Special GENGAR pattern - uses numbers for different elements
+        // 1 = body (purple), 2 = eyes (red), 3 = grin (white), 4 = eye shine
+        // 16x14 with that iconic chunky Gengar silhouette - pointed ears, fat round body, wide grin
+        const gengarPattern = [
+            '0100000000000010',
+            '0110000000000110',
+            '0111000000001110',
+            '0011111111111100',
+            '0111111111111110',
+            '1111111111111111',
+            '1114221111224111',
+            '1111221111221111',
+            '1111111111111111',
+            '1133333333333311',
+            '1113333333333111',
+            '1111311331131111',
+            '0111111111111110',
+            '1100111111110011'
+        ];
+
+        // Create SVG from pixel pattern  
+        function createGhostSVG(pattern, color, eyeColor, grinColor = null) {
+            const pixelSize = 3;
+            const width = pattern[0].length * pixelSize;
+            const height = pattern.length * pixelSize;
+            
+            let pixels = '';
+            for (let y = 0; y < pattern.length; y++) {
+                for (let x = 0; x < pattern[y].length; x++) {
+                    const char = pattern[y][x];
+                    if (char === '1') {
+                        pixels += `<rect x="${x * pixelSize}" y="${y * pixelSize}" width="${pixelSize}" height="${pixelSize}" fill="${color}"/>`;
+                    } else if (char === '2') {
+                        pixels += `<rect x="${x * pixelSize}" y="${y * pixelSize}" width="${pixelSize}" height="${pixelSize}" fill="${eyeColor}"/>`;
+                    } else if (char === '3' && grinColor) {
+                        pixels += `<rect x="${x * pixelSize}" y="${y * pixelSize}" width="${pixelSize}" height="${pixelSize}" fill="${grinColor}"/>`;
+                    } else if (char === '4') {
+                        pixels += `<rect x="${x * pixelSize}" y="${y * pixelSize}" width="${pixelSize}" height="${pixelSize}" fill="rgba(255,255,255,0.9)"/>`;
+                    }
+                    // 0 and space = transparent/empty
                 }
-                
-                // Blur varies with size
-                this.baseBlur = this.size < 3 ? 0.5 + Math.random() * 0.5 : 1 + Math.random() * 1;
-                
-                // Glow intensity varies
-                this.glowIntensity = 0.5 + Math.random() * 1; // Multiplier for box-shadow spread
-                
-                // Glow properties
-                this.glowPhase = Math.random() * Math.PI * 2;
-                this.glowSpeed = 0.015 + Math.random() * 0.04; // More variety in pulse speed
-                this.maxOpacity = 0.25 + Math.random() * 0.6; // Wider opacity range
-                
-                // Lifespan - larger ones tend to live longer
-                const lifeMult = this.size > 4 ? 1.3 : 1;
-                this.life = 0;
-                this.maxLife = (300 + Math.random() * 500) * lifeMult;
-                this.fadeIn = 40 + Math.random() * 30;
-                this.fadeOut = 70 + Math.random() * 50;
-                
-                // Wandering behavior - smaller ones more erratic
-                this.wanderAngle = Math.random() * Math.PI * 2;
-                this.wanderSpeed = this.size < 3 ? 0.025 + Math.random() * 0.025 : 0.015 + Math.random() * 0.02;
-                this.wanderStrength = this.size < 3 ? 0.025 : 0.015; // How much wander affects velocity
-                
-                // Direction change timer
-                this.directionTimer = 0;
-                this.directionInterval = 40 + Math.random() * 80;
-                
-                // Apply initial styles
-                this.element.style.width = this.size + 'px';
-                this.element.style.height = this.size + 'px';
-                this.applyColor(1);
-                
-                this.update();
             }
             
-            applyColor(glowMultiplier) {
-                const l = this.lightness + (glowMultiplier - 0.5) * 15; // Brighter when glowing more
-                const color = `hsl(${this.hue}, ${this.saturation}%, ${l}%)`;
-                const glowColor = `hsla(${this.hue}, ${this.saturation}%, ${l}%, 0.6)`;
-                const outerGlow = `hsla(${this.hue}, ${this.saturation - 10}%, ${l - 10}%, 0.3)`;
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">${pixels}</svg>`;
+        }
+
+        class PixelGhost {
+            constructor(isGengar = false) {
+                this.isGengar = isGengar;
+                this.element = document.createElement('div');
+                this.element.className = 'pixel-ghost';
+                if (isGengar) this.element.classList.add('gengar');
+                ghostField.appendChild(this.element);
                 
-                this.element.style.background = color;
+                // Gengar peeks down from behind the search bar, upside down
+                if (isGengar) {
+                    const searchBar = document.querySelector('.search-wrapper');
+                    if (searchBar) {
+                        const rect = searchBar.getBoundingClientRect();
+                        // Position at search bar, centered horizontally
+                        this.x = rect.left + rect.width / 2 - 24; // Center the sprite
+                        this.y = rect.top - 60; // Start above/behind the bar (hidden)
+                        this.targetY = rect.top + 45; // Peek down further so full face is visible
+                    } else {
+                        this.x = window.innerWidth / 2;
+                        this.y = -60;
+                        this.targetY = 120;
+                    }
+                } else {
+                    this.x = Math.random() * window.innerWidth;
+                    this.y = Math.random() * window.innerHeight;
+                }
                 
-                const spread1 = 4 * this.glowIntensity;
-                const spread2 = 10 * this.glowIntensity;
-                this.element.style.boxShadow = `
-                    0 0 ${spread1}px ${spread1 / 2}px ${glowColor},
-                    0 0 ${spread2}px ${spread2 / 2}px ${outerGlow}
-                `;
+                // Movement - Gengar peeks down slowly
+                this.vx = isGengar ? 0 : (Math.random() - 0.5) * 0.3;
+                this.vy = isGengar ? 0.4 : (Math.random() - 0.5) * 0.2 - 0.1;
+                this.floatPhase = Math.random() * Math.PI * 2;
+                this.floatSpeed = isGengar ? 0.015 : 0.02 + Math.random() * 0.02;
+                
+                // Visual variety
+                this.patternIndex = Math.floor(Math.random() * ghostPatterns.length);
+                this.scale = isGengar ? 1.8 + Math.random() * 0.4 : 0.8 + Math.random() * 0.8;
+                
+                // Color - Gengar gets special purple, others get ghostly palette
+                if (isGengar) {
+                    // Classic Gengar purple with red eyes and white grin
+                    this.bodyColor = 'rgba(88, 64, 120, 0.85)';
+                    this.eyeColor = '#ff3333';
+                    this.grinColor = 'rgba(255, 255, 255, 0.9)';
+                } else {
+                    const colorOptions = [
+                        { body: 'rgba(201, 166, 107, 0.7)', eyes: '#000' },      // Gold ghost
+                        { body: 'rgba(180, 200, 180, 0.6)', eyes: '#300' },      // Pale green ghost
+                        { body: 'rgba(150, 180, 200, 0.6)', eyes: '#003' },      // Pale blue ghost
+                        { body: 'rgba(200, 170, 190, 0.6)', eyes: '#203' },      // Pale purple ghost
+                        { body: 'rgba(220, 200, 180, 0.5)', eyes: '#210' },      // Cream ghost
+                        { body: 'rgba(100, 200, 200, 0.5)', eyes: '#022' },      // Cyan ghost
+                    ];
+                    const colorChoice = colorOptions[Math.floor(Math.random() * colorOptions.length)];
+                    this.bodyColor = colorChoice.body;
+                    this.eyeColor = colorChoice.eyes;
+                    this.grinColor = null;
+                }
+                
+                // Create the ghost SVG
+                this.updateSprite();
+                
+                // Opacity and life - Gengar lives longer and is more visible
+                this.baseOpacity = isGengar ? 0.85 + Math.random() * 0.1 : 0.3 + Math.random() * 0.4;
+                this.element.style.setProperty('--ghost-opacity', this.baseOpacity);
+                
+                // Lifecycle
+                this.state = isGengar ? 'peeking' : 'materializing';
+                this.life = 0;
+                this.maxLife = isGengar ? 600 + Math.random() * 300 : 400 + Math.random() * 600;
+                this.glitchCooldown = 0;
+                this.peekPhase = 0; // For Gengar's peeking animation
+                
+                // Apply initial styles
+                if (isGengar) {
+                    // Gengar starts hidden above search bar, UPSIDE DOWN (rotated 180)
+                    this.element.style.transform = `translate(${this.x}px, ${this.y}px) scale(${this.scale}) rotate(180deg)`;
+                    this.element.style.opacity = '0';
+                    this.element.style.zIndex = '5'; // Behind the search bar initially
+                    this.element.classList.add('peeking-from-search');
+                } else {
+                    this.element.style.transform = `translate(${this.x}px, ${this.y}px) scale(${this.scale})`;
+                    this.element.classList.add('materializing');
+                    
+                    setTimeout(() => {
+                        this.element.classList.remove('materializing');
+                        this.state = 'alive';
+                    }, 400);
+                }
+            }
+            
+            updateSprite() {
+                if (this.isGengar) {
+                    const svg = createGhostSVG(gengarPattern, this.bodyColor, this.eyeColor, this.grinColor);
+                    this.element.innerHTML = svg;
+                } else {
+                    const svg = createGhostSVG(ghostPatterns[this.patternIndex], this.bodyColor, this.eyeColor);
+                    this.element.innerHTML = svg;
+                }
+            }
+            
+            glitch() {
+                if (this.glitchCooldown > 0 || (this.state !== 'alive' && this.state !== 'rising')) return;
+                
+                this.glitchCooldown = 30;
+                this.element.style.setProperty('--x', '0px');
+                this.element.style.setProperty('--y', '0px');
+                this.element.classList.add('glitching');
+                
+                // Brief color shift during glitch
+                const glitchColors = ['cyan', 'magenta', 'lime', this.bodyColor];
+                const glitchColor = glitchColors[Math.floor(Math.random() * glitchColors.length)];
+                if (this.isGengar) {
+                    const svg = createGhostSVG(gengarPattern, glitchColor, this.eyeColor, this.grinColor);
+                    this.element.innerHTML = svg;
+                } else {
+                    const svg = createGhostSVG(ghostPatterns[this.patternIndex], glitchColor, this.eyeColor);
+                    this.element.innerHTML = svg;
+                }
+                
+                setTimeout(() => {
+                    this.element.classList.remove('glitching');
+                    this.updateSprite();
+                }, 200);
+            }
+            
+            phase() {
+                if (this.state !== 'alive') return;
+                this.element.classList.add('phasing');
+                setTimeout(() => {
+                    this.element.classList.remove('phasing');
+                }, 150);
             }
             
             update() {
                 this.life++;
-                this.glowPhase += this.glowSpeed;
-                this.directionTimer++;
+                this.glitchCooldown = Math.max(0, this.glitchCooldown - 1);
+                this.floatPhase += this.floatSpeed;
                 
-                // Wandering - gradual angle changes
-                this.wanderAngle += (Math.random() - 0.5) * 0.3;
-                
-                // Apply wander force
-                this.vx += Math.cos(this.wanderAngle) * this.wanderStrength;
-                this.vy += Math.sin(this.wanderAngle) * this.wanderStrength;
-                
-                // Gentle gravity - slightly stronger for larger particles
-                const gravityMult = this.size > 4 ? 1.5 : 1;
-                this.vy += 0.003 * gravityMult;
-                
-                // Occasional direction shifts
-                if (this.directionTimer > this.directionInterval) {
-                    this.vx += (Math.random() - 0.5) * 0.2;
-                    this.vy += (Math.random() - 0.5) * 0.15;
+                // Gengar peeking down from behind search bar (upside down)
+                if (this.state === 'peeking' && this.isGengar) {
+                    this.peekPhase++;
                     
-                    // Small chance of updraft boost - lighter particles more likely
-                    const updraftChance = this.size < 3 ? 0.15 : 0.08;
-                    if (Math.random() < updraftChance) {
-                        this.vy -= 0.15 + Math.random() * 0.1;
+                    // Phase 1: Slowly peek down (0-80 frames)
+                    if (this.peekPhase < 80) {
+                        const progress = this.peekPhase / 80;
+                        const eased = 1 - Math.pow(1 - progress, 3); // Ease out
+                        this.y = this.y + (this.targetY - this.y) * 0.03;
+                        this.element.style.opacity = Math.min(this.baseOpacity, progress * this.baseOpacity);
+                        
+                        // Slight side-to-side sway while peeking
+                        const sway = Math.sin(this.floatPhase * 0.5) * 3;
+                        this.element.style.transform = `translate(${this.x + sway}px, ${this.y}px) scale(${this.scale}) rotate(180deg)`;
+                    }
+                    // Phase 2: Hold and look around menacingly (80-300 frames)
+                    else if (this.peekPhase < 300) {
+                        const sway = Math.sin(this.floatPhase * 0.3) * 5;
+                        const tilt = Math.sin(this.floatPhase * 0.2) * 3;
+                        this.element.style.transform = `translate(${this.x + sway}px, ${this.y}px) scale(${this.scale}) rotate(${180 + tilt}deg)`;
+                        this.element.style.opacity = this.baseOpacity;
+                        
+                        // Occasional glitch while lurking
+                        if (Math.random() < 0.015) {
+                            this.glitch();
+                        }
+                    }
+                    // Phase 3: Retreat back up (300+ frames)
+                    else {
+                        const retreatProgress = (this.peekPhase - 300) / 60;
+                        this.y -= 1.5; // Move back up
+                        this.element.style.opacity = Math.max(0, this.baseOpacity * (1 - retreatProgress));
+                        
+                        const sway = Math.sin(this.floatPhase * 0.5) * 2;
+                        this.element.style.transform = `translate(${this.x + sway}px, ${this.y}px) scale(${this.scale}) rotate(180deg)`;
+                        
+                        // Done retreating
+                        if (this.peekPhase > 360) {
+                            this.destroy();
+                            return false;
+                        }
                     }
                     
-                    this.directionTimer = 0;
-                    this.directionInterval = 30 + Math.random() * 70;
+                    return true;
                 }
                 
-                // Velocity damping
-                this.vx *= 0.98;
-                this.vy *= 0.98;
-                
-                // Clamp velocity - smaller particles can move faster
-                const maxSpeed = this.size < 3 ? 0.8 : 0.6;
-                this.vx = Math.max(-maxSpeed, Math.min(maxSpeed, this.vx));
-                this.vy = Math.max(-maxSpeed, Math.min(maxSpeed, this.vy));
-                
-                // Apply velocity
-                this.x += this.vx;
-                this.y += this.vy;
-                
-                // Soft boundary behavior
-                if (this.x < -40) this.x = window.innerWidth + 40;
-                if (this.x > window.innerWidth + 40) this.x = -40;
-                if (this.y < -40) {
-                    this.y = -40;
-                    this.vy = Math.abs(this.vy) * 0.5;
-                }
-                if (this.y > window.innerHeight + 60) {
-                    this.life = this.maxLife - 20;
-                }
-                
-                // Calculate opacity with fade in/out and flicker
-                let baseOpacity = this.maxOpacity;
-                
-                if (this.life < this.fadeIn) {
-                    baseOpacity *= this.life / this.fadeIn;
-                } else if (this.life > this.maxLife - this.fadeOut) {
-                    baseOpacity *= (this.maxLife - this.life) / this.fadeOut;
-                }
-                
-                // Ember flicker - organic pulsing with variety
-                const flicker1 = Math.sin(this.glowPhase);
-                const flicker2 = Math.sin(this.glowPhase * 2.3 + 1.5) * 0.3;
-                const flicker3 = Math.sin(this.glowPhase * 0.7) * 0.2; // Slower undertone
-                const glowMultiplier = 0.45 + (flicker1 * 0.25) + (flicker2 * 0.2) + (flicker3 * 0.1);
-                const opacity = baseOpacity * glowMultiplier;
-                
-                // Apply styles
-                this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
-                this.element.style.opacity = opacity;
-                
-                // Update color glow based on current brightness
-                this.applyColor(glowMultiplier);
-                
-                // Blur varies with glow
-                const blur = this.baseBlur + Math.sin(this.glowPhase * 0.7) * 0.3;
-                this.element.style.filter = `blur(${blur}px)`;
-                
-                if (this.life >= this.maxLife) {
-                    this.destroy();
-                    return false;
+                if (this.state === 'alive') {
+                    // Gentle floating movement (Gengar floats more lazily)
+                    const floatAmplitude = this.isGengar ? 3 : 2;
+                    const floatY = Math.sin(this.floatPhase) * floatAmplitude;
+                    const floatX = Math.sin(this.floatPhase * 0.7) * (this.isGengar ? 2 : 1);
+                    
+                    this.x += this.vx + floatX * 0.1;
+                    this.y += this.vy + floatY * 0.05;
+                    
+                    // Random direction changes (Gengar is more deliberate)
+                    const dirChangeChance = this.isGengar ? 0.005 : 0.01;
+                    if (Math.random() < dirChangeChance) {
+                        this.vx += (Math.random() - 0.5) * (this.isGengar ? 0.1 : 0.2);
+                        this.vy += (Math.random() - 0.5) * (this.isGengar ? 0.08 : 0.15);
+                    }
+                    
+                    // Velocity damping
+                    this.vx *= 0.99;
+                    this.vy *= 0.99;
+                    
+                    // Boundary wrapping
+                    if (this.x < -50) this.x = window.innerWidth + 50;
+                    if (this.x > window.innerWidth + 50) this.x = -50;
+                    if (this.y < -50) this.y = window.innerHeight + 50;
+                    if (this.y > window.innerHeight + 50) this.y = -50;
+                    
+                    // Random glitches (Gengar glitches more dramatically)
+                    const glitchChance = this.isGengar ? 0.008 : 0.005;
+                    if (Math.random() < glitchChance) {
+                        this.glitch();
+                    }
+                    
+                    // Random phases (brief teleport effect)
+                    if (Math.random() < 0.002) {
+                        this.phase();
+                    }
+                    
+                    // Apply transform
+                    const rotation = Math.sin(this.floatPhase * 0.5) * 3;
+                    this.element.style.transform = `translate(${this.x}px, ${this.y}px) scale(${this.scale}) rotate(${rotation}deg)`;
+                    this.element.style.opacity = this.baseOpacity;
+                    
+                    // Check if time to dematerialize
+                    if (this.life > this.maxLife) {
+                        this.state = 'dematerializing';
+                        this.element.classList.add('dematerializing');
+                        setTimeout(() => this.destroy(), 300);
+                    }
                 }
                 
-                return true;
+                return this.state !== 'destroyed';
             }
             
             destroy() {
+                this.state = 'destroyed';
                 this.element.remove();
-                const index = fireflies.indexOf(this);
-                if (index > -1) fireflies.splice(index, 1);
+                const index = ghosts.indexOf(this);
+                if (index > -1) ghosts.splice(index, 1);
             }
         }
 
-        function spawnFirefly() {
-            if (fireflies.length < maxFireflies) {
-                fireflies.push(new Firefly());
+        function spawnGhost() {
+            if (ghosts.length < maxGhosts) {
+                ghosts.push(new PixelGhost(false));
             }
         }
 
-        function updateFireflies() {
-            fireflies.forEach(f => f.update());
-            requestAnimationFrame(updateFireflies);
+        // Spawn the special Gengar ghost (rare)
+        function spawnGengar() {
+            // Only one Gengar at a time
+            const existingGengar = ghosts.find(g => g.isGengar);
+            if (!existingGengar && ghosts.length < maxGhosts + 1) {
+                ghosts.push(new PixelGhost(true));
+            }
         }
 
-        function scheduleFireflySpawn() {
-            spawnFirefly();
-            const delay = isMobile ? (700 + Math.random() * 1400) : (600 + Math.random() * 1300);
-            setTimeout(scheduleFireflySpawn, delay);
+        function updateGhosts() {
+            ghosts.forEach(g => g.update());
+            requestAnimationFrame(updateGhosts);
         }
 
-        // Initialize
-        updateFireflies();
-        scheduleFireflySpawn();
-        const initialSpawn = isMobile ? 5 : 7;
-        for (let i = 0; i < initialSpawn; i++) {
-            setTimeout(spawnFirefly, i * 250);
+        function scheduleGhostSpawn() {
+            spawnGhost();
+            const delay = isMobile ? (2000 + Math.random() * 3000) : (1500 + Math.random() * 2500);
+            setTimeout(scheduleGhostSpawn, delay);
         }
+
+        // Schedule rare Gengar spawns
+        function scheduleGengarSpawn() {
+            // Gengar appears every 20-45 seconds
+            const delay = 20000 + Math.random() * 25000;
+            setTimeout(() => {
+                spawnGengar();
+                scheduleGengarSpawn();
+            }, delay);
+        }
+
+        // Glitch nearby ghosts (for interaction events)
+        function glitchNearbyGhosts(rect) {
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            ghosts.forEach(g => {
+                const distance = Math.sqrt(
+                    Math.pow(g.x - centerX, 2) + 
+                    Math.pow(g.y - centerY, 2)
+                );
+                
+                if (distance < 200 && Math.random() < 0.6) {
+                    g.glitch();
+                }
+            });
+        }
+
+        // Glitch random ghosts
+        function glitchRandomGhosts(count = 2) {
+            const candidates = ghosts.filter(g => g.state === 'alive');
+            for (let i = 0; i < Math.min(count, candidates.length); i++) {
+                const randomGhost = candidates[Math.floor(Math.random() * candidates.length)];
+                if (randomGhost) randomGhost.glitch();
+            }
+        }
+
+        // Initialize ghosts
+        updateGhosts();
+        scheduleGhostSpawn();
+        scheduleGengarSpawn();
+        const initialGhosts = isMobile ? 3 : 5;
+        for (let i = 0; i < initialGhosts; i++) {
+            setTimeout(spawnGhost, i * 400);
+        }
+        // First Gengar appears after 8-15 seconds
+        setTimeout(spawnGengar, 8000 + Math.random() * 7000);
+
+        // CRT screen tear effect
+        const screenTear = document.getElementById('screen-tear');
+        const chromaticShift = document.getElementById('chromatic-shift');
+        
+        function triggerScreenTear() {
+            if (!screenTear) return;
+            screenTear.style.top = (Math.random() * window.innerHeight) + 'px';
+            screenTear.classList.remove('active');
+            void screenTear.offsetWidth;
+            screenTear.classList.add('active');
+            setTimeout(() => screenTear.classList.remove('active'), 150);
+        }
+        
+        function triggerChromaticShift() {
+            if (!chromaticShift) return;
+            chromaticShift.classList.remove('active');
+            void chromaticShift.offsetWidth;
+            chromaticShift.classList.add('active');
+            setTimeout(() => chromaticShift.classList.remove('active'), 100);
+        }
+        
+        // Schedule random screen tears
+        function scheduleScreenTear() {
+            const delay = 3000 + Math.random() * 8000;
+            setTimeout(() => {
+                triggerScreenTear();
+                // Sometimes trigger chromatic shift too
+                if (Math.random() < 0.4) {
+                    triggerChromaticShift();
+                }
+                // Sometimes glitch ghosts during tear
+                if (Math.random() < 0.5) {
+                    glitchRandomGhosts(2);
+                }
+                scheduleScreenTear();
+            }, delay);
+        }
+        
+        scheduleScreenTear();
 
         // ============================================
         // INFO CODEX TYPEWRITER EFFECT
@@ -2637,42 +3137,23 @@
         let glitchIntensityTimeout = null;
         document.querySelectorAll('.domain-link').forEach(link => {
             link.addEventListener('mouseenter', () => {
-                // Trigger several rapid glitches
+                // Trigger a storm of rapid glitches
                 clearTimeout(glitchIntensityTimeout);
-                for (let i = 0; i < 4; i++) {
+                for (let i = 0; i < 8; i++) {
                     setTimeout(() => {
                         if (typeof glitchRandomChar === 'function') glitchRandomChar();
-                        if (typeof glitchSecondaryChar === 'function') glitchSecondaryChar();
-                    }, i * 50);
+                        if (typeof glitchSecondaryChar === 'function') {
+                            glitchSecondaryChar();
+                            glitchSecondaryChar(); // Double up
+                        }
+                    }, i * 30);
                 }
             });
         });
 
-        // 5. Last Access Timestamp
-        const lastAccessEl = document.getElementById('codex-last-access');
-        const lastVisit = localStorage.getItem('last-visit');
+        // 5. Last Access - localStorage is set here so next visit calculates correctly
+        // (The display is handled by codexData and typewriter above)
         const now = Date.now();
-        
-        function getRelativeTime(timestamp) {
-            const diff = now - timestamp;
-            const seconds = Math.floor(diff / 1000);
-            const minutes = Math.floor(seconds / 60);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
-            
-            if (days > 0) return days === 1 ? '1 day ago' : `${days} days ago`;
-            if (hours > 0) return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
-            if (minutes > 0) return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
-            return 'Just now';
-        }
-        
-        if (lastAccessEl) {
-            if (lastVisit) {
-                lastAccessEl.textContent = getRelativeTime(parseInt(lastVisit));
-            } else {
-                lastAccessEl.textContent = 'First visit';
-            }
-        }
         
         // Store this visit for next time
         localStorage.setItem('last-visit', now.toString());
@@ -2698,10 +3179,13 @@
             
             setTimeout(() => burst.remove(), 350);
             
-            // Also trigger some text glitches
+            // Trigger a storm of text glitches on touch
             if (typeof glitchRandomChar === 'function') {
-                for (let i = 0; i < 3; i++) {
-                    setTimeout(() => glitchRandomChar(), i * 40);
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => {
+                        glitchRandomChar();
+                        if (typeof glitchSecondaryChar === 'function') glitchSecondaryChar();
+                    }, i * 30);
                 }
             }
         }, { passive: true });
@@ -2721,6 +3205,13 @@
                     
                     // Glitch nearby embers too
                     glitchNearbyEmbers(entry.target.getBoundingClientRect());
+                    
+                    // Also trigger text glitches
+                    for (let i = 0; i < 4; i++) {
+                        setTimeout(() => {
+                            if (typeof glitchSecondaryChar === 'function') glitchSecondaryChar();
+                        }, i * 40);
+                    }
                     
                     setTimeout(() => {
                         entry.target.classList.remove('viewport-glitch');
@@ -2762,8 +3253,8 @@
             const gammaDelta = Math.abs(e.gamma - lastGamma);
             const betaDelta = Math.abs(e.beta - lastBeta);
             
-            // Detect sharp tilt movement
-            if ((gammaDelta > tiltThreshold || betaDelta > tiltThreshold) && now - lastTiltTime > 500) {
+            // Detect sharp tilt movement (lower threshold, shorter cooldown)
+            if ((gammaDelta > tiltThreshold || betaDelta > tiltThreshold) && now - lastTiltTime > 300) {
                 lastTiltTime = now;
                 
                 // Trigger screen corruption
@@ -2775,18 +3266,21 @@
                     setTimeout(() => tiltCorruption.classList.remove('active'), 300);
                 }
                 
-                // Trigger multiple text glitches
+                // Trigger a storm of text glitches
                 if (typeof glitchRandomChar === 'function') {
-                    for (let i = 0; i < 5; i++) {
+                    for (let i = 0; i < 10; i++) {
                         setTimeout(() => {
                             glitchRandomChar();
-                            if (typeof glitchSecondaryChar === 'function') glitchSecondaryChar();
-                        }, i * 30);
+                            if (typeof glitchSecondaryChar === 'function') {
+                                glitchSecondaryChar();
+                                glitchSecondaryChar();
+                            }
+                        }, i * 25);
                     }
                 }
                 
-                // Glitch some embers
-                glitchRandomEmbers(3);
+                // Glitch more embers
+                glitchRandomEmbers(5);
             }
             
             lastGamma = e.gamma;
@@ -2879,64 +3373,30 @@
         });
 
         // ============================================
-        // EMBER GLITCH INTEGRATION
+        // GHOST GLITCH INTEGRATION (aliases for compatibility)
         // ============================================
 
-        // Glitch embers near a specific location
+        // Alias functions for backward compatibility with ember system
         function glitchNearbyEmbers(rect) {
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            fireflies.forEach(f => {
-                const distance = Math.sqrt(
-                    Math.pow(f.x - centerX, 2) + 
-                    Math.pow(f.y - centerY, 2)
-                );
-                
-                if (distance < 200 && Math.random() < 0.5) {
-                    glitchEmber(f);
-                }
-            });
+            glitchNearbyGhosts(rect);
         }
 
-        // Glitch random embers
         function glitchRandomEmbers(count = 2) {
-            const candidates = fireflies.filter(() => Math.random() < 0.3);
-            candidates.slice(0, count).forEach(f => glitchEmber(f));
+            glitchRandomGhosts(count);
         }
 
-        // Glitch a single ember
-        function glitchEmber(firefly) {
-            if (!firefly || !firefly.element) return;
-            
-            const el = firefly.element;
-            el.style.setProperty('--x', firefly.x + 'px');
-            el.style.setProperty('--y', firefly.y + 'px');
-            el.classList.add('glitched');
-            
-            // Brief color shift
-            const originalHue = firefly.hue;
-            firefly.hue = originalHue + (Math.random() - 0.5) * 60;
-            
+        // Periodically glitch a random ghost (ambient)
+        function scheduleAmbientGhostGlitch() {
+            const delay = isMobileDevice ? (2000 + Math.random() * 4000) : (3000 + Math.random() * 6000);
             setTimeout(() => {
-                el.classList.remove('glitched');
-                firefly.hue = originalHue;
-            }, 150);
-        }
-
-        // Periodically glitch a random ember (ambient)
-        function scheduleEmberGlitch() {
-            const delay = isMobileDevice ? (3000 + Math.random() * 5000) : (5000 + Math.random() * 10000);
-            setTimeout(() => {
-                if (fireflies.length > 0 && Math.random() < 0.6) {
-                    const randomEmber = fireflies[Math.floor(Math.random() * fireflies.length)];
-                    glitchEmber(randomEmber);
+                if (ghosts.length > 0 && Math.random() < 0.7) {
+                    glitchRandomGhosts(1 + Math.floor(Math.random() * 2));
                 }
-                scheduleEmberGlitch();
+                scheduleAmbientGhostGlitch();
             }, delay);
         }
 
-        scheduleEmberGlitch();
+        scheduleAmbientGhostGlitch();
     </script>
 </body>
 </html>
