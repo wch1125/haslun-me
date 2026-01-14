@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Will Haslun</title>
-    <meta name="description" content="Artist, tinkerer, writer. A few corners of the internet where I keep things (and occasionally redesign for no reason).">
+    <title>Haslun Domains</title>
+    <meta name="description" content="Index of domains maintained by Will Haslun.">
 
-    <!-- Fonts -->
+    <!-- Fonts: JetBrains Mono for that terminal feel, but softer -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Newsreader:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 
-    <!-- Structured identity -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -22,730 +21,2305 @@
         "https://haslun.studio",
         "https://haslun.ai",
         "https://haslan.xyz",
-        "https://instagram.com/watercolorwill",
-        "https://www.linkedin.com/in/willhaslun",
-        "https://bsky.app/profile/willful-ignorance.bsky.social"
+        "https://haslun.online"
       ]
     }
     </script>
 
     <style>
         :root {
-            --color-cream: #FAF7F2;
-            --color-warm-white: #FFFCF7;
-            --color-ink: #2C2A26;
-            --color-ink-light: #5A574F;
-            --color-terracotta: #C4846C;
-            --color-sage: #8B9A7D;
-            --color-slate: #6B7B8A;
-            --color-gold: #B8986B;
-            --font-serif: 'Cormorant Garamond', Georgia, serif;
-            --font-sans: 'DM Sans', -apple-system, sans-serif;
+            --bg: #0A0A09;
+            --bg-elevated: #121110;
+            --bg-hover: #1A1918;
+            --text: #B8B4A8;
+            --text-bright: #D4D0C4;
+            --text-dim: #7A7770;
+            --text-muted: #4A4840;
+            --accent: #C9A66B;
+            --accent-glow: rgba(201, 166, 107, 0.15);
+            --status-live: #7DB07D;
+            --status-live-glow: rgba(125, 176, 125, 0.3);
+            --status-wip: #C9A66B;
+            --status-soon: #6B6860;
+            --scan-color: rgba(201, 166, 107, 0.08);
+            --grid-color: rgba(201, 166, 107, 0.03);
+            --border: rgba(255, 255, 255, 0.06);
+            --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+            --font-serif: 'Newsreader', Georgia, serif;
         }
 
-        /* Dark mode colors */
-        [data-theme="dark"] {
-            --color-cream: #141312;
-            --color-warm-white: #1F1D1B;
-            --color-ink: #F5F2ED;
-            --color-ink-light: #A8A49C;
+        [data-theme="light"] {
+            --bg: #FAF8F5;
+            --bg-elevated: #FFFFFF;
+            --bg-hover: #F0EDE8;
+            --text: #3A3830;
+            --text-bright: #1A1918;
+            --text-dim: #7A776E;
+            --text-muted: #B5B0A5;
+            --border: rgba(0, 0, 0, 0.08);
+            --scan-color: rgba(201, 166, 107, 0.05);
+            --grid-color: rgba(201, 166, 107, 0.02);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        html { font-size: 16px; }
-
-        body {
-            font-family: var(--font-sans);
-            background: var(--color-cream);
-            color: var(--color-ink);
-            min-height: 100vh;
-            min-height: 100dvh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            position: relative;
-            overflow-x: hidden;
-            transition: background-color 0.35s ease, color 0.35s ease;
+        html {
+            font-size: 15px;
+            scroll-behavior: smooth;
+            /* Prevent pull-to-refresh on mobile */
+            overscroll-behavior: none;
         }
 
-        /* Subtle paper texture overlay */
+        body {
+            font-family: var(--font-mono);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            min-height: 100dvh;
+            transition: background 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
+            position: relative;
+            /* Prevent text selection issues on mobile */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ============================================
+           TERMINAL ATMOSPHERE
+           ============================================ */
+
+        /* Base grid pattern */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.03;
+            background: 
+                /* Horizontal scan lines */
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.03) 2px,
+                    rgba(0, 0, 0, 0.03) 4px
+                ),
+                /* Subtle grid */
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(0deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
             pointer-events: none;
             z-index: 1;
+            opacity: 0.8;
         }
 
-        [data-theme="dark"] body::before { opacity: 0.02; }
+        /* Scanning beam that sweeps the page - VERTICAL */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                var(--accent) 20%,
+                rgba(201, 166, 107, 0.9) 50%,
+                var(--accent) 80%,
+                transparent 100%
+            );
+            box-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent-glow);
+            pointer-events: none;
+            z-index: 2;
+            animation: scanBeamVertical 6s ease-in-out infinite;
+        }
 
-        /* Soft watercolor-inspired gradient wash */
-        .background-wash {
+        @keyframes scanBeamVertical {
+            0%, 100% { left: -10px; opacity: 0; }
+            5% { opacity: 1; }
+            95% { opacity: 1; }
+            100% { left: 100vw; opacity: 0; }
+        }
+
+        /* Corner decorations - terminal frame feel */
+        .terminal-corner {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            pointer-events: none;
+            z-index: 3;
+            opacity: 0.4;
+        }
+
+        .terminal-corner::before,
+        .terminal-corner::after {
+            content: '';
+            position: absolute;
+            background: var(--accent);
+        }
+
+        .terminal-corner.top-left {
+            top: 1rem;
+            left: 1rem;
+        }
+        .terminal-corner.top-left::before {
+            width: 20px;
+            height: 1px;
+            top: 0;
+            left: 0;
+        }
+        .terminal-corner.top-left::after {
+            width: 1px;
+            height: 20px;
+            top: 0;
+            left: 0;
+        }
+
+        .terminal-corner.top-right {
+            top: 1rem;
+            right: 1rem;
+        }
+        .terminal-corner.top-right::before {
+            width: 20px;
+            height: 1px;
+            top: 0;
+            right: 0;
+        }
+        .terminal-corner.top-right::after {
+            width: 1px;
+            height: 20px;
+            top: 0;
+            right: 0;
+        }
+
+        .terminal-corner.bottom-left {
+            bottom: 1rem;
+            left: 1rem;
+        }
+        .terminal-corner.bottom-left::before {
+            width: 20px;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+        }
+        .terminal-corner.bottom-left::after {
+            width: 1px;
+            height: 20px;
+            bottom: 0;
+            left: 0;
+        }
+
+        .terminal-corner.bottom-right {
+            bottom: 1rem;
+            right: 1rem;
+        }
+        .terminal-corner.bottom-right::before {
+            width: 20px;
+            height: 1px;
+            bottom: 0;
+            right: 0;
+        }
+        .terminal-corner.bottom-right::after {
+            width: 1px;
+            height: 20px;
+            bottom: 0;
+            right: 0;
+        }
+
+        /* Data stream in margins */
+        .data-stream {
+            position: fixed;
+            width: 1px;
+            top: 0;
+            bottom: 0;
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                var(--accent) 20%,
+                var(--accent) 80%,
+                transparent 100%
+            );
+            opacity: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .data-stream.left {
+            left: 2rem;
+            animation: streamPulse 4s ease-in-out infinite;
+        }
+
+        .data-stream.right {
+            right: 2rem;
+            animation: streamPulse 4s ease-in-out infinite 2s;
+        }
+
+        @keyframes streamPulse {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Ambient glow at top */
+        .ambient-glow {
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            animation: ambientPulse 6s ease-in-out infinite;
+        }
+
+        @keyframes ambientPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Firefly particles */
+        .firefly-field {
             position: fixed;
             inset: 0;
             pointer-events: none;
-            z-index: 0;
+            z-index: 1;
+            overflow: hidden;
+            transition: transform 0.1s ease-out;
         }
 
-        .wash-element {
+        .firefly {
             position: absolute;
             border-radius: 50%;
-            filter: blur(86px);
-            opacity: 0.26;
+            opacity: 0;
         }
 
-        .wash-1 {
-            width: 62vw;
-            height: 62vw;
-            background: linear-gradient(135deg, var(--color-terracotta), transparent 65%);
-            top: -22%;
-            right: -18%;
-            animation: float 22s ease-in-out infinite;
+        /* Parallax layers */
+        .parallax-bg {
+            transition: transform 0.15s ease-out;
+            will-change: transform;
         }
 
-        .wash-2 {
-            width: 52vw;
-            height: 52vw;
-            background: linear-gradient(225deg, var(--color-sage), transparent 62%);
-            bottom: -18%;
-            left: -12%;
-            animation: float 27s ease-in-out infinite reverse;
+        .parallax-deep {
+            /* Deepest layer - moves most */
         }
 
-        .wash-3 {
-            width: 36vw;
-            height: 36vw;
-            background: linear-gradient(180deg, var(--color-slate), transparent 60%);
-            top: 32%;
-            left: 8%;
-            opacity: 0.16;
-            animation: float 19s ease-in-out infinite 2s;
+        .parallax-mid {
+            /* Middle layer - moves less */
         }
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(16px, -22px) scale(1.02); }
-            66% { transform: translate(-12px, 16px) scale(0.985); }
-        }
-
-        /* Main card container */
-        .card {
-            background: var(--color-warm-white);
-            border-radius: 2px;
-            box-shadow:
-                0 1px 2px rgba(44, 42, 38, 0.04),
-                0 4px 16px rgba(44, 42, 38, 0.06),
-                0 24px 64px rgba(44, 42, 38, 0.08);
-            max-width: 460px;
-            width: 100%;
+        /* Glass/depth effect on container */
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 3rem 2rem 4rem;
             position: relative;
-            z-index: 2;
-            overflow: hidden;
-            transition: background-color 0.35s ease, box-shadow 0.35s ease;
+            z-index: 10;
+            /* Subtle inner shadow for recessed feel */
+            background: linear-gradient(
+                180deg,
+                rgba(10, 10, 9, 0.3) 0%,
+                transparent 15%,
+                transparent 85%,
+                rgba(10, 10, 9, 0.3) 100%
+            );
         }
 
-        [data-theme="dark"] .card {
-            box-shadow:
-                0 1px 2px rgba(0, 0, 0, 0.22),
-                0 4px 16px rgba(0, 0, 0, 0.28),
-                0 24px 64px rgba(0, 0, 0, 0.38);
+        /* Glass reflection overlay */
+        .glass-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 50;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.01) 0%,
+                transparent 40%,
+                transparent 60%,
+                rgba(255, 255, 255, 0.008) 100%
+            );
+            opacity: 0.5;
         }
 
-        /* Gold accent line at top */
-        .card::before {
+        /* Vignette for depth */
+        .depth-vignette {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 45;
+            box-shadow: inset 0 0 150px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="light"] .depth-vignette {
+            box-shadow: inset 0 0 150px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .glass-overlay {
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.03) 0%,
+                transparent 40%,
+                transparent 60%,
+                rgba(255, 255, 255, 0.02) 100%
+            );
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .title {
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            opacity: 0;
+            animation: fadeIn 0.6s ease forwards;
+            text-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .title span.slash {
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* Glitch effect - can be applied to any text */
+        .glitch-char {
+            display: inline-block;
+            position: relative;
+        }
+
+        .glitch-char.glitching {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+            animation: glitchFlicker 0.1s steps(1) infinite;
+        }
+
+        /* Glitchable text elements */
+        .glitchable {
+            display: inline;
+        }
+
+        .glitchable .glitch-char.glitching {
+            color: var(--accent);
+            text-shadow: 0 0 8px var(--accent);
+        }
+
+        @keyframes glitchFlicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .meta-row {
+            display: flex;
+            gap: 2rem;
+            margin-top: 0.5rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            opacity: 0;
+            animation: fadeIn 0.6s ease 0.2s forwards;
+        }
+
+        .meta-row span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-row .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--status-live);
+            box-shadow: 0 0 8px var(--status-live-glow);
+        }
+
+        /* Info Codex */
+        .info-codex {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-left: 2px solid var(--accent);
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            opacity: 0;
+            animation: fadeIn 0.6s ease 0.3s forwards;
+        }
+
+        .codex-line {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+            color: var(--text-dim);
+            min-height: 1.2em;
+        }
+
+        .codex-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .codex-label {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            min-width: 90px;
+        }
+
+        .codex-value {
+            color: var(--text-bright);
+            position: relative;
+        }
+
+        .codex-value.typing::after {
+            content: '▊';
+            color: var(--accent);
+            animation: cursorBlink 0.6s step-end infinite;
+            margin-left: 2px;
+        }
+
+        .codex-divider {
+            color: var(--accent);
+            margin: 0 0.25rem;
+        }
+
+        /* Search */
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeIn 0.6s ease 0.3s forwards;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.5rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 0.8125rem;
+            letter-spacing: 0.02em;
+            transition: all 0.2s ease;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-hover);
+            box-shadow: 0 0 20px var(--accent-glow), inset 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        /* Blinking cursor after placeholder */
+        .search-cursor {
+            position: absolute;
+            left: calc(2.5rem + 115px);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-size: 0.8125rem;
+            animation: cursorBlink 1s step-end infinite;
+            opacity: 0.7;
+            pointer-events: none;
+            font-family: var(--font-mono);
+        }
+
+        @keyframes cursorBlink {
+            0%, 50% { opacity: 0.7; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .search-input:focus ~ .search-cursor,
+        .search-input:not(:placeholder-shown) ~ .search-cursor {
+            display: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        /* Domain list */
+        .domain-list {
+            list-style: none;
+            opacity: 0;
+            animation: fadeIn 0.6s ease 0.4s forwards;
+        }
+
+        .domain-item {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .domain-item:first-child {
+            border-top: 1px solid var(--border);
+        }
+
+        /* Parent domains with children don't get bottom border */
+        .domain-item.has-children {
+            border-bottom: none;
+        }
+
+        .domain-link {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0.5rem;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .domain-link::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--color-terracotta), var(--color-gold), var(--color-sage));
-        }
-
-        .card-inner { padding: 3rem 2.5rem; }
-
-        /* Header section */
-        .header {
-            text-align: center;
-            margin-bottom: 2.25rem;
+            inset: 0;
+            background: var(--bg-hover);
             opacity: 0;
-            animation: fadeUp 0.8s ease-out 0.2s forwards;
+            transition: opacity 0.15s ease;
+            z-index: -1;
+            margin: 0 -0.5rem;
+            padding: 0 0.5rem;
         }
 
-        .name {
-            font-family: var(--font-serif);
-            font-size: 2.25rem;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-            color: var(--color-ink);
-            margin-bottom: 0.75rem;
-            line-height: 1.1;
+        .domain-link:hover::before,
+        .domain-link.focused::before {
+            opacity: 1;
+            box-shadow: inset 0 0 30px var(--accent-glow);
         }
 
-        .tagline {
-            font-family: var(--font-serif);
-            font-size: 1.125rem;
+        .domain-link:hover,
+        .domain-link.focused {
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .status-dot.live { 
+            background: var(--status-live);
+            box-shadow: 0 0 8px var(--status-live-glow), 0 0 16px var(--status-live-glow);
+            animation: statusGlow 3s ease-in-out infinite;
+        }
+
+        .status-dot.wip { 
+            background: var(--status-wip); 
+            box-shadow: 0 0 6px var(--accent-glow);
+            animation: statusBlink 2s ease-in-out infinite;
+        }
+
+        .status-dot.soon { 
+            background: var(--status-soon);
+            opacity: 0.5;
+        }
+
+        @keyframes statusGlow {
+            0%, 100% { box-shadow: 0 0 8px var(--status-live-glow), 0 0 16px var(--status-live-glow); }
+            50% { box-shadow: 0 0 12px var(--status-live-glow), 0 0 24px var(--status-live-glow); }
+        }
+
+        @keyframes statusBlink {
+            0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--accent-glow); }
+            50% { opacity: 0.5; box-shadow: 0 0 2px var(--accent-glow); }
+        }
+
+        .domain-name {
+            font-size: 0.875rem;
             font-weight: 400;
-            font-style: italic;
-            color: var(--color-ink-light);
             letter-spacing: 0.01em;
         }
 
-        .hubline {
-            margin-top: 0.9rem;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            color: var(--color-ink-light);
-            font-family: var(--font-sans);
-            font-style: normal;
-        }
-
-        /* Divider */
-        .divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
-            opacity: 0;
-            animation: fadeUp 0.8s ease-out 0.35s forwards;
-        }
-
-        .divider-line {
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--color-ink), transparent);
-            opacity: 0.12;
-        }
-
-        .divider-icon {
-            width: 8px;
-            height: 8px;
-            border: 1px solid var(--color-gold);
-            transform: rotate(45deg);
-            opacity: 0.6;
-        }
-
-        /* Bio section */
-        .bio {
-            text-align: center;
-            margin-bottom: 2.25rem;
-            opacity: 0;
-            animation: fadeUp 0.8s ease-out 0.5s forwards;
-        }
-
-        .bio p {
-            font-size: 0.9375rem;
-            line-height: 1.72;
-            color: var(--color-ink-light);
-            max-width: 340px;
-            margin: 0 auto;
-        }
-
-        /* Links section */
-        .links {
-            display: flex;
-            flex-direction: column;
-            gap: 0.875rem;
-            margin-bottom: 1.75rem;
-            opacity: 0;
-            animation: fadeUp 0.8s ease-out 0.65s forwards;
-        }
-
-        .link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 1.25rem;
-            background: var(--color-cream);
-            border-radius: 2px;
-            text-decoration: none;
-            color: var(--color-ink);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .link::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--color-gold);
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .link:hover {
-            background: var(--color-warm-white);
-            box-shadow: 0 4px 20px rgba(44, 42, 38, 0.08);
-            transform: translateY(-2px);
-        }
-
-        [data-theme="dark"] .link:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25); }
-
-        .link:hover::after { transform: scaleX(1); transform-origin: left; }
-
-        .link-content {
-            display: flex;
-            align-items: center;
-            gap: 0.875rem;
-        }
-
-        .link-icon {
-            width: 20px;
-            height: 20px;
-            color: var(--color-ink-light);
-            transition: color 0.3s ease;
-        }
-
-        .link:hover .link-icon { color: var(--color-terracotta); }
-
-        .link-label {
-            font-size: 0.875rem;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-        }
-
-        .link-meta {
-            font-size: 0.75rem;
-            color: var(--color-ink-light);
-            letter-spacing: 0.04em;
+        .domain-tag {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             text-align: right;
         }
 
-        .link-meta .diamond {
-            display: inline-block;
-            width: 4px;
-            height: 4px;
-            background: var(--color-gold);
-            transform: rotate(45deg);
-            margin: 0 0.4em;
-            vertical-align: middle;
-            position: relative;
-            top: -1px;
-        }
-
-        .link-arrow {
+        .domain-arrow {
             width: 16px;
             height: 16px;
-            color: var(--color-ink-light);
-            transition: all 0.3s ease;
-            opacity: 0.5;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            opacity: 0;
         }
 
-        .link:hover .link-arrow {
+        .domain-link:hover .domain-arrow,
+        .domain-link.focused .domain-arrow {
+            opacity: 1;
             transform: translateX(4px);
-            opacity: 1;
-            color: var(--color-gold);
+            color: var(--accent);
         }
 
-        /* Contact row */
-        .contact-row {
-            display: flex;
-            gap: 0.875rem;
+        /* Subpath items - indented children */
+        .domain-item.subpath {
+            border-top: none;
+            border-bottom: none;
         }
 
-        .contact-row .link {
-            flex: 1;
-            justify-content: center;
+        .domain-item.subpath.last-child {
+            border-bottom: 1px solid var(--border);
         }
 
-        .contact-row .link-content { justify-content: center; }
-        .contact-row .link-arrow { display: none; }
+        .domain-item.subpath .domain-link {
+            padding: 0.5rem 0.5rem 0.5rem 2.25rem;
+            position: relative;
+        }
 
-        /* Current project */
-        .current-project {
-            margin-top: 1.75rem;
+        .domain-item.subpath .domain-name {
+            font-size: 0.8125rem;
+            color: var(--text-dim);
+        }
+
+        .domain-item.subpath .domain-link:hover .domain-name,
+        .domain-item.subpath .domain-link.focused .domain-name {
+            color: var(--accent);
+        }
+
+        .domain-item.subpath .status-dot {
+            width: 6px;
+            height: 6px;
+        }
+
+        /* Subpath connector - minimal bracket style */
+        .domain-item.subpath .tree-line {
+            position: absolute;
+            left: 0.9rem;
+            width: 10px;
+            height: 1px;
+            background: var(--accent);
+            opacity: 0.25;
+            top: 50%;
+        }
+
+        .domain-item.subpath .tree-line::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 1px;
+            height: 200%;
+            background: linear-gradient(180deg, var(--accent) 0%, transparent 100%);
+            opacity: 0.3;
+            top: -100%;
+        }
+
+        /* Scanning highlight on subpath connector */
+        .domain-item.subpath .tree-line::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -2px;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), transparent);
             opacity: 0;
-            animation: fadeUp 0.8s ease-out 0.72s forwards;
+            animation: connectorScan 6s ease-in-out infinite;
         }
 
-        .current-project-label {
+        @keyframes connectorScan {
+            0%, 90%, 100% { opacity: 0; }
+            45%, 55% { opacity: 0.5; }
+        }
+
+        /* Hidden items via search */
+        .domain-item.hidden {
+            display: none;
+        }
+
+        /* Empty state */
+        .empty-state {
             text-align: center;
-            font-size: 0.7rem;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: var(--color-ink-light);
-            margin-bottom: 0.75rem;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+            display: none;
         }
 
-        .project-card {
+        .empty-state.visible {
             display: block;
-            text-decoration: none;
-            color: inherit;
-            background: rgba(44, 42, 38, 0.03);
-            border: 1px solid rgba(44, 42, 38, 0.08);
-            border-left: 3px solid var(--color-sage);
-            border-radius: 2px;
-            padding: 1rem 1.1rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        [data-theme="dark"] .project-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .project-card:hover {
-            transform: translateY(-2px);
-            background: rgba(44, 42, 38, 0.04);
-            box-shadow: 0 10px 30px rgba(44, 42, 38, 0.10);
-        }
-
-        [data-theme="dark"] .project-card:hover {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-        }
-
-        .project-title {
-            font-size: 0.95rem;
-            font-weight: 500;
-            letter-spacing: 0.01em;
-            margin-bottom: 0.25rem;
-        }
-
-        .project-subtitle {
-            font-size: 0.82rem;
-            color: var(--color-ink-light);
-            line-height: 1.5;
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            display: flex;
-            justify-content: center;
-            margin-top: 1.25rem;
-            opacity: 0;
-            animation: fadeUp 0.8s ease-out 0.78s forwards;
-        }
-
-        .theme-toggle-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.625rem 1.25rem;
-            background: transparent;
-            border: 1px solid var(--color-ink);
-            border-radius: 2px;
-            color: var(--color-ink);
-            font-family: var(--font-sans);
-            font-size: 0.75rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0.42;
-        }
-
-        .theme-toggle-btn:hover {
-            opacity: 1;
-            background: var(--color-cream);
-            border-color: var(--color-gold);
-            color: var(--color-gold);
-        }
-
-        .theme-toggle-btn svg { width: 14px; height: 14px; }
-
-        .theme-toggle-btn .sun { display: none; }
-        .theme-toggle-btn .moon { display: block; }
-
-        [data-theme="dark"] .theme-toggle-btn .sun { display: block; }
-        [data-theme="dark"] .theme-toggle-btn .moon { display: none; }
 
         /* Footer */
         .footer {
-            text-align: center;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(44, 42, 38, 0.06);
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             opacity: 0;
-            animation: fadeUp 0.8s ease-out 0.86s forwards;
+            animation: fadeIn 0.6s ease 0.5s forwards;
+            gap: 1rem;
         }
 
-        [data-theme="dark"] .footer { border-top-color: rgba(255, 255, 255, 0.06); }
-
-        .location {
+        .footer-links {
             display: flex;
-            align-items: center;
-            justify-content: center;
             gap: 0.5rem;
-            font-size: 0.8125rem;
-            color: var(--color-ink-light);
-            letter-spacing: 0.04em;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
+            transition: all 0.2s ease;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid transparent;
+            position: relative;
         }
 
-        .location-icon { width: 14px; height: 14px; opacity: 0.7; }
-
-        /* Social icons row */
-        .social-row {
-            display: flex;
-            justify-content: center;
-            gap: 1.25rem;
-            margin-top: 1.25rem;
+        .footer-link:hover {
+            color: var(--accent);
+            border-color: var(--border);
+            background: var(--bg-elevated);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        .social-link {
+        .footer-link::before {
+            content: '>';
+            margin-right: 0.3rem;
+            color: var(--accent);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .footer-link:hover::before {
+            opacity: 1;
+        }
+
+        .footer-divider {
+            color: var(--text-muted);
+            opacity: 0.3;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .theme-toggle svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .theme-toggle .icon-sun { display: none; }
+        .theme-toggle .icon-moon { display: block; }
+
+        [data-theme="light"] .theme-toggle .icon-sun { display: block; }
+        [data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
+        /* Keyboard hints */
+        .keyboard-hints {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            opacity: 0;
+            animation: fadeIn 0.6s ease 0.8s forwards;
+        }
+
+        .keyboard-hints span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .key {
+            display: inline-flex;
+            align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            font-size: 0.6rem;
+        }
+
+        @media (max-width: 640px) {
+            /* Hide desktop-only elements */
+            .keyboard-hints { display: none; }
+            .search-cursor { display: none; }
+            
+            /* Keep terminal corners but make them smaller */
+            .terminal-corner {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .terminal-corner.top-left,
+            .terminal-corner.bottom-left {
+                left: 0.5rem;
+            }
+            
+            .terminal-corner.top-right,
+            .terminal-corner.bottom-right {
+                right: 0.5rem;
+            }
+            
+            .terminal-corner.top-left,
+            .terminal-corner.top-right {
+                top: 0.5rem;
+            }
+            
+            .terminal-corner.bottom-left,
+            .terminal-corner.bottom-right {
+                bottom: 0.5rem;
+            }
+            
+            .terminal-corner::before {
+                width: 15px;
+            }
+            
+            .terminal-corner::after {
+                height: 15px;
+            }
+            
+            /* Keep data streams but more subtle */
+            .data-stream {
+                opacity: 0.5;
+            }
+            
+            .data-stream.left {
+                left: 0.75rem;
+            }
+            
+            .data-stream.right {
+                right: 0.75rem;
+            }
+            
+            /* Reduce container padding */
+            .container {
+                padding: 2rem 1rem 3rem;
+            }
+            
+            /* Keep vignette but lighter */
+            .depth-vignette {
+                box-shadow: inset 0 0 100px 30px rgba(0, 0, 0, 0.35);
+            }
+            
+            /* Header adjustments */
+            .header {
+                margin-bottom: 1rem;
+            }
+            
+            .title {
+                font-size: 0.7rem;
+                letter-spacing: 0.2em;
+            }
+            
+            .meta-row { 
+                flex-direction: column; 
+                gap: 0.25rem;
+                margin-top: 0.25rem;
+            }
+            
+            .meta-row span {
+                font-size: 0.6rem;
+            }
+            
+            /* Info codex - tighter on mobile */
+            .info-codex {
+                padding: 0.75rem;
+                margin-bottom: 1rem;
+                font-size: 0.6rem;
+            }
+            
+            .codex-label {
+                min-width: 75px;
+            }
+            
+            .codex-line {
+                gap: 0.35rem;
+            }
+            
+            /* Search adjustments */
+            .search-wrapper {
+                margin-bottom: 1.5rem;
+            }
+            
+            .search-input {
+                padding: 0.75rem 1rem 0.75rem 2.25rem;
+                font-size: 0.75rem;
+            }
+            
+            .search-icon {
+                left: 0.75rem;
+                width: 12px;
+                height: 12px;
+            }
+            
+            /* Domain list - simplified grid */
+            .domain-link {
+                grid-template-columns: auto 1fr auto;
+                gap: 0.75rem;
+                padding: 0.875rem 0.25rem;
+            }
+            
+            .domain-tag { display: none; }
+            
+            .domain-name {
+                font-size: 0.8rem;
+            }
+            
+            .domain-arrow {
+                width: 14px;
+                height: 14px;
+            }
+            
+            .status-dot {
+                width: 6px;
+                height: 6px;
+            }
+            
+            /* Subpath adjustments */
+            .domain-item.subpath .domain-link {
+                padding-left: 1.75rem;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            
+            .domain-item.subpath .domain-name {
+                font-size: 0.75rem;
+            }
+            
+            .domain-item.subpath .status-dot {
+                width: 5px;
+                height: 5px;
+            }
+            
+            .domain-item.subpath .tree-line {
+                left: 0.6rem;
+                width: 8px;
+            }
+            
+            /* Footer - stack on mobile */
+            .footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                margin-top: 2rem;
+                padding-top: 1.5rem;
+            }
+            
+            .footer-links {
+                gap: 0.25rem;
+            }
+            
+            .footer-link {
+                font-size: 0.6rem;
+                padding: 0.35rem 0.5rem;
+            }
+            
+            .footer-link::before {
+                display: none;
+            }
+            
+            .footer-divider {
+                font-size: 0.5rem;
+            }
+            
+            .theme-toggle {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.6rem;
+            }
+        }
+        
+        /* Extra small screens */
+        @media (max-width: 380px) {
+            .container {
+                padding: 1.5rem 0.75rem 2.5rem;
+            }
+            
+            .title {
+                font-size: 0.6rem;
+                letter-spacing: 0.15em;
+            }
+            
+            .info-codex {
+                font-size: 0.55rem;
+            }
+            
+            .codex-label {
+                min-width: 65px;
+            }
+            
+            .domain-name {
+                font-size: 0.75rem;
+            }
+            
+            .domain-item.subpath .domain-name {
+                font-size: 0.7rem;
+            }
+            
+            .footer-links {
+                flex-wrap: wrap;
+            }
+        }
+        
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            /* Larger tap targets */
+            .domain-link {
+                padding: 1rem 0.5rem;
+                min-height: 48px;
+            }
+            
+            .footer-link {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .theme-toggle {
+                min-height: 44px;
+            }
+            
+            /* Disable hover effects that don't work well on touch */
+            .domain-link:hover::before {
+                opacity: 0;
+            }
+            
+            .domain-link:active::before {
+                opacity: 1;
+            }
+            
+            .footer-link:hover {
+                color: var(--text-muted);
+                border-color: transparent;
+                background: transparent;
+                box-shadow: none;
+            }
+            
+            .footer-link:active {
+                color: var(--accent);
+                background: var(--bg-elevated);
+            }
+        }
+        
+        /* Landscape phone */
+        @media (max-width: 640px) and (orientation: landscape) {
+            .container {
+                padding-top: 1.5rem;
+                padding-bottom: 2rem;
+            }
+            
+            .header {
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+            
+            .info-codex {
+                margin-bottom: 0.75rem;
+            }
+        }
+
+        /* Admin Mode */
+        .admin-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 0.4rem 0.6rem;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0.4;
+            z-index: 100;
+        }
+
+        .admin-toggle:hover {
+            opacity: 1;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        [data-admin="true"] .admin-toggle {
+            opacity: 1;
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        /* Admin mode indicator bar */
+        .admin-bar {
+            display: none;
+            background: linear-gradient(90deg, var(--accent), #D4956A);
+            color: var(--bg);
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 500;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 99;
+        }
+
+        [data-admin="true"] .admin-bar {
+            display: block;
+        }
+
+        [data-admin="true"] .container {
+            padding-top: 4.5rem;
+        }
+
+        /* Toggle switch for each domain */
+        .domain-toggle {
+            display: none;
+            width: 32px;
+            height: 18px;
+            background: var(--text-muted);
+            border-radius: 9px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .domain-toggle::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--bg);
             border-radius: 50%;
-            background: transparent;
-            color: var(--color-ink-light);
-            transition: all 0.3s ease;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s ease;
         }
 
-        .social-link:hover {
-            background: var(--color-cream);
-            color: var(--color-ink);
-            transform: translateY(-2px);
+        .domain-toggle.enabled {
+            background: var(--status-live);
         }
 
-        .social-link svg { width: 18px; height: 18px; }
+        .domain-toggle.enabled::after {
+            transform: translateX(14px);
+        }
+
+        [data-admin="true"] .domain-toggle {
+            display: block;
+        }
+
+        [data-admin="true"] .domain-link {
+            grid-template-columns: auto auto 1fr auto auto;
+        }
+
+        [data-admin="true"] .domain-item.subpath .domain-link {
+            grid-template-columns: auto auto 1fr auto auto;
+        }
+
+        /* Disabled domain styling */
+        .domain-item.disabled .domain-link {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .domain-item.disabled .status-dot {
+            background: var(--text-muted) !important;
+            animation: none !important;
+        }
+
+        .domain-item.disabled .domain-name {
+            text-decoration: line-through;
+            text-decoration-color: var(--text-muted);
+        }
+
+        /* In admin mode, disabled links are still clickable for toggling */
+        [data-admin="true"] .domain-item.disabled .domain-link {
+            opacity: 0.5;
+            pointer-events: auto;
+        }
+
+        [data-admin="true"] .domain-item.disabled .domain-link:hover {
+            opacity: 0.7;
+        }
 
         /* Animations */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Mobile refinements */
-        @media (max-width: 480px) {
-            body {
-                padding: 1rem;
-                align-items: flex-start;
-                padding-top: 2rem;
-            }
-
-            .card-inner { padding: 2.25rem 1.75rem; }
-
-            .name { font-size: 1.875rem; }
-            .tagline { font-size: 1rem; }
-
-            .contact-row { flex-direction: column; }
-            .wash-1, .wash-2, .wash-3 { filter: blur(64px); }
-        }
-
-        @media (hover: none) {
-            .link:hover { transform: none; box-shadow: none; }
-            .project-card:hover { transform: none; box-shadow: none; }
-            .link:active { background: var(--color-warm-white); }
         }
 
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
+            }
+            
+            .firefly-field {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Background watercolor wash -->
-    <div class="background-wash" aria-hidden="true">
-        <div class="wash-element wash-1"></div>
-        <div class="wash-element wash-2"></div>
-        <div class="wash-element wash-3"></div>
+    <!-- Admin Mode Toggle (uncomment to enable)
+    <button class="admin-toggle" id="admin-toggle" aria-label="Toggle admin mode">⚙ Admin</button>
+    <div class="admin-bar">Admin Mode — Toggles persist locally</div>
+    -->
+
+    <!-- Terminal atmosphere decorations -->
+    <div class="ambient-glow parallax-bg parallax-deep" aria-hidden="true"></div>
+    <div class="terminal-corner top-left" aria-hidden="true"></div>
+    <div class="terminal-corner top-right" aria-hidden="true"></div>
+    <div class="terminal-corner bottom-left" aria-hidden="true"></div>
+    <div class="terminal-corner bottom-right" aria-hidden="true"></div>
+    <div class="data-stream left parallax-bg parallax-mid" aria-hidden="true"></div>
+    <div class="data-stream right parallax-bg parallax-mid" aria-hidden="true"></div>
+    <div class="firefly-field parallax-bg parallax-deep" id="firefly-field" aria-hidden="true"></div>
+    
+    <!-- Depth effects -->
+    <div class="depth-vignette" aria-hidden="true"></div>
+    <div class="glass-overlay" aria-hidden="true"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title" id="glitch-title" aria-label="Haslun / Domains">
+                <span class="glitch-char">H</span><span class="glitch-char">A</span><span class="glitch-char">S</span><span class="glitch-char">L</span><span class="glitch-char">U</span><span class="glitch-char">N</span>
+                <span class="slash"> / </span>
+                <span class="glitch-char">D</span><span class="glitch-char">O</span><span class="glitch-char">M</span><span class="glitch-char">A</span><span class="glitch-char">I</span><span class="glitch-char">N</span><span class="glitch-char">S</span>
+            </h1>
+            <div class="meta-row">
+                <span><span class="dot"></span> 5 domains, 7 subpaths</span>
+            </div>
+        </header>
+
+        <!-- Info Codex -->
+        <div class="info-codex">
+            <div class="codex-line">
+                <span class="codex-label">Location</span>
+                <span class="codex-divider">:</span>
+                <span class="codex-value" id="codex-location"></span>
+            </div>
+            <div class="codex-line">
+                <span class="codex-label">Creator</span>
+                <span class="codex-divider">:</span>
+                <span class="codex-value" id="codex-creator"></span>
+            </div>
+            <div class="codex-line">
+                <span class="codex-label">Last Update</span>
+                <span class="codex-divider">:</span>
+                <span class="codex-value" id="codex-update"></span>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input 
+                type="text" 
+                class="search-input" 
+                id="search" 
+                placeholder="Filter domains..." 
+                autocomplete="off"
+                spellcheck="false"
+            ><span class="search-cursor" id="search-cursor">▊</span>
+        </div>
+
+        <!-- Domain List -->
+        <ul class="domain-list" id="domain-list" role="list">
+            <!-- haslun.studio - with children -->
+            <li class="domain-item has-children" data-id="haslun-studio" data-tags="art watercolor painting gallery">
+                <a href="https://haslun.studio" class="domain-link" target="_blank" rel="noopener">
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot live" title="Live"></span>
+                    <span class="domain-name">haslun.studio</span>
+                    <span class="domain-tag">Watercolors</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+            <li class="domain-item subpath" data-id="haslun-studio-collectors" data-tags="collectors collection sold" data-parent="haslun.studio">
+                <a href="https://haslun.studio/collectors" class="domain-link" target="_blank" rel="noopener">
+                    <span class="tree-line"></span>
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot live" title="Live"></span>
+                    <span class="domain-name">/collectors</span>
+                    <span class="domain-tag">Collection</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+            <li class="domain-item subpath last-child" data-id="haslun-studio-digital-watercolors" data-tags="digital watercolor generative art experiments" data-parent="haslun.studio">
+                <a href="https://haslun.studio/color-lab/digital-watercolors" class="domain-link" target="_blank" rel="noopener">
+                    <span class="tree-line"></span>
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot wip" title="In Progress"></span>
+                    <span class="domain-name">/color-lab/digital-watercolors</span>
+                    <span class="domain-tag">Digital Art</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+
+            <!-- haslun.ai - with children -->
+            <li class="domain-item has-children" data-id="haslun-ai" data-tags="legal tech ai experiments tools">
+                <a href="https://haslun.ai" class="domain-link" target="_blank" rel="noopener">
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot live" title="Live"></span>
+                    <span class="domain-name">haslun.ai</span>
+                    <span class="domain-tag">Legal × Tech</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+            <li class="domain-item subpath last-child" data-id="haslun-ai-credit-agreement" data-tags="credit agreement contract demo closing checklist" data-parent="haslun.ai">
+                <a href="https://haslun.ai/credit-agreement" class="domain-link" target="_blank" rel="noopener">
+                    <span class="tree-line"></span>
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot live" title="Live"></span>
+                    <span class="domain-name">/credit-agreement</span>
+                    <span class="domain-tag">Demo</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+
+            <!-- haslan.xyz - with children -->
+            <li class="domain-item has-children" data-id="haslan-xyz" data-tags="writing essays fiction philosophy wiki">
+                <a href="https://haslan.xyz" class="domain-link" target="_blank" rel="noopener">
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot live" title="Live"></span>
+                    <span class="domain-name">haslan.xyz</span>
+                    <span class="domain-tag">Essays</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+            <li class="domain-item subpath last-child" data-id="haslan-xyz-projects" data-tags="projects tools experiments" data-parent="haslan.xyz">
+                <a href="https://haslan.xyz/projects" class="domain-link" target="_blank" rel="noopener">
+                    <span class="tree-line"></span>
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot live" title="Live"></span>
+                    <span class="domain-name">/projects</span>
+                    <span class="domain-tag">Wiki Tools</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+
+            <!-- haslun.online - with children -->
+            <li class="domain-item has-children" data-id="haslun-online" data-tags="games experiments interactive">
+                <a href="https://haslun.online" class="domain-link" target="_blank" rel="noopener">
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot live" title="Live"></span>
+                    <span class="domain-name">haslun.online</span>
+                    <span class="domain-tag">Experiments</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+            <li class="domain-item subpath" data-id="haslun-online-aquarelle" data-tags="color pigment mixing game art learning" data-parent="haslun.online">
+                <a href="https://haslun.online/aquarelle" class="domain-link" target="_blank" rel="noopener">
+                    <span class="tree-line"></span>
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot live" title="Live"></span>
+                    <span class="domain-name">/aquarelle</span>
+                    <span class="domain-tag">Pigment Mixer</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+            <li class="domain-item subpath last-child" data-id="haslun-online-space-capital" data-tags="space stocks finance dashboard arcade retro" data-parent="haslun.online">
+                <a href="https://haslun.online/space-capital" class="domain-link" target="_blank" rel="noopener">
+                    <span class="tree-line"></span>
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot wip" title="In Progress"></span>
+                    <span class="domain-name">/space-capital</span>
+                    <span class="domain-tag">Stock Dashboard</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+
+            <!-- haslun.me - with children -->
+            <li class="domain-item has-children" data-id="haslun-me" data-tags="hub home personal">
+                <a href="https://haslun.me" class="domain-link" target="_blank" rel="noopener">
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot live" title="Live"></span>
+                    <span class="domain-name">haslun.me</span>
+                    <span class="domain-tag">This page</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+            <li class="domain-item subpath last-child" data-id="haslun-me-projects" data-tags="cards invites menus templates tools" data-parent="haslun.me">
+                <a href="https://haslun.me/projects" class="domain-link" target="_blank" rel="noopener">
+                    <span class="tree-line"></span>
+                    <span class="domain-toggle enabled" title="Toggle visibility"></span>
+                    <span class="status-dot live" title="Live"></span>
+                    <span class="domain-name">/projects</span>
+                    <span class="domain-tag">Templates</span>
+                    <svg class="domain-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+
+        <p class="empty-state" id="empty-state">No domains match your search.</p>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="mailto:will@haslun.me" class="footer-link">Email</a>
+                <span class="footer-divider">/</span>
+                <a href="https://instagram.com/watercolorwill" class="footer-link" target="_blank" rel="noopener">Instagram</a>
+                <span class="footer-divider">/</span>
+                <a href="https://linkedin.com/in/willhaslun" class="footer-link" target="_blank" rel="noopener">LinkedIn</a>
+                <span class="footer-divider">/</span>
+                <a href="https://bsky.app/profile/willful-ignorance.bsky.social" class="footer-link" target="_blank" rel="noopener">Bluesky</a>
+            </div>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                </svg>
+                Theme
+            </button>
+        </footer>
     </div>
 
-    <!-- Main card -->
-    <main class="card">
-        <div class="card-inner">
-            <!-- Header -->
-            <header class="header">
-                <h1 class="name">Will Haslun</h1>
-                <p class="tagline">Attorney by training.<br>
-                    Painter by practice.<br>
-                    Writer when my thinking needs a place to live.</p>
-                <p class="hubline">This page is a hub. Three “main” sites below. The rest is whatever I’m currently building (or breaking).</p>
-            </header>
-
-            <!-- Divider -->
-            <div class="divider" aria-hidden="true">
-                <span class="divider-line"></span>
-                <span class="divider-icon"></span>
-                <span class="divider-line"></span>
-            </div>
-
-            <!-- Bio -->
-            <section class="bio">
-                <p>
-                    I paint New York in watercolor, build weird little legal-tech experiments,
-                    and write essays that orbit power, systems, and whatever won’t leave me alone.<br>
-                    Also: yes, I like designing web pages. Sorry in advance.
-                </p>
-            </section>
-
-            <!-- Links (main sites only) -->
-            <nav class="links" aria-label="Main sites">
-                <!-- Studio -->
-                <a href="https://haslun.studio" class="link" target="_blank" rel="noopener">
-                    <span class="link-content">
-                        <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                            <rect x="2" y="6" width="20" height="12" rx="1"/>
-                            <path d="M6 10l4 4 3-2 5 4"/>
-                            <circle cx="8" cy="10" r="1.5"/>
-                        </svg>
-                        <span class="link-label">Haslun.studio</span>
-                    </span>
-                    <span class="link-meta">Watercolors</span>
-                    <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-
-                <!-- AI / Legal tech -->
-                <a href="https://haslun.ai" class="link" target="_blank" rel="noopener">
-                    <span class="link-content">
-                        <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                            <path d="M2 17l10 5 10-5"/>
-                            <path d="M2 12l10 5 10-5"/>
-                        </svg>
-                        <span class="link-label">Haslun.ai</span>
-                    </span>
-                    <span class="link-meta">Legal <span class="diamond"></span> Tech <span class="diamond"></span> Experiments</span>
-                    <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-
-                <!-- Writing -->
-                <a href="https://haslan.xyz" class="link" target="_blank" rel="noopener">
-                    <span class="link-content">
-                        <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
-                            <path d="M8 7h8M8 11h6"/>
-                        </svg>
-                        <span class="link-label">Haslan.xyz</span>
-                    </span>
-                    <span class="link-meta">Essays <span class="diamond"></span> Fiction</span>
-                    <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-
-                <!-- Contact -->
-                <div class="contact-row">
-                    <a href="mailto:Haslun@pm.me" class="link" aria-label="Email Will Haslun">
-                        <span class="link-content">
-                            <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                                <path d="M22 6l-10 7L2 6"/>
-                            </svg>
-                            <span class="link-label">Email</span>
-                        </span>
-                    </a>
-                </div>
-            </nav>
-
-            <!-- Current Project (Haslun.online lives here now) -->
-            <section class="current-project" aria-label="Current project">
-                <div class="current-project-label">Current Projects</div>
-                
-                <a class="project-card" href="https://haslun.online" target="_blank" rel="noopener">
-                    <div class="project-title">Space Capital</div>
-                    <div class="project-subtitle">Retro arcade fleet command dashboard for space stocks (in progress, obviously)</div>
-                </a>
-                
-                <a class="project-card" href="https://haslun.me/projects/aquarelle" target="_blank" rel="noopener">
-                    <div class="project-title">Pigment Mixer</div>
-                    <div class="project-subtitle">Simple pigment mixing game to learn color theory.</div>
-                </a>
-
-                <a class="project-card" href="https://haslun.me/projects/digital-watercolors" target="_blank" rel="noopener">
-                    <div class="project-title">Digital Watercolors</div>
-                    <div class="project-subtitle">Exploring ways to make watercolor paintings into digital art.</div>
-                </a>
-            </section>
-
-            <!-- Theme Toggle -->
-            <div class="theme-toggle">
-                <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle dark mode">
-                    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                        <circle cx="12" cy="12" r="5"/>
-                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                    </svg>
-                    <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                    </svg>
-                    <span class="toggle-label">Toggle Theme</span>
-                </button>
-            </div>
-
-            <!-- Footer -->
-            <footer class="footer">
-                <div class="location">
-                    <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-                        <circle cx="12" cy="10" r="3"/>
-                    </svg>
-                    <span>Upper West Side, NYC</span>
-                </div>
-
-                <div class="social-row" aria-label="Social links">
-                    <a href="https://instagram.com/watercolorwill" class="social-link" target="_blank" rel="noopener me" aria-label="Instagram">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                            <rect x="2" y="2" width="20" height="20" rx="5"/>
-                            <circle cx="12" cy="12" r="4"/>
-                            <circle cx="18" cy="6" r="1" fill="currentColor"/>
-                        </svg>
-                    </a>
-                    <a href="https://www.linkedin.com/in/willhaslun" class="social-link" target="_blank" rel="noopener me" aria-label="LinkedIn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                            <rect x="2" y="2" width="20" height="20" rx="2"/>
-                            <path d="M8 11v5M8 8v.01M12 16v-5c0-1 .5-2 2-2s2 1 2 2v5"/>
-                        </svg>
-                    </a>
-                    <a href="https://bsky.app/profile/willful-ignorance.bsky.social" class="social-link" target="_blank" rel="noopener me" aria-label="Bluesky">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                            <path d="M12 3c-2.5 2.5-5 5.5-5 9 0 3 2 4.5 4 4.5.5 0 1-.1 1.5-.3-.5 1-1.5 1.8-3 1.8-1 0-2-.5-2.5-1-.5.5-.5 1.5 0 2 1 1 2.5 1.5 4 1.5 4 0 7-3 7-7.5 0-3.5-2.5-6.5-5-9-.3-.3-.7-.3-1 0z"/>
-                            <path d="M12 3c2.5 2.5 5 5.5 5 9 0 3-2 4.5-4 4.5-.5 0-1-.1-1.5-.3.5 1 1.5 1.8 3 1.8 1 0 2-.5 2.5-1 .5.5.5 1.5 0 2-1 1-2.5 1.5-4 1.5-4 0-7-3-7-7.5 0-3.5 2.5-6.5 5-9 .3-.3.7-.3 1 0z"/>
-                        </svg>
-                    </a>
-                </div>
-            </footer>
-        </div>
-    </main>
+    <!-- Keyboard hints -->
+    <div class="keyboard-hints">
+        <span><span class="key">↑</span><span class="key">↓</span> Navigate</span>
+        <span><span class="key">↵</span> Open</span>
+        <span><span class="key">/</span> Search</span>
+        <span><span class="key">esc</span> Clear</span>
+    </div>
 
     <script>
         // Theme Toggle
         const themeToggle = document.getElementById('theme-toggle');
         const html = document.documentElement;
-
-        // Check for saved preference or system preference
         const savedTheme = localStorage.getItem('theme');
         const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
         if (savedTheme) {
             html.setAttribute('data-theme', savedTheme);
-        } else if (systemPrefersDark) {
-            html.setAttribute('data-theme', 'dark');
+        } else if (!systemPrefersDark) {
+            html.setAttribute('data-theme', 'light');
         }
 
         themeToggle.addEventListener('click', () => {
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
         });
 
-        // Listen for system preference changes (only if user hasn't explicitly chosen)
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('theme')) {
-                html.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        // Search & Filter
+        const searchInput = document.getElementById('search');
+        const domainList = document.getElementById('domain-list');
+        const domainItems = Array.from(domainList.querySelectorAll('.domain-item'));
+        const emptyState = document.getElementById('empty-state');
+        let focusedIndex = -1;
+
+        function updateFilter() {
+            const query = searchInput.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            domainItems.forEach((item, index) => {
+                const name = item.querySelector('.domain-name').textContent.toLowerCase();
+                const tag = item.querySelector('.domain-tag')?.textContent.toLowerCase() || '';
+                const tags = item.dataset.tags?.toLowerCase() || '';
+                const matches = name.includes(query) || tag.includes(query) || tags.includes(query);
+
+                item.classList.toggle('hidden', !matches);
+                if (matches) visibleCount++;
+            });
+
+            emptyState.classList.toggle('visible', visibleCount === 0);
+            
+            // Reset focus when filtering
+            if (focusedIndex >= 0) {
+                const focused = domainItems[focusedIndex]?.querySelector('.domain-link');
+                if (focused) focused.classList.remove('focused');
+            }
+            focusedIndex = -1;
+        }
+
+        searchInput.addEventListener('input', updateFilter);
+
+        // Keyboard Navigation
+        function getVisibleItems() {
+            return domainItems.filter(item => !item.classList.contains('hidden'));
+        }
+
+        function setFocus(index) {
+            const visible = getVisibleItems();
+            
+            // Remove previous focus
+            domainItems.forEach(item => {
+                item.querySelector('.domain-link').classList.remove('focused');
+            });
+
+            if (index < 0 || index >= visible.length) {
+                focusedIndex = -1;
+                return;
+            }
+
+            focusedIndex = domainItems.indexOf(visible[index]);
+            visible[index].querySelector('.domain-link').classList.add('focused');
+            visible[index].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const visible = getVisibleItems();
+            const currentVisibleIndex = focusedIndex >= 0 ? visible.indexOf(domainItems[focusedIndex]) : -1;
+
+            if (e.key === '/') {
+                if (document.activeElement !== searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            } else if (e.key === 'Escape') {
+                searchInput.value = '';
+                searchInput.blur();
+                updateFilter();
+                setFocus(-1);
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (currentVisibleIndex < visible.length - 1) {
+                    setFocus(currentVisibleIndex + 1);
+                } else {
+                    setFocus(0);
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (currentVisibleIndex > 0) {
+                    setFocus(currentVisibleIndex - 1);
+                } else {
+                    setFocus(visible.length - 1);
+                }
+            } else if (e.key === 'Enter' && focusedIndex >= 0) {
+                e.preventDefault();
+                const link = domainItems[focusedIndex].querySelector('.domain-link');
+                if (link) window.open(link.href, '_blank');
             }
         });
+
+        // Click outside search clears focus
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.domain-link')) {
+                setFocus(-1);
+            }
+        });
+
+        // Update domain count dynamically
+        const parentCount = domainItems.filter(item => !item.classList.contains('subpath')).length;
+        const subpathCount = domainItems.filter(item => item.classList.contains('subpath')).length;
+        document.querySelector('.meta-row span:first-child').innerHTML = 
+            `<span class="dot"></span> ${parentCount} domains` + (subpathCount > 0 ? `, ${subpathCount} subpaths` : '');
+
+        // ============================================
+        // ADMIN MODE (uncomment HTML elements to enable UI)
+        // ============================================
+        const adminToggle = document.getElementById('admin-toggle');
+        const ADMIN_KEY = 'haslun-admin-mode';
+        const DISABLED_KEY = 'haslun-disabled-domains';
+
+        // Load admin state
+        function loadAdminState() {
+            const isAdmin = localStorage.getItem(ADMIN_KEY) === 'true';
+            document.body.setAttribute('data-admin', isAdmin);
+            return isAdmin;
+        }
+
+        // Load disabled domains
+        function loadDisabledDomains() {
+            try {
+                return JSON.parse(localStorage.getItem(DISABLED_KEY)) || [];
+            } catch {
+                return [];
+            }
+        }
+
+        // Save disabled domains
+        function saveDisabledDomains(disabled) {
+            localStorage.setItem(DISABLED_KEY, JSON.stringify(disabled));
+        }
+
+        // Apply disabled state to DOM
+        function applyDisabledStates() {
+            const disabled = loadDisabledDomains();
+            domainItems.forEach(item => {
+                const id = item.dataset.id;
+                const isDisabled = disabled.includes(id);
+                item.classList.toggle('disabled', isDisabled);
+                const toggle = item.querySelector('.domain-toggle');
+                if (toggle) {
+                    toggle.classList.toggle('enabled', !isDisabled);
+                }
+            });
+        }
+
+        // Toggle admin mode (only if button exists)
+        if (adminToggle) {
+            adminToggle.addEventListener('click', () => {
+                const current = document.body.getAttribute('data-admin') === 'true';
+                const next = !current;
+                document.body.setAttribute('data-admin', next);
+                localStorage.setItem(ADMIN_KEY, next);
+            });
+        }
+
+        // Handle toggle clicks (in admin mode)
+        domainList.addEventListener('click', (e) => {
+            const toggle = e.target.closest('.domain-toggle');
+            if (!toggle) return;
+            
+            const isAdmin = document.body.getAttribute('data-admin') === 'true';
+            if (!isAdmin) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const item = toggle.closest('.domain-item');
+            const id = item.dataset.id;
+            const disabled = loadDisabledDomains();
+            
+            if (disabled.includes(id)) {
+                // Enable it
+                const index = disabled.indexOf(id);
+                disabled.splice(index, 1);
+            } else {
+                // Disable it
+                disabled.push(id);
+            }
+            
+            saveDisabledDomains(disabled);
+            applyDisabledStates();
+        });
+
+        // Prevent navigation when clicking disabled links (unless admin)
+        domainList.addEventListener('click', (e) => {
+            const link = e.target.closest('.domain-link');
+            if (!link) return;
+
+            const item = link.closest('.domain-item');
+            const isDisabled = item.classList.contains('disabled');
+            const isAdmin = document.body.getAttribute('data-admin') === 'true';
+
+            if (isDisabled && !isAdmin) {
+                e.preventDefault();
+            }
+        });
+
+        // Secret activation: Triple-click the title to show admin button
+        // (Admin button is always visible but very subtle - this is optional extra hiding)
+        let clickCount = 0;
+        let clickTimer = null;
+        const title = document.querySelector('.title');
+        
+        title.addEventListener('click', () => {
+            clickCount++;
+            if (clickTimer) clearTimeout(clickTimer);
+            
+            if (clickCount === 3) {
+                // Toggle admin button visibility or just activate admin mode directly
+                const isAdmin = document.body.getAttribute('data-admin') === 'true';
+                document.body.setAttribute('data-admin', !isAdmin);
+                localStorage.setItem(ADMIN_KEY, !isAdmin);
+                clickCount = 0;
+            } else {
+                clickTimer = setTimeout(() => {
+                    clickCount = 0;
+                }, 400);
+            }
+        });
+
+        // Initialize
+        loadAdminState();
+        applyDisabledStates();
+
+        // ============================================
+        // GLITCH EFFECT - EXPANDED
+        // ============================================
+        const glitchChars = document.querySelectorAll('.glitch-char');
+        const glitchAlternates = {
+            'H': ['#', '4', 'Ħ', '|-|'],
+            'A': ['4', '@', 'Λ', '^'],
+            'S': ['$', '5', '§', 'Ş'],
+            'L': ['1', '|', 'Ł', '/'],
+            'U': ['Ü', 'µ', 'Û', 'V'],
+            'N': ['Ñ', 'И', '/\\/', 'П'],
+            'D': ['Đ', 'Ð', '[)', 'ↁ'],
+            'O': ['0', 'Ø', '○', 'Ó'],
+            'M': ['Μ', '/\\/\\', 'Ṁ', 'ℳ'],
+            'I': ['1', '|', '!', 'Ï'],
+            // Extended alphabet for other elements
+            'a': ['@', '4', 'α', 'ά'],
+            'b': ['6', '8', 'ß', 'β'],
+            'c': ['(', '<', '¢', 'ç'],
+            'd': ['đ', 'ð', '∂', 'δ'],
+            'e': ['3', '€', 'ε', 'ê'],
+            'f': ['ƒ', 'φ', '£', 'ғ'],
+            'g': ['9', '6', 'ǥ', 'ğ'],
+            'h': ['#', '|-|', 'ħ', 'н'],
+            'i': ['1', '!', '|', 'ï'],
+            'j': ['ʝ', ']', 'ј', 'ĵ'],
+            'k': ['κ', 'ķ', '|<', 'к'],
+            'l': ['1', '|', 'ł', 'ι'],
+            'm': ['м', '/\\/', 'ṁ', 'ɱ'],
+            'n': ['η', 'ñ', 'и', 'π'],
+            'o': ['0', 'ø', '○', 'σ'],
+            'p': ['ρ', 'þ', '¶', 'р'],
+            'q': ['ǫ', '9', 'ҩ', 'φ'],
+            'r': ['®', 'ř', 'г', 'ρ'],
+            's': ['$', '5', '§', 'ş'],
+            't': ['+', '†', 'τ', 'ŧ'],
+            'u': ['µ', 'ü', 'υ', 'ц'],
+            'v': ['√', 'ν', '\\/', 'υ'],
+            'w': ['ω', 'ψ', '\\/\\/', 'ш'],
+            'x': ['×', 'χ', '}{', 'ж'],
+            'y': ['¥', 'γ', 'ÿ', 'у'],
+            'z': ['2', 'ζ', 'ž', 'з'],
+            '-': ['~', '—', '–', '='],
+            '/': ['\\', '|', '¦', '÷'],
+            '.': ['·', '•', ':', ','],
+        };
+
+        function glitchRandomChar() {
+            const randomIndex = Math.floor(Math.random() * glitchChars.length);
+            const char = glitchChars[randomIndex];
+            const originalChar = char.textContent;
+            const alternates = glitchAlternates[originalChar] || glitchAlternates[originalChar.toLowerCase()];
+            
+            if (!alternates) return;
+            
+            const glitchedChar = alternates[Math.floor(Math.random() * alternates.length)];
+            
+            char.classList.add('glitching');
+            char.textContent = glitchedChar;
+            
+            setTimeout(() => {
+                char.classList.remove('glitching');
+                char.textContent = originalChar;
+            }, 100 + Math.random() * 150);
+        }
+
+        function scheduleGlitch() {
+            const delay = 2000 + Math.random() * 4000;
+            setTimeout(() => {
+                const burstCount = Math.random() > 0.7 ? Math.floor(Math.random() * 3) + 2 : 1;
+                for (let i = 0; i < burstCount; i++) {
+                    setTimeout(glitchRandomChar, i * 80);
+                }
+                scheduleGlitch();
+            }, delay);
+        }
+
+        scheduleGlitch();
+
+        // Glitch additional elements: domain names, codex labels, footer links
+        function makeGlitchable(selector) {
+            document.querySelectorAll(selector).forEach(el => {
+                const text = el.textContent;
+                el.innerHTML = '';
+                el.classList.add('glitchable');
+                for (const char of text) {
+                    const span = document.createElement('span');
+                    span.className = 'glitch-char';
+                    span.textContent = char;
+                    el.appendChild(span);
+                }
+            });
+        }
+
+        // Apply glitch capability to additional elements
+        makeGlitchable('.domain-name');
+        makeGlitchable('.codex-label');
+        makeGlitchable('.footer-link');
+        makeGlitchable('.meta-row span:first-child');
+
+        // Update glitchChars reference to include new elements
+        const allGlitchChars = document.querySelectorAll('.glitch-char');
+
+        // Secondary glitch loop for other elements (less frequent)
+        function glitchSecondaryChar() {
+            const chars = document.querySelectorAll('.glitchable .glitch-char');
+            if (chars.length === 0) return;
+            
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            const char = chars[randomIndex];
+            const originalChar = char.textContent;
+            const alternates = glitchAlternates[originalChar] || glitchAlternates[originalChar.toLowerCase()];
+            
+            if (!alternates || originalChar === ' ') return;
+            
+            const glitchedChar = alternates[Math.floor(Math.random() * alternates.length)];
+            
+            char.classList.add('glitching');
+            char.textContent = glitchedChar;
+            
+            setTimeout(() => {
+                char.classList.remove('glitching');
+                char.textContent = originalChar;
+            }, 80 + Math.random() * 120);
+        }
+
+        function scheduleSecondaryGlitch() {
+            const delay = 3000 + Math.random() * 5000;
+            setTimeout(() => {
+                if (Math.random() > 0.5) {
+                    const burstCount = Math.floor(Math.random() * 2) + 1;
+                    for (let i = 0; i < burstCount; i++) {
+                        setTimeout(glitchSecondaryChar, i * 60);
+                    }
+                }
+                scheduleSecondaryGlitch();
+            }, delay);
+        }
+
+        scheduleSecondaryGlitch();
+
+        // ============================================
+        // EMBER PARTICLES - HYBRID PHYSICS + VISUAL VARIETY
+        // ============================================
+        const fireflyField = document.getElementById('firefly-field');
+        const fireflies = [];
+        // Slightly reduced on mobile but still plenty
+        const isMobile = window.innerWidth <= 640;
+        const maxFireflies = isMobile ? 14 : 20;
+
+        // Color palette - warm golds, ambers, and occasional cool accent
+        const emberColors = [
+            { h: 38, s: 60, l: 55 },   // Gold
+            { h: 42, s: 65, l: 50 },   // Amber
+            { h: 35, s: 55, l: 60 },   // Pale gold
+            { h: 30, s: 70, l: 45 },   // Deep amber
+            { h: 45, s: 50, l: 58 },   // Soft yellow-gold
+            { h: 25, s: 60, l: 50 },   // Orange-gold
+            { h: 50, s: 40, l: 65 },   // Cream gold
+            { h: 20, s: 50, l: 55 },   // Copper hint
+        ];
+
+        class Firefly {
+            constructor() {
+                this.element = document.createElement('div');
+                this.element.className = 'firefly';
+                fireflyField.appendChild(this.element);
+                
+                // Random starting position - bias toward upper half
+                this.x = Math.random() * window.innerWidth;
+                this.y = Math.random() * window.innerHeight * 0.7;
+                
+                // Initial velocity - wandering with slight downward bias
+                this.vx = (Math.random() - 0.5) * 0.6;
+                this.vy = (Math.random() - 0.3) * 0.5;
+                
+                // Visual variety
+                const colorChoice = emberColors[Math.floor(Math.random() * emberColors.length)];
+                // Slight random variation on the chosen color
+                this.hue = colorChoice.h + (Math.random() - 0.5) * 10;
+                this.saturation = colorChoice.s + (Math.random() - 0.5) * 15;
+                this.lightness = colorChoice.l + (Math.random() - 0.5) * 10;
+                
+                // Size variety - most small, some medium, rare large
+                const sizeRoll = Math.random();
+                if (sizeRoll < 0.6) {
+                    this.size = 1.5 + Math.random() * 1.5; // Small: 1.5-3px
+                } else if (sizeRoll < 0.9) {
+                    this.size = 3 + Math.random() * 2; // Medium: 3-5px
+                } else {
+                    this.size = 5 + Math.random() * 2; // Large: 5-7px (rare)
+                }
+                
+                // Blur varies with size
+                this.baseBlur = this.size < 3 ? 0.5 + Math.random() * 0.5 : 1 + Math.random() * 1;
+                
+                // Glow intensity varies
+                this.glowIntensity = 0.5 + Math.random() * 1; // Multiplier for box-shadow spread
+                
+                // Glow properties
+                this.glowPhase = Math.random() * Math.PI * 2;
+                this.glowSpeed = 0.015 + Math.random() * 0.04; // More variety in pulse speed
+                this.maxOpacity = 0.25 + Math.random() * 0.6; // Wider opacity range
+                
+                // Lifespan - larger ones tend to live longer
+                const lifeMult = this.size > 4 ? 1.3 : 1;
+                this.life = 0;
+                this.maxLife = (300 + Math.random() * 500) * lifeMult;
+                this.fadeIn = 40 + Math.random() * 30;
+                this.fadeOut = 70 + Math.random() * 50;
+                
+                // Wandering behavior - smaller ones more erratic
+                this.wanderAngle = Math.random() * Math.PI * 2;
+                this.wanderSpeed = this.size < 3 ? 0.025 + Math.random() * 0.025 : 0.015 + Math.random() * 0.02;
+                this.wanderStrength = this.size < 3 ? 0.025 : 0.015; // How much wander affects velocity
+                
+                // Direction change timer
+                this.directionTimer = 0;
+                this.directionInterval = 40 + Math.random() * 80;
+                
+                // Apply initial styles
+                this.element.style.width = this.size + 'px';
+                this.element.style.height = this.size + 'px';
+                this.applyColor(1);
+                
+                this.update();
+            }
+            
+            applyColor(glowMultiplier) {
+                const l = this.lightness + (glowMultiplier - 0.5) * 15; // Brighter when glowing more
+                const color = `hsl(${this.hue}, ${this.saturation}%, ${l}%)`;
+                const glowColor = `hsla(${this.hue}, ${this.saturation}%, ${l}%, 0.6)`;
+                const outerGlow = `hsla(${this.hue}, ${this.saturation - 10}%, ${l - 10}%, 0.3)`;
+                
+                this.element.style.background = color;
+                
+                const spread1 = 4 * this.glowIntensity;
+                const spread2 = 10 * this.glowIntensity;
+                this.element.style.boxShadow = `
+                    0 0 ${spread1}px ${spread1 / 2}px ${glowColor},
+                    0 0 ${spread2}px ${spread2 / 2}px ${outerGlow}
+                `;
+            }
+            
+            update() {
+                this.life++;
+                this.glowPhase += this.glowSpeed;
+                this.directionTimer++;
+                
+                // Wandering - gradual angle changes
+                this.wanderAngle += (Math.random() - 0.5) * 0.3;
+                
+                // Apply wander force
+                this.vx += Math.cos(this.wanderAngle) * this.wanderStrength;
+                this.vy += Math.sin(this.wanderAngle) * this.wanderStrength;
+                
+                // Gentle gravity - slightly stronger for larger particles
+                const gravityMult = this.size > 4 ? 1.5 : 1;
+                this.vy += 0.003 * gravityMult;
+                
+                // Occasional direction shifts
+                if (this.directionTimer > this.directionInterval) {
+                    this.vx += (Math.random() - 0.5) * 0.2;
+                    this.vy += (Math.random() - 0.5) * 0.15;
+                    
+                    // Small chance of updraft boost - lighter particles more likely
+                    const updraftChance = this.size < 3 ? 0.15 : 0.08;
+                    if (Math.random() < updraftChance) {
+                        this.vy -= 0.15 + Math.random() * 0.1;
+                    }
+                    
+                    this.directionTimer = 0;
+                    this.directionInterval = 30 + Math.random() * 70;
+                }
+                
+                // Velocity damping
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+                
+                // Clamp velocity - smaller particles can move faster
+                const maxSpeed = this.size < 3 ? 0.8 : 0.6;
+                this.vx = Math.max(-maxSpeed, Math.min(maxSpeed, this.vx));
+                this.vy = Math.max(-maxSpeed, Math.min(maxSpeed, this.vy));
+                
+                // Apply velocity
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Soft boundary behavior
+                if (this.x < -40) this.x = window.innerWidth + 40;
+                if (this.x > window.innerWidth + 40) this.x = -40;
+                if (this.y < -40) {
+                    this.y = -40;
+                    this.vy = Math.abs(this.vy) * 0.5;
+                }
+                if (this.y > window.innerHeight + 60) {
+                    this.life = this.maxLife - 20;
+                }
+                
+                // Calculate opacity with fade in/out and flicker
+                let baseOpacity = this.maxOpacity;
+                
+                if (this.life < this.fadeIn) {
+                    baseOpacity *= this.life / this.fadeIn;
+                } else if (this.life > this.maxLife - this.fadeOut) {
+                    baseOpacity *= (this.maxLife - this.life) / this.fadeOut;
+                }
+                
+                // Ember flicker - organic pulsing with variety
+                const flicker1 = Math.sin(this.glowPhase);
+                const flicker2 = Math.sin(this.glowPhase * 2.3 + 1.5) * 0.3;
+                const flicker3 = Math.sin(this.glowPhase * 0.7) * 0.2; // Slower undertone
+                const glowMultiplier = 0.45 + (flicker1 * 0.25) + (flicker2 * 0.2) + (flicker3 * 0.1);
+                const opacity = baseOpacity * glowMultiplier;
+                
+                // Apply styles
+                this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+                this.element.style.opacity = opacity;
+                
+                // Update color glow based on current brightness
+                this.applyColor(glowMultiplier);
+                
+                // Blur varies with glow
+                const blur = this.baseBlur + Math.sin(this.glowPhase * 0.7) * 0.3;
+                this.element.style.filter = `blur(${blur}px)`;
+                
+                if (this.life >= this.maxLife) {
+                    this.destroy();
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            destroy() {
+                this.element.remove();
+                const index = fireflies.indexOf(this);
+                if (index > -1) fireflies.splice(index, 1);
+            }
+        }
+
+        function spawnFirefly() {
+            if (fireflies.length < maxFireflies) {
+                fireflies.push(new Firefly());
+            }
+        }
+
+        function updateFireflies() {
+            fireflies.forEach(f => f.update());
+            requestAnimationFrame(updateFireflies);
+        }
+
+        function scheduleFireflySpawn() {
+            spawnFirefly();
+            const delay = isMobile ? (700 + Math.random() * 1400) : (600 + Math.random() * 1300);
+            setTimeout(scheduleFireflySpawn, delay);
+        }
+
+        // Initialize
+        updateFireflies();
+        scheduleFireflySpawn();
+        const initialSpawn = isMobile ? 5 : 7;
+        for (let i = 0; i < initialSpawn; i++) {
+            setTimeout(spawnFirefly, i * 250);
+        }
+
+        // ============================================
+        // INFO CODEX TYPEWRITER EFFECT
+        // ============================================
+        const codexData = [
+            { id: 'codex-location', text: 'Upper West Side, NYC' },
+            { id: 'codex-creator', text: '_WCH_' },
+            { id: 'codex-update', text: '01 - 14 - 26' }
+        ];
+
+        function typeWriter(element, text, speed = 50) {
+            return new Promise((resolve) => {
+                element.classList.add('typing');
+                let i = 0;
+                function type() {
+                    if (i < text.length) {
+                        element.textContent += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed + Math.random() * 30);
+                    } else {
+                        element.classList.remove('typing');
+                        resolve();
+                    }
+                }
+                type();
+            });
+        }
+
+        async function initCodex() {
+            // Small delay before starting
+            await new Promise(r => setTimeout(r, 800));
+            
+            for (const item of codexData) {
+                const element = document.getElementById(item.id);
+                if (element) {
+                    await typeWriter(element, item.text, 40);
+                    await new Promise(r => setTimeout(r, 200)); // Pause between lines
+                }
+            }
+        }
+
+        // Check if we've already shown the typewriter effect this session
+        const codexShown = sessionStorage.getItem('codex-typed');
+        if (!codexShown) {
+            initCodex();
+            sessionStorage.setItem('codex-typed', 'true');
+        } else {
+            // If already shown, just display the text immediately
+            codexData.forEach(item => {
+                const element = document.getElementById(item.id);
+                if (element) element.textContent = item.text;
+            });
+        }
+
+        // ============================================
+        // PARALLAX DEPTH EFFECT
+        // ============================================
+        const parallaxDeep = document.querySelectorAll('.parallax-deep');
+        const parallaxMid = document.querySelectorAll('.parallax-mid');
+        
+        let targetX = 0;
+        let targetY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        let parallaxEnabled = false;
+        
+        // Desktop: Track mouse position
+        document.addEventListener('mousemove', (e) => {
+            targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+            targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+        
+        // Mobile: Track device orientation (gyroscope)
+        function handleOrientation(e) {
+            if (e.gamma === null || e.beta === null) return;
+            
+            // gamma: left/right tilt (-90 to 90)
+            // beta: front/back tilt (-180 to 180)
+            // Normalize to -1 to 1 range, clamped
+            targetX = Math.max(-1, Math.min(1, e.gamma / 30));
+            targetY = Math.max(-1, Math.min(1, (e.beta - 45) / 30)); // 45 is typical holding angle
+        }
+        
+        // Request permission for device orientation on iOS 13+
+        function requestOrientationPermission() {
+            if (typeof DeviceOrientationEvent !== 'undefined' && 
+                typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                            parallaxEnabled = true;
+                        }
+                    })
+                    .catch(console.error);
+            } else if ('DeviceOrientationEvent' in window) {
+                // Non-iOS devices
+                window.addEventListener('deviceorientation', handleOrientation);
+                parallaxEnabled = true;
+            }
+        }
+        
+        // Smooth parallax animation
+        function updateParallax() {
+            // Ease toward target
+            currentX += (targetX - currentX) * 0.05;
+            currentY += (targetY - currentY) * 0.05;
+            
+            // Deep layer - moves most (opposite direction for depth illusion)
+            const deepX = -currentX * 20;
+            const deepY = -currentY * 15;
+            parallaxDeep.forEach(el => {
+                el.style.transform = `translate(${deepX}px, ${deepY}px)`;
+            });
+            
+            // Mid layer - moves less
+            const midX = -currentX * 10;
+            const midY = -currentY * 8;
+            parallaxMid.forEach(el => {
+                el.style.transform = `translate(${midX}px, ${midY}px)`;
+            });
+            
+            requestAnimationFrame(updateParallax);
+        }
+        
+        // Initialize parallax
+        const isTouchDevice = 'ontouchstart' in window;
+        
+        if (isTouchDevice) {
+            // On touch devices, try to enable gyroscope parallax
+            // For iOS 13+, we need user interaction to request permission
+            document.addEventListener('touchstart', function initGyro() {
+                requestOrientationPermission();
+                document.removeEventListener('touchstart', initGyro);
+            }, { once: true });
+            
+            // Also try without permission for Android/older iOS
+            if (typeof DeviceOrientationEvent !== 'undefined' && 
+                typeof DeviceOrientationEvent.requestPermission !== 'function') {
+                window.addEventListener('deviceorientation', handleOrientation);
+            }
+        }
+        
+        // Always start the animation loop
+        updateParallax();
     </script>
 </body>
 </html>
